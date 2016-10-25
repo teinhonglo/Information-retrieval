@@ -6,7 +6,7 @@ documant_path = os.getcwd() + "/SPLIT_DOC_WDID_NEW"
 query_path = os.getcwd() + "/QUERY_WDID_NEW"
 data = {}				# content of document (doc, content)
 background_word = {}	# word count of 2265 documant (word, number of words)
-query = {}				# query 
+query = {}				# query
 my_lambda = 0.5
 
 # preprocess
@@ -25,18 +25,22 @@ def preprocess(dictionary):
 		# replace old content
 		dictionary[key]	= content
 	return dictionary
-	
+
 # word count
-def word_count(data):
-	bg_word = {}
-	for key, value in data.items():
-		for part in data[key].split():
-			if part in bg_word:
-				bg_word[part] += 1
-			else:
-				bg_word[part] = 1
+def word_count(content, bg_word):
+	for part in content.split():
+		if part in bg_word:
+			bg_word[part] += 1
+		else:
+			bg_word[part] = 1
 	return bg_word
 	
+def word_sum(content):
+	num = 0
+	for part in content.split():
+		num += int(part)
+	return num
+
 # list all files of a directory(Document)
 for dir_item in os.listdir(documant_path):
 	# join dir path and file name
@@ -47,10 +51,17 @@ for dir_item in os.listdir(documant_path):
 			# read content of documant (doc, content)
             data[dir_item] = f.read()
 
-# preprocess			
+# preprocess
 data = preprocess(data)
+
 # count background_word
-background_word = word_count(data)
+for key, value in data.items():
+	background_word = word_count(value, background_word)
+
+for key, value in background_word.items():
+	print key
+	print value
+	c= raw_input()
 
 # 16 query documants
 for query_item in os.listdir(query_path):
@@ -61,9 +72,6 @@ for query_item in os.listdir(query_path):
         with open(query_item_path, 'r') as f:
 			# read content of query documant (doc, content)
             query[query_item] = f.read()
-			
+
 # preprocess
 query = preprocess(query)
-
-
-	
