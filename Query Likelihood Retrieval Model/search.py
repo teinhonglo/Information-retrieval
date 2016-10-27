@@ -35,10 +35,10 @@ def word_count(content, bg_word):
 			bg_word[part] = 1
 	return bg_word
 	
-def word_sum(content):
+def word_sum(data):
 	num = 0
-	for part in content.split():
-		num += int(part)
+	for key, value in data:
+		num += int(value)
 	return num
 
 # list all files of a directory(Document)
@@ -57,11 +57,6 @@ data = preprocess(data)
 # count background_word
 for key, value in data.items():
 	background_word = word_count(value, background_word)
-
-for key, value in background_word.items():
-	print key
-	print value
-	c= raw_input()
 
 # 16 query documants
 for query_item in os.listdir(query_path):
