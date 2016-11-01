@@ -83,7 +83,7 @@ lambda_test = {0: 0}
 interval	= 0.1
 isBreak = "run"
 while isBreak != "exit":
-	for my_lambda in np.arange(0.1, 1, interval):
+	for my_lambda in np.arange(0, 1, interval):
 		if my_lambda in lambda_test: 	continue
 		else:							
 			docs_point = {}
@@ -93,11 +93,12 @@ while isBreak != "exit":
 				for doc_key, doc_val in data.items():
 					doc_words = {}
 					doc_words = word_count(doc_val, doc_words)
-					doc_words_sum = word_sum(doc_words)
+					doc_words_sum = word_sum(doc_words) * 1.0
+					
 					point = 0
-					# calculate each query value of document
+					# calculate each query value of the document
 					for query_word in q_val.split():
-						count = 0						# C(w | D)
+						count = 1						# C(w | D)
 						word_probability = 0			# P(w | D)
 						background_probability = 0		# BG(w | D)
 						# check if word at query exists in the document
@@ -108,22 +109,27 @@ while isBreak != "exit":
 						else:
 							count = 0
 							word_probability = 0
+							# check if word at query exists in the background
 							if(query_word in background_word):
 								background_probability = (background_word[query_word] + 0.01) / (background_word_sum + 0.01)
 							else:
 								background_probability = 0.01 / (background_word_sum + 0.01)
+
 						point += count * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 						
 					docs_point[doc_key] = point
 				# sorted each doc of query by point
 				docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
+				#for key, value in docs_point_list:
+					#print key, value
+					#c = raw_input()	
 				# sum of each query precision
 				precision_sum += readAssessment.precision(docs_point_list, assessment[q_key])
-		# mean average precision	
-		mAP = precision_sum / len(query)
-		print my_lambda
-		print mAP
-		lambda_test[my_lambda] = mAP
+			# mean average precision	
+			mAP = precision_sum / len(query)
+			print my_lambda
+			print mAP
+			lambda_test[my_lambda] = mAP
 	# get key with maximum value in lambda_test dictionary	
 	max_lambda = max(lambda_test.iteritems(), key=operator.itemgetter(1))[0]
 	max_mAP = lambda_test[my_lambda]
