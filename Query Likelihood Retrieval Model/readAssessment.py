@@ -29,16 +29,15 @@ def get_assessment():
 def precision(result, assessment_list):
 	iterative = 0
 	count = 0
+	precision = 0
 	assessment = assessment_list.split()
-	for doc_name, val in result:
-		
+	for doc_name, point in result:
+		iterative += 1
 		if count == len(assessment): break
 			
 		if doc_name in assessment:
 			count += 1
-			
-		iterative += 1
-		
-	precision = count * 1.0 / iterative
+			precision += count * 1.0 / iterative
 	
+	precision /= len(assessment)
 	return precision
