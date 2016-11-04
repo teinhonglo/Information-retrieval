@@ -7,7 +7,7 @@ import collections
 
 CNA_path = "Corpus"
 
-# read documant
+# read document
 def read_doc():
 	CNATraingSetDict = {}
 	title = "Doc "
@@ -19,7 +19,7 @@ def read_doc():
 		# check whether a file exists before read
 		if os.path.isfile(doc_item_path):
 			with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
-				# read content of query documant (doc, content)
+				# read content of query document (doc, content)
 				for line in f.readlines():
 					numOfDoc += 1
 					CNATraingSetDict[str(numOfDoc)] = line
@@ -34,9 +34,13 @@ def word_count(content, bg_word):
 		else:
 			bg_word[part] = 1
 	return bg_word	
+
+# word count, dictionary
+def word_count_dict(content, bg_word):
+	for word, count in content.items():
+		if word in bg_word:
+			bg_word[word] += int(count)
+		else:
+			bg_word[word] = int(count)
+	return bg_word
 	
-def printDict(dict):
-	for key, val in dict.items():
-		print key
-		print val
-	c = raw_input("Press any key to continue...")

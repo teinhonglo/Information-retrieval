@@ -1,10 +1,20 @@
-import os
-import numpy as np
-
 # kmeans clustering algorithm
 # data = set of data points
 # k = number of clusters
 # c = initial list of centroids (if provided)
+import os
+import numpy as np
+class dataInfo:
+    def __init__(self, ID, coor):
+        self.ID = ID        # title
+        self.coor = coor    # numpy array
+        
+    def getID(self):
+        return self.ID
+    
+    def getCoor(self):
+        return self.coor 
+
 def kmeans(data, k):
     centroids = []
 
@@ -25,7 +35,10 @@ def kmeans(data, k):
         index = 0
         for cluster in clusters:
             old_centroids[index] = centroids[index]
-            centroids[index] = np.mean(cluster, axis=0).tolist()
+            cluster_np = []
+            for d in cluster:
+                cluster_np.append(d.coor.flatten().tolist())
+            centroids[index] = np.mean(cluster_np, axis=0).tolist()
             index += 1
 
 	'''
@@ -47,7 +60,7 @@ def euclidean_dist(data, centroids, clusters):
     for instance in data:  
         # Find which centroid is the closest
         # to the given data point.
-        mu_index = np.sqrt(((instance-centroids)**2).sum(axis=1)).argmin(axis=0)
+        mu_index = np.sqrt(((instance.coor-centroids)**2).sum(axis=1)).argmin(axis=0)
         try:
             clusters[mu_index].append(instance)
         except KeyError:
@@ -58,7 +71,7 @@ def euclidean_dist(data, centroids, clusters):
     # clusters and 0 means.        
     for cluster in clusters:
         if not cluster:
-            cluster.append(data[np.random.randint(0, len(data), size=1)].flatten().tolist())
+            cluster.append(data[np.random.randint(0, len(data), size=1)])
 
     return clusters
 
@@ -66,7 +79,7 @@ def euclidean_dist(data, centroids, clusters):
 # randomize initial centroids
 def randomize_centroids(data, centroids, k):
     for cluster in range(0, k):
-        centroids.append(data[np.random.randint(0, len(data), size=1)].flatten().tolist())
+        centroids.append(data[np.random.randint(0, len(data), size=1)].coor.flatten().tolist())
     return centroids
 
 
