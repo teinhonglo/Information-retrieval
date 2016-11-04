@@ -1,10 +1,17 @@
-
 import numpy as np
 # Function: K Means
 # -------------
 # K-Means is an algorithm that takes in a dataset and a constant
 # k and returns k centroids (which define clusters of data in the
 # dataset which are similar to one another).
+class datas:
+	def __init__(name, coor):	
+		self.name = name
+		self.coor = coor
+		
+class cluster:
+	def __init__():
+		
 def kmeans(dataSet, k):
 	
     # Initialize centroids randomly
@@ -54,4 +61,10 @@ def getCentroids(dataSet, labels, k):
     # have that centroid's label. Important: If a centroid is empty (no points have
     # that centroid's label) you should randomly re-initialize it.	
 
-def getRandomCentroids(numFeatures, k)	
+def getRandomCentroids(numFeatures, k):
+
+x = np.array([1, 2, 3, 4, 5]
+y = np.array([8, 8, 8, 8, 8])
+z = np.ones((5, 9))
+np.sqrt(sum((x - y) ** 2))
+np.sqrt(((z-x)**2).sum(axis=0))
