@@ -4,6 +4,8 @@
 # c = initial list of centroids (if provided)
 import os
 import numpy as np
+import sys
+
 class dataInfo:
     def __init__(self, ID, coor):
         self.ID = ID        # title
@@ -35,22 +37,23 @@ def kmeans(data, k):
         index = 0
         for cluster in clusters:
             old_centroids[index] = centroids[index]
+            cluster_union = []
             cluster_np = []
+            # create union in cluster
             for d in cluster:
-                cluster_np.append(d.coor.flatten().tolist())
-            centroids[index] = np.mean(cluster_np, axis=0).tolist()
+                cluster_union = list(set(cluster_union) | set(d.getCoor().flatten().tolist()))
+            cluster_union = sorted(cluster_union)
+            # get intersection between element and union	
+            for d in cluster:
+                d_list = [0] * len(cluster_union)
+                d_intesection = sorted(list(set(d.getCoor().flatten().tolist()) & set(cluster_union)))
+                for d_i in d_intesection:
+                    d_list[cluster_union.index(d_i)] = 1
+                cluster_np.append(np.array(d_list))
+					
+            centroids[index] = (np.array(cluster_union) * np.mean(cluster_np, axis=0)).tolist()
             index += 1
 
-	'''
-    print("The total number of data instances is: " + str(len(data)))
-    print("The total number of iterations necessary is: " + str(iterations))
-    print("The means of each cluster are: " + str(centroids))
-    print("The clusters are as follows:")
-    for cluster in clusters:
-        print("Cluster with a size of " + str(len(cluster)) + " starts here:")
-        print(np.array(cluster).tolist())
-        print("Cluster ends here.")
-	'''
     return clusters
 
 # Calculates euclidean distance between
@@ -60,12 +63,26 @@ def euclidean_dist(data, centroids, clusters):
     for instance in data:  
         # Find which centroid is the closest
         # to the given data point.
-        mu_index = np.sqrt(((instance.coor-centroids)**2).sum(axis=1)).argmin(axis=0)
+        # convert to two similarity np array
+		
+        temp_instanse = []
+        temp_centroid = []
+        mu_value = sys.maxint
+        mu_index = 0
+		
+        for c in centroids:
+            [temp_instanse, temp_centroid] = list_compare(instance.getCoor().flatten().tolist(), c)
+            cur_idx = centroids.index(c)
+            cur_value = np.sqrt((temp_instanse - temp_centroid)**2).sum(axis = 0)
+            if cur_value < mu_value:
+                mu_value = cur_value
+                mu_index = cur_idx   
+
         try:
             clusters[mu_index].append(instance)
         except KeyError:
             clusters[mu_index] = [instance]
-
+		
     # If any cluster is empty then assign one point
     # from data set randomly so as to not have empty
     # clusters and 0 means.        
@@ -89,3 +106,19 @@ def has_converged(centroids, old_centroids, iterations):
     if iterations > MAX_ITERATIONS:
         return True
     return old_centroids == centroids
+
+# convert to two similarity np array
+def list_compare(l1, l2):	
+	union = sorted(list(set(l1) | set(l2)))
+	intersection_1 = sorted(list(set(l1) & set(union)))
+	intersection_2 = sorted(list(set(l2) & set(union)))
+	
+	l3 = [0] * len(union)
+	l4 = [0] * len(union)
+	
+	for item1 in intersection_1:
+		l3[union.index(item1)] = 1 
+	for item1 in intersection_2:	
+		l4[union.index(item1)] = 1 
+		
+	return [np.array(l3), np.array(l4)]	

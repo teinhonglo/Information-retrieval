@@ -43,4 +43,12 @@ def word_count_dict(content, bg_word):
 		else:
 			bg_word[word] = int(count)
 	return bg_word
+
+# input dict
+# output sum of word
+def word_sum(data):
+	num = 0
+	for key, value in data.items():
+		num += int(value)
+	return num
 	

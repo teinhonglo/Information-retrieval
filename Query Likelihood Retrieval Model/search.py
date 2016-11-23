@@ -53,7 +53,7 @@ for dir_item in os.listdir(documant_path):
 	# check whether a file exists before read
     if os.path.isfile(dir_item_path):
         with open(dir_item_path, 'r') as f:
-			# read content of documant (doc, content)
+			# read content of document (doc, content)
             data[dir_item] = f.read()
 
 # preprocess
@@ -87,7 +87,7 @@ while isBreak != "exit":
 		if my_lambda in lambda_test: 	continue
 		else:							
 			docs_point = {}
-			precision_sum = 0
+			AP = 0
 			mAP = 0
 			for q_key, q_val in query.items():
 				for doc_key, doc_val in data.items():
@@ -96,37 +96,26 @@ while isBreak != "exit":
 					doc_words_sum = word_sum(doc_words) * 1.0
 					
 					point = 0
-					# calculate each query value of the document
+					# calculate each query value for the document
 					for query_word in q_val.split():
-						count = 1						# C(w | D)
+						count = 0						# C(w , D)
 						word_probability = 0			# P(w | D)
 						background_probability = 0		# BG(w | D)
 						# check if word at query exists in the document
-						if (query_word in doc_words):
+						if query_word in doc_words:
 							count = doc_words[query_word]
 							word_probability = doc_words[query_word] / doc_words_sum
+						if query_word in background_word:	
 							background_probability = (background_word[query_word] + 0.01) / (background_word_sum + 0.01)
 						else:
-							count = 0
-							word_probability = 0
-							# check if word at query exists in the background
-							if(query_word in background_word):
-								background_probability = (background_word[query_word] + 0.01) / (background_word_sum + 0.01)
-							else:
-								background_probability = 0.01 / (background_word_sum + 0.01)
-
-						point += count * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
-						
+							background_probability = 1
+						point += log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 					docs_point[doc_key] = point
 				# sorted each doc of query by point
 				docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
-				#for key, value in docs_point_list:
-					#print key, value
-					#c = raw_input()	
-				# sum of each query precision
-				precision_sum += readAssessment.precision(docs_point_list, assessment[q_key])
+				AP += readAssessment.precision(docs_point_list, assessment[q_key])
 			# mean average precision	
-			mAP = precision_sum / len(query)
+			mAP = AP / len(query)
 			print my_lambda
 			print mAP
 			lambda_test[my_lambda] = mAP
