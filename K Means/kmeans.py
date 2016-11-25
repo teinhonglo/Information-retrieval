@@ -43,6 +43,8 @@ def kmeans(data, k):
             for d in cluster:
                 cluster_union = list(set(cluster_union) | set(d.getCoor().flatten().tolist()))
             cluster_union = sorted(cluster_union)
+            threshold = [0.3 for i in range(len(cluster_union))]
+			
             # get intersection between element and union	
             for d in cluster:
                 d_list = [0] * len(cluster_union)
@@ -50,8 +52,8 @@ def kmeans(data, k):
                 for d_i in d_intesection:
                     d_list[cluster_union.index(d_i)] = 1
                 cluster_np.append(np.array(d_list))
-					
-            centroids[index] = (np.array(cluster_union) * np.mean(cluster_np, axis=0)).tolist()
+            new_centroids = filter(lambda a: a != 0, np.array(cluster_union) * (np.mean(cluster_np, axis=0) >= np.array(threshold)))
+            centroids[index] = (new_centroids).tolist()
             index += 1
 
     return clusters

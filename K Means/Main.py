@@ -3,7 +3,7 @@ import operator
 import collections
 import uniout
 import ProcDoc
-import Kmeans
+import kmeans
 
 
 doc_wordCount = ProcDoc.read_doc()  # read document (Doc No.,Doc content)  
@@ -29,12 +29,14 @@ print ("Start vector space")
 # calculate vector space of each document	
 for docName, word_dict in dict_vectorSpace.items():
 	word_vector = []
-	word_index = 0
+	word_index = 1
 	for word, frequency in bg_word:
 		if word in word_dict:
 			# append index of word vector
 			word_vector.append(word_index)
-		word_index += 1	
+		if word_index == len(word_dict.items()):
+			break
+		word_index += 1
 	dict_vectorSpace[docName] = np.array(word_vector)
 	# assign ID and coordinate
 	ID = docName
