@@ -3,7 +3,7 @@ import operator
 import collections
 import uniout
 import ProcDoc
-import kmeans
+import Kmeans
 
 
 doc_wordCount = ProcDoc.read_doc()  # read document (Doc No.,Doc content)  

@@ -53,7 +53,7 @@ def kmeans(data, k):
                     d_list[cluster_union.index(d_i)] = 1
                 cluster_np.append(np.array(d_list))
             new_centroids = filter(lambda a: a != 0, np.array(cluster_union) * (np.mean(cluster_np, axis=0) >= np.array(threshold)))
-            centroids[index] = (new_centroids).tolist()
+            centroids[index] = new_centroids
             index += 1
 
     return clusters
@@ -104,7 +104,7 @@ def randomize_centroids(data, centroids, k):
 
 # check if clusters have converged    
 def has_converged(centroids, old_centroids, iterations):
-    MAX_ITERATIONS = 1000
+    MAX_ITERATIONS = 10000
     if iterations > MAX_ITERATIONS:
         return True
     return old_centroids == centroids
