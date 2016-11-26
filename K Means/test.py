@@ -9,7 +9,7 @@ coors = np.array([[0, 1, 2, 3, 4, 5],
 datasets = {"1025": [0, 1, 2, 3, 4, 5], "956":[5, 6, 7, 8, 9, 10], "10258": [0, 2, 4, 7, 11], "33758": [2, 4, 5], "111":[5, 6, 7], "456": [2, 9, 11, 12, 16, 17]}
 dataset = []
 
-for ID, Coor in datasets.items(): 
+for ID, Coor in datasets.items():
 	data = Kmeans.dataInfo(ID, np.array(Coor))
 	dataset.append(data)
 		
