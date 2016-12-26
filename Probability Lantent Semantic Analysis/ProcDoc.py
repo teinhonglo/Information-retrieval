@@ -6,30 +6,11 @@ import collections
 
 
 CNA_path = "Corpus"
-Cluster_path = "clusters"
-# read document
-def read_doc():
-	CNATraingSet = []
-	title = "Doc "
-	numOfDoc = 0
-	# CNA_only_utf8
-	for doc_item in os.listdir(CNA_path):
-		# join dir path and file name
-		doc_item_path = os.path.join(CNA_path, doc_item)
-		# check whether a file exists before read
-		if os.path.isfile(doc_item_path):
-			with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
-				# read content of query document (doc, content)
-				for line in f.readlines():
-					numOfDoc += 1
-					CNATraingSet.append(line)
-	# CNATraingSet(list)
-	return CNATraingSet
+Cluster_path = "Topic"
 
 # read cluster
 def read_clusters():
-	clusters = []
-	numOfClusters = 0
+	clusters = {}
 	# cluster_only_utf8
 	for cluster_item in os.listdir(Cluster_path):
 		# join dir path and file name
@@ -39,9 +20,15 @@ def read_clusters():
 			with io.open(cluster_item_path, 'r', encoding = 'utf8') as f:
 				# read content of query document (doc, content)
 				for line in f.readlines():
-					[cluster_name, documents] = line.split(", ")
-					numOfClusters += 1
-					clusters.append([cluster_name, documents])
+					[cluster_name, words] = line.split(":")
+					word_prob_dict = {}
+					for word_prob in words.split(","):
+						try:
+							[word, prob ]= word_prob.split(" ")
+							word_prob_dict[word] = prob
+						except:
+							break
+					clusters[cluster_name] = word_prob_dict
 	# clusters(list)
 	return clusters	
 	
