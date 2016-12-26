@@ -1,11 +1,11 @@
 import ProcDoc
 
 def Probability_LSA(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict):
-	topic_word_prob_dict = {}
-	doc_topic_prob_dict = {}
+	topic_word_prob_dict = topic_word_prob_dict
+	doc_topic_prob_dict = doc_topic_prob_dict
 	doc_word_topic_prob_dict = {}
-	doc_wc_dict = {}
-	bg_word = {}
+	doc_wc_dict = doc_wc_dict
+	bg_word = bg_word
 	interative = 0
 	while has_converged(interative):
 		Evaluate(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict)
@@ -15,14 +15,14 @@ def Probability_LSA(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_d
 	
 def Evaluate(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict):
 	# P(T| D, w)
-	for word, freq in bg_word.items():
-		for doc_name, doc_wc_list in doc_wc_dict.items():
+	for doc_name, word_topic in doc_word_topic_prob_dict.items():	
+		for word, topic_list in word_topic.items():
 			denominator = 0.0
-			for topic, prob in doc_topic_prob_dictp[doc_name].items():
+			for topic, prob in topic_list.items():
 				w_t = topic_word_prob_dict[topic][word]
 				t_d = doc_topic_prob_dict[doc_name][topic]
 				denominator += w_t * td
-			for topic, prob in doc_topic_prob_dictp[doc_name].items():
+			for topic, prob in topic_list.items():
 				w_t = topic_word_prob_dict[topic][word]
 				t_d = doc_topic_prob_dict[doc_name][topic]
 				doc_word_topic_prob_dict[doc_name][word][topic] = w_t * t_d / denominator
