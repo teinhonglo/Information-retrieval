@@ -1,19 +1,19 @@
 import ProcDoc
 
-def Probability_LSA(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict):
+def Probability_LSA(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict):
 	topic_word_prob_dict = topic_word_prob_dict
 	doc_topic_prob_dict = doc_topic_prob_dict
-	doc_word_topic_prob_dict = {}
+	doc_word_topic_prob_dict = doc_word_topic_prob_dict
 	doc_wc_dict = doc_wc_dict
-	bg_word = bg_word
 	interative = 0
 	while has_converged(interative):
-		Evaluate(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict)
+		Evaluate(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict)
 		Maximum(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict)
 		interative += 1
-	return [topic_word_prob_dict, doc_topic_prob_dict, doc_wc_dict]	
+		print interative
+	return [topic_word_prob_dict, doc_topic_prob_dict]	
 	
-def Evaluate(bg_word, doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict):
+def Evaluate(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict):
 	# P(T| D, w)
 	for doc_name, word_topic in doc_word_topic_prob_dict.items():	
 		for word, topic_list in word_topic.items():
@@ -43,13 +43,14 @@ def Maximum(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_top
 				d_w_c = doc_wc_list[word]
 				d_w_t_p = doc_word_topic_prob_dict[doc_name][word][tp]
 				molecellur += d_w_c * d_w_t_p
-				
-			topic_word_prob_dict[tp][word] = molecellur / denominator
+			
+			if denominator != 0.0:	
+				topic_word_prob_dict[tp][word] = molecellur / denominator
 		
 	# P(T| D)
 	for doc_name, topic_list in doc_topic_prob_dict.items():
+		denominator = ProcDoc.word_sum(doc_wc_dict[doc_name]) * 1.0
 		for tp, tp_prob in topic_list.items():
-			denominator = ProcDoc.word_sum(doc_wc_dict[doc_name]) * 1.0
 			molecellur = 0.0
 			for d_w, doc_wc in doc_wc_dict[doc_name].items():
 				d_w_c = doc_wc
