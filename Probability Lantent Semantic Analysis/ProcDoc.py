@@ -20,7 +20,8 @@ def read_clusters():
 			with io.open(cluster_item_path, 'r', encoding = 'utf8') as f:
 				# read content of query document (doc, content)
 				for line in f.readlines():
-					[cluster_name, words] = line.split(":")
+					c = raw_input()
+					[cluster_name, words] = line.split("#")
 					word_prob_dict = {}
 					for word_prob in words.split(","):
 						try:
@@ -45,9 +46,8 @@ def read_doc_dict():
 		if os.path.isfile(doc_item_path):
 			with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
 				# read content of query document (doc, content)
-				for line in f.readlines():
-					CNATraingSetDict[str(numOfDoc)] = line
-					numOfDoc += 1
+				CNATraingSetDict[str(numOfDoc)] = f.read()
+				numOfDoc += 1
 	# CNATraingSetDict(No., content)
 	return CNATraingSetDict
 	
