@@ -37,28 +37,35 @@ with io.open("animate.txt", 'r', encoding = 'utf8') as f:
 		anime_name = anime_info[0]
 		anime_attr_name = anime_info[1::2]
 		anime_attr_value = anime_info[2::2]
+		
+		
 		#print anime_name
 		anime_attr = [0] * len(attr_names)
 		
 		for an in anime_attr_name:
+			
 			if anime_attr_value[anime_attr_name.index(an)] != '--':
 				anime_attr[attr_names.index(an)] = float(anime_attr_value[anime_attr_name.index(an)])
 			else:	
 				anime_attr[attr_names.index(an)] = float(7)
 			
 		new_anime[anime_name] = anime_attr
+		
 large_matrix = []		
+
 for an, av in new_anime.items():
 	print an
 	print av
 	large_matrix.append(av)
 
 max_col =  np.array(large_matrix).max(axis = 0)
+min_col =  np.array(large_matrix).min(axis = 0)
 print max_col
 
 re_anime_item = {}
 for an, av in new_anime.items():	
-	av = np.array(av) / max_col
+	av = (np.array(av) - min_col)/ (max_col- min_col)
+	# av = np.array(av) / max_col
 	re_anime_item[an] = av
 
 for an, av in re_anime_item.items():
