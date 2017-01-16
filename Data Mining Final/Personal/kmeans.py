@@ -38,28 +38,23 @@ def kmeans(dataSet, k):
             cluster_np = []
             for d in cluster:
                 cluster_np.append(d.getCoor().flatten().tolist())
+			# mean	
             centroids[index] = np.mean(cluster_np, axis=0).tolist()
             index += 1
 
     return clusters
 
-# Calculates euclidean distance between
-# a data point and all the available cluster
-# centroids.      
+# calculates euclidean distance
 def getLabels(dataSets, centroids, clusters):
     for instance in dataSets:  
-        # Find which centroid is the closest
-        # to the given data point.
-        mu_index = np.sqrt(((instance.getCoor()-centroids)**2).sum(axis=1)).argmin(axis=0)
+        # find which centroid is the closest
+        closest_index = np.sqrt(((instance.getCoor()-centroids)**2).sum(axis=1)).argmin(axis=0)
         try:
-            clusters[mu_index].append(instance)
+            clusters[closest_index].append(instance)
         except KeyError:
-            clusters[mu_index] = [instance]
-	'''
-    # If any cluster is empty then assign one point
-    # from data set randomly so as to not have empty
-    # clusters and 0 means.        
-	'''
+            clusters[closest_index] = [instance]
+	
+    # if any cluster is empty, then assign one point from data set randomly
     for cluster in clusters:
         if not cluster:
             cluster.append(dataSets[np.random.randint(0, len(data), size=1)])
