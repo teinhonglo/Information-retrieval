@@ -1,9 +1,6 @@
-# kmeans clustering algorithm
-# data = set of data points
-# k = number of clusters
-# c = initial list of centroids (if provided)
 import os
 import numpy as np
+
 class dataInfo:
     def __init__(self, ID, coor):
         self.ID = ID        # title
@@ -15,6 +12,8 @@ class dataInfo:
     def getCoor(self):
         return self.coor 
 
+# data = set of data points
+# k = number of clusters
 def kmeans(dataSet, k):
     centroids = []
 
@@ -42,7 +41,7 @@ def kmeans(dataSet, k):
             centroids[index] = np.mean(cluster_np, axis=0).tolist()
             index += 1
 
-    return clusters
+    return [clusters, centroids]
 
 # calculates euclidean distance
 def getLabels(dataSets, centroids, clusters):
@@ -57,15 +56,15 @@ def getLabels(dataSets, centroids, clusters):
     # if any cluster is empty, then assign one point from data set randomly
     for cluster in clusters:
         if not cluster:
-            cluster.append(dataSets[np.random.randint(0, len(data), size=1)])
+            cluster.append(dataSets[int(np.random.randint(0, len(dataSets), size=1))])
 
     return clusters
 
 
 # get randomize initial centroids
-def getCentroids(data, centroids, k):
+def getCentroids(dataSets, centroids, k):
     for cluster in range(0, k):
-        centroids.append(data[np.random.randint(0, len(data), size=1)].getCoor().flatten().tolist())
+        centroids.append(dataSets[int(np.random.randint(0, len(dataSets), size=1))].getCoor().flatten().tolist())
     return centroids
 
 
