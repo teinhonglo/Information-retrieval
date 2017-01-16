@@ -65,9 +65,17 @@ for an, av in re_anime_item.items():
 	print an
 	print av
 
-with io.open("animate_re.txt", 'r', encoding = 'utf8') as f:
+with io.open("animate_re.txt", 'w', encoding = 'utf8') as output:
+	
+	title = ""
+	for an in attr_names:
+		title += "," + an
+	
+	output.write(title + "\n")	
 	for an, av in re_anime_item.items():
-		io.write(an)
-		animate_value = ""
+		output.write(an)
+		anime_value = ""
 		for v in av:
-			
+			anime_value += "," + str(v)
+		anime_value = unicode(anime_value, "utf-8")	
+		output.write(anime_value + "\n")
