@@ -44,7 +44,7 @@ with io.open("animate.txt", 'r', encoding = 'utf8') as f:
 			if anime_attr_value[anime_attr_name.index(an)] != '--':
 				anime_attr[attr_names.index(an)] = float(anime_attr_value[anime_attr_name.index(an)])
 			else:	
-				anime_attr[attr_names.index(an)] = float(0)
+				anime_attr[attr_names.index(an)] = float(7)
 			
 		new_anime[anime_name] = anime_attr
 large_matrix = []		
