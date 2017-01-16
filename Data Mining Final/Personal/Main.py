@@ -18,7 +18,7 @@ with io.open('animate_re.csv', 'r', encoding = 'utf-8') as f:
 			data = kmeans.dataInfo(name, info)
 			data_list.append(data)
 		else:
-			vocabulary = row.split(",")
+			vocabulary = row.split(",")[1:]
 			isFirst = False
 # Calculate
 for num in range(4, 65):			
@@ -27,34 +27,40 @@ for num in range(4, 65):
 	# return clusters and centeroids
 	[clusters, centeriods] = kmeans.kmeans(data_list, num_of_cluster)	
 
-	with io.open('kmeans_' + str(num_of_cluster) + '.txt', 'w', encoding = 'utf-8') as output:
+	with io.open('cluster/kmeans_' + str(num_of_cluster) + '.txt', 'w', encoding = 'utf-8') as output:
 		# Compute SSE
 		sse = 0
 		for i in range(0, len(clusters)):
 			# Cluster 
 			cluster_name = "cluster" + str(i) + ":\n"
 			output.write(unicode(cluster_name, 'utf-8', errors="replace"))
+			
 			# Centeroid
-			print centeriods[i]
+			#print centeriods[i]
 			cluster_data = []
 			data_str = ""
+			
 			# Anime name
 			for data in clusters[i]:
 				data_str += "," + data.getID()
 				cluster_data.append(data.getCoor())
 			output.write(data_str[1:])
 			output.write(unicode("\n", 'utf-8', errors="replace"))
+			
 			# Five hightest title	
 			cluster_data = np.array(cluster_data)
 			cluster_sum = cluster_data.sum(axis = 0)
 			cluster_sum = cluster_sum.tolist()
 			output.write(unicode("Related Topic:\n", 'utf-8', errors="replace"))
 			topic_str = ""
-			for fh in sorted(cluster_data.sum(axis = 0), reverse=True)[:5]:
+			print sorted(cluster_sum, reverse=True)[:5]
+			print cluster_sum
+			for fh in sorted(cluster_sum, reverse=True)[:5]:
 				topic_str += "," + vocabulary[cluster_sum.index(fh)]
 			output.write(topic_str[1:])
 			output.write(unicode("\n", 'utf-8', errors="replace"))
 			output.write(unicode("\n", 'utf-8', errors="replace"))
+			
 			# Sum of Squared Error
 			sse += ((cluster_data - centeriods[i]) ** 2).sum(axis = 1).sum(axis = 0)
 			print 
