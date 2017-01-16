@@ -1,271 +1,295 @@
 cluster0:
-侵略陸地!花枝娘 OAD
-Related Topic:
-people,勵志,聲優配音,角色設定,音樂音效
-
-cluster1:
-航海王,爆漫王。,Fate/stay night,白箱 SHIROBAKO,夏日大作戰
-Related Topic:
-people,世界觀,音樂音效,聲優配音,作品劇情
-
-cluster2:
 Love Live! 學園偶像計畫,K-ON！輕音部,超時空要塞 Frontier
 Related Topic:
-people,發人深省,重視思考,聲優配音,作品劇情
+score,聲優配音,音樂音效,角色設定,動畫品質
+
+cluster1:
+RWBY,KILL la KILL,JOJO 的奇妙冒險,一拳超人
+Related Topic:
+score,角色設定,熱血,動畫品質,題材創意
+
+
+cluster2:
+Fate/stay night,夏日大作戰,哆啦A夢 大雄的太陽王傳說
+Related Topic:
+score,作品劇情,角色設定,題材創意
+,動畫品質
 
 cluster3:
-星期一的豐滿
+烏菈菈迷路帖,亞人醬有話要說,南鎌倉高校女子自行車社
 Related Topic:
-熱血,people,發人深省,大眾取向,聲優配音
+score,動畫品質,聲優配音,心靈治癒,角色設定
 
 cluster4:
-迷茫管家與膽怯的我,我的朋友很少,政宗君的復仇
+啟航吧！編舟計畫,果然我的青春戀愛喜劇搞錯了。續,怪醫黑傑克 OVA
 Related Topic:
-people,聲優配音,發人深省,作品劇情,世界觀
+score,發人深省,作品劇情,動畫品質,角色設定
 
 cluster5:
-Code Geass 反叛的魯路修 R2,暮蟬鳴泣時解,魔法禁書目錄,化物語,狼與辛香料
-Related Topic:
-people,世界觀,聲優配音,音樂音效,發人深省
-
-cluster6:
-RWBY
-Related Topic:
-聲優配音,people,重視思考,音樂音效,作品劇情
-
-cluster7:
-神裝少女小纏,線上遊戲的老婆不可能是女生？,我太受歡迎了該怎麼辦,殺老師 Q！,這個美術社大有問題！
-Related Topic:
-people,發人深省,角色設定,聲優配音,作品劇情
-
-cluster8:
-影子籃球員,FAIRY TAIL 魔導少年,排球少年！！ 第三季,食戟之靈 第二季,青之驅魔師
-Related Topic:
-people,聲優配音,世界觀,作品劇情,感動
-
-cluster9:
-銀魂
-Related Topic:
-people,聲優配音,音樂音效,發人深省,世界觀
-
-cluster10:
-IS 〈Infinite Stratos〉,魔法禁書目錄外傳 科學超電磁砲,約會大作戰 DATE A LIVE,我的妹妹哪有這麼可愛！
-Related Topic:
-people,聲優配音,發人深省,作品劇情,世界觀
-
-cluster11:
-鞋貓劍客,新我們這一家,神偷奶爸 2
-Related Topic:
-people,角色設定,勵志,作品劇情,聲優配音
-
-cluster12:
-只想告訴你,TIGER×DRAGON!,Kanon,可塑性記憶
-Related Topic:
-people,世界觀,聲優配音,發人深省,心靈治癒
-
-cluster13:
-哆啦A夢 大雄的太陽王傳說
-Related Topic:
-世界觀,people,勵志,聲優配音,音樂音效
-
-cluster14:
-狼的孩子雨和雪,一週的朋友。
-Related Topic:
-people,世界觀,心靈治癒,作品劇情,大眾取向
-
-cluster15:
-蠟筆小新,忍者亂太郎,咕嚕咕嚕魔法陣
-Related Topic:
-people,聲優配音,音樂音效,世界觀,角色設定
-
-cluster16:
-只有我不存在的城市,櫻子小姐的腳下埋著屍體,金融 C 風暴,命運石之門,亂步奇譚 Game of Laplace
-Related Topic:
-people,世界觀,音樂音效,輕鬆歡樂,聲優配音
-
-cluster17:
-天元突破 紅蓮螺巖,KILL la KILL,JOJO 的奇妙冒險,一拳超人,少女與戰車
-Related Topic:
-people,聲優配音,世界觀,感動,音樂音效
-
-cluster18:
-夏目友人帳 伍,白兔玩偶
-Related Topic:
-people,大眾取向,世界觀,心靈治癒,作品劇情
-
-cluster19:
-Re：從零開始的異世界生活
-Related Topic:
-﻿片名,﻿片名,世界觀,作品劇情,發人深省
-
-cluster20:
-忍者哈特利
-Related Topic:
-聲優配音,people,音樂音效,世界觀,勵志
-
-cluster21:
-中二病也想談戀愛！
-Related Topic:
-people,作品劇情,聲優配音,世界觀,發人深省
-
-cluster22:
-幼女戰記,機動戰士鋼彈 AGE,黑色子彈,發條精靈戰記 天鏡的極北之星
-Related Topic:
-people,世界觀,score,聲優配音,作品劇情
-
-cluster23:
-奇蹟少女 KOBATO.,異國迷宮的十字路口,烏龍麵之國的金色毛毬
-Related Topic:
-people,大眾取向,世界觀,作品劇情,聲優配音
-
-cluster24:
-北極熊咖啡廳,KILL ME BABY 愛殺寶貝,血型小將 ABO
-Related Topic:
-角色設定,people,發人深省,聲優配音,音樂音效
-
-cluster25:
-為美好的世界獻上祝福！ 第二季,伯納德小姐說。,男子高校生的日常
-Related Topic:
-people,角色設定,發人深省,音樂音效,聲優配音
-
-cluster26:
-你的名字,Angel Beats！,四月是你的謊言,AIR,秒速 5 公分,CLANNAD
-Related Topic:
-people,世界觀,作品劇情,心靈治癒,重視思考
-
-cluster27:
-星夢手記,Hand Shakers,Shelter,加速世界 INFINITE BURST
-Related Topic:
-people,作品劇情,重視思考,聲優配音,發人深省
-
-cluster28:
-怪獸大學,神奇寶貝超級願望,七龍珠 Z：復活的「F」
-Related Topic:
-people,作品劇情,勵志,角色設定,聲優配音
-
-cluster29:
-全部成為 F THE PERFECT INSIDER
-Related Topic:
-輕鬆歡樂,people,世界觀,男性取向,音樂音效
-
-cluster30:
-混沌之子,暗殺教室 第二季,黑白來看守所
-Related Topic:
-people,世界觀,音樂音效,聲優配音,作品劇情
-
-cluster31:
-果然我的青春戀愛喜劇搞錯了。續,怪醫黑傑克 OVA,果然我的青春戀愛喜劇搞錯了。
-Related Topic:
-people,男性取向,世界觀,聲優配音,作品劇情
-
-cluster32:
-賭博默示錄
-Related Topic:
-男性取向,音樂音效,輕鬆歡樂,people,世界觀
-
-cluster33:
-湯姆與傑利,惡魔奶爸,家有賤狗,新蠟筆小新 S1
-Related Topic:
-people,角色設定,音樂音效,聲優配音,世界觀
-
-cluster34:
-怪物的孩子,花開物語 HOME SWEET HOME
-Related Topic:
-people,作品劇情,世界觀,聲優配音,動畫品質
-
-cluster35:
-地球防衛少年,轉吧！企鵝罐,ReLIFE 重返 17 歲,啟航吧！編舟計畫,妖精的旋律,歡迎加入NHK,東京殘響,屍鬼,死亡遊行,寄生獸
-Related Topic:
-people,世界觀,音樂音效,男性取向,聲優配音
-
-cluster36:
-超自然 9 人組,文豪野犬 第二季,亞人 第二季
-Related Topic:
-people,世界觀,聲優配音,發人深省,作品劇情
-
-cluster37:
-記錄的地平線,翠星上的加爾岡緹亞,加速世界,問題兒童都來自異世界？,Fate/zero,未來日記,鋼之鍊金術師 BROTHERHOOD,絕園的暴風雨,Sword Art Online 刀劍神域
-Related Topic:
-people,世界觀,聲優配音,作品劇情,score
-
-cluster38:
-七大罪 聖戰的預兆,漂流武士,雙星之陰陽師,JOJO 的奇妙冒險 不滅鑽石,無畏魔女,潮與虎
-Related Topic:
-people,聲優配音,世界觀,感動,作品劇情
-
-cluster39:
-Fate/Grand Order,冰果,花開物語,赤髮白雪姬 第二季
-Related Topic:
-people,世界觀,作品劇情,聲優配音,發人深省
-
-cluster40:
-琴浦小姐,東京地震 8.0,螢火蟲之墓,宇宙兄弟
-Related Topic:
-people,世界觀,男性取向,心靈治癒,音樂音效
-
-cluster41:
-言葉之庭
-Related Topic:
-作品劇情,people,世界觀,心靈治癒,重視思考
-
-cluster42:
-終末的伊澤塔,3 月的獅子,魔法少女育成計畫,空之境界劇場版 終章 空之境界,來自風平浪靜的明日,Yuri on Ice
-Related Topic:
-people,作品劇情,世界觀,聲優配音,發人深省
-
-cluster43:
-競女!!!!!!!!,男子啦啦隊！！
-Related Topic:
-people,音樂音效,感動,發人深省,聲優配音
-
-cluster44:
 乒乓,第一神拳 Rising,鑽石王牌,王牌投手-振臂高揮～夏季大會篇～,棒球大聯盟,我的英雄學院,鑽石王牌 第二季,飆速宅男
 Related Topic:
-people,世界觀,感動,聲優配音,動畫品質
+score,作品劇情,熱血,角色設定,勵志
+
+cluster6:
+混沌之子,男子啦啦隊！！,暗殺教室 第二季,蟲師
+Related Topic:
+score,作品劇情,題材創意
+,動畫品質,音樂音效
+
+cluster7:
+進擊的巨人,金融 C 風暴
+Related Topic:
+score,作品劇情,題材創意
+,世界觀,動畫品質
+
+cluster8:
+櫻子小姐的腳下埋著屍體,亂步奇譚 Game of Laplace
+Related Topic:
+score,作品劇情,重視思考,動畫品質,角色設定
+
+cluster9:
+七大罪 聖戰的預兆,漂流武士,JOJO 的奇妙冒險 不滅鑽石,無畏魔女,發條精靈戰記 天鏡的極北之星
+Related Topic:
+score,角色設定,作品劇情,世界觀,動畫品質
+
+cluster10:
+記錄的地平線,翠星上的加爾岡緹亞,絕園的暴風雨
+Related Topic:
+score,作品劇情,世界觀,角色設定,動畫品質
+
+cluster11:
+IS 〈Infinite Stratos〉,零之使魔,少女編號,約會大作戰 DATE A LIVE,灼眼的夏娜,我的妹妹哪有這麼可愛！,旋風管家！ 第二季,亞人 第二季,緋彈的亞莉亞
+Related Topic:
+score,聲優配音,角色設定,作品劇情,動畫品質
+
+cluster12:
+你的名字,Angel Beats！,四月是你的謊言,言葉之庭,AIR,秒速 5 公分,CLANNAD
+Related Topic:
+score,作品劇情,動畫品質,感動,音樂音效
+
+cluster13:
+全部成為 F THE PERFECT INSIDER
+Related Topic:
+重視思考,score,作品劇情,發人深省,題材創意
+
+
+cluster14:
+嘟嘟貓觀察日記,怪獸大學,神奇寶貝超級願望,七龍珠 Z：復活的「F」,神偷奶爸 2
+Related Topic:
+score,大眾取向,輕鬆歡樂,動畫品質,角色設定
+
+cluster15:
+怪物的孩子,花開物語 HOME SWEET HOME
+Related Topic:
+score,動畫品質,作品劇情,角色設定,勵志
+
+cluster16:
+賭博默示錄
+Related Topic:
+發人深省,題材創意
+,重視思考,score,作品劇情
+
+cluster17:
+終末的伊澤塔,K,魔法少女育成計畫,來自風平浪靜的明日,Yuri on Ice,吹響吧！上低音號 第二季,Guilty Crown 罪惡王冠,TARI TARI
+Related Topic:
+score,動畫品質,作品劇情,角色設定,聲優配音
+
+cluster18:
+琴浦小姐,東京地震 8.0,螢火蟲之墓,宇宙兄弟
+Related Topic:
+score,作品劇情,發人深省,感動,題材創意
+
+
+cluster19:
+我們仍未知道那天所看見的花名。,狼的孩子雨和雪,一週的朋友。
+Related Topic:
+score,感動,作品劇情,心靈治癒,動畫品質
+
+cluster20:
+暮蟬鳴泣時解,命運石之門
+Related Topic:
+作品劇情,score,題材創意
+,角色設定,重視思考
+
+cluster21:
+Fate/zero
+Related Topic:
+動畫品質,score,作品劇情,角色設定,世界觀
+
+cluster22:
+星夢手記,Hand Shakers,機動戰士鋼彈 AGE,Shelter,加速世界 INFINITE BURST,雙星之陰陽師
+Related Topic:
+score,動畫品質,角色設定,音樂音效,聲優配音
+
+cluster23:
+侵略陸地!花枝娘 OAD
+Related Topic:
+score,大眾取向,角色設定,輕鬆歡樂,題材創意
+
+
+cluster24:
+果然我的青春戀愛喜劇搞錯了。
+Related Topic:
+score,發人深省,角色設定,作品劇情,聲優配音
+
+cluster25:
+爆漫王。,白箱 SHIROBAKO
+Related Topic:
+score,作品劇情,題材創意
+,勵志,角色設定
+
+cluster26:
+神裝少女小纏,線上遊戲的老婆不可能是女生？,我太受歡迎了該怎麼辦,迷茫管家與膽怯的我,這個美術社大有問題！,中二病也想談戀愛！,我的朋友很少,政宗君的復仇
+Related Topic:
+score,聲優配音,角色設定,動畫品質,輕鬆歡樂
+
+cluster27:
+文豪野犬 第二季
+Related Topic:
+score,角色設定,作品劇情,動畫品質,聲優配音
+
+cluster28:
+ACCA13 區監察課,冰果,TRICKSTER–少年偵探團
+Related Topic:
+score,作品劇情,動畫品質,角色設定,聲優配音
+
+cluster29:
+來自新世界
+Related Topic:
+世界觀,作品劇情,score,題材創意
+,發人深省
+
+cluster30:
+加速世界,問題兒童都來自異世界？,未來日記,鋼之鍊金術師 BROTHERHOOD
+Related Topic:
+score,作品劇情,角色設定,題材創意
+,動畫品質
+
+cluster31:
+為美好的世界獻上祝福！ 第二季,伯納德小姐說。,殺老師 Q！,新蠟筆小新 S1
+Related Topic:
+score,輕鬆歡樂,題材創意
+,聲優配音,角色設定
+
+cluster32:
+涼宮春日的憂鬱,超自然 9 人組
+Related Topic:
+score,角色設定,聲優配音,作品劇情,題材創意
+
+
+cluster33:
+銀魂,男子高校生的日常,血型小將 ABO
+Related Topic:
+score,聲優配音,輕鬆歡樂,題材創意
+,角色設定
+
+cluster34:
+影子籃球員,FAIRY TAIL 魔導少年,排球少年！！ 第三季,食戟之靈 第二季,青之驅魔師
+Related Topic:
+score,角色設定,作品劇情,動畫品質,熱血
+
+cluster35:
+這樣算是殭屍嗎？,蠟筆小新,忍者哈特利,湯姆與傑利,忍者亂太郎,惡魔奶爸,妄想學生會,笨蛋，測驗，召喚獸,黑白來看守所,家有賤狗,打工吧！魔王大人,咕嚕咕嚕魔法陣,日常
+Related Topic:
+score,角色設定,題材創意
+,輕鬆歡樂,作品劇情
+
+cluster36:
+少女與戰車
+Related Topic:
+score,動畫品質,題材創意
+,角色設定,作品劇情
+
+cluster37:
+競女!!!!!!!!
+Related Topic:
+score,題材創意
+,聲優配音,熱血,角色設定
+
+cluster38:
+轉吧！企鵝罐,ReLIFE 重返 17 歲,東京殘響,屍鬼,死亡遊行,寄生獸
+Related Topic:
+score,作品劇情,題材創意
+,發人深省,角色設定
+
+cluster39:
+藍海少女
+Related Topic:
+score,心靈治癒,動畫品質,聲優配音,輕鬆歡樂
+
+cluster40:
+Fate/Grand Order,幼女戰記,黑色子彈,花開物語,Re：從零開始的異世界生活
+Related Topic:
+score,作品劇情,角色設定,動畫品質,聲優配音
+
+cluster41:
+3 月的獅子,赤髮白雪姬 第二季,異國迷宮的十字路口
+Related Topic:
+score,作品劇情,動畫品質,心靈治癒,聲優配音
+
+cluster42:
+只想告訴你,TIGER×DRAGON!,Kanon,可塑性記憶
+Related Topic:
+score,作品劇情,角色設定,聲優配音,感動
+
+cluster43:
+夏目友人帳 伍,奇蹟少女 KOBATO.,白兔玩偶,烏龍麵之國的金色毛毬
+Related Topic:
+score,心靈治癒,作品劇情,感動,動畫品質
+
+cluster44:
+航海王,天元突破 紅蓮螺巖
+Related Topic:
+score,作品劇情,角色設定,題材創意
+,熱血
 
 cluster45:
-ACCA13 區監察課,TRICKSTER–少年偵探團,NAZOTOKINE
+潮與虎
 Related Topic:
-people,輕鬆歡樂,世界觀,發人深省,作品劇情
+score,作品劇情,熱血,角色設定,動畫品質
 
 cluster46:
-烏菈菈迷路帖,悠悠哉哉少女日和,Anne-Happy,請問您今天要來點兔子嗎？,亞人醬有話要說,當女孩遇到熊,南鎌倉高校女子自行車社
+地球防衛少年,妖精的旋律,歡迎加入NHK
 Related Topic:
-people,大眾取向,發人深省,角色設定,作品劇情
+score,作品劇情,題材創意
+,角色設定,發人深省
 
 cluster47:
-零之使魔,涼宮春日的憂鬱,少女編號,灼眼的夏娜,旋風管家！ 第二季,緋彈的亞莉亞
+Sword Art Online 刀劍神域
 Related Topic:
-發人深省,people,聲優配音,世界觀,作品劇情
+score,作品劇情,動畫品質,角色設定,題材創意
+
 
 cluster48:
-嘟嘟貓觀察日記,藍海少女,飛翔的魔女
+Code Geass 反叛的魯路修 R2,魔法禁書目錄外傳 科學超電磁砲,魔法禁書目錄,化物語,狼與辛香料
 Related Topic:
-people,大眾取向,角色設定,作品劇情,聲優配音
+score,角色設定,作品劇情,題材創意
+,動畫品質
 
 cluster49:
-進擊的巨人,來自新世界,蟲師
+星期一的豐滿,NAZOTOKINE
 Related Topic:
-people,世界觀,音樂音效,作品劇情,score
+男性取向,score,心靈治癒,重視思考,聲優配音
 
 cluster50:
-K,吹響吧！上低音號 第二季,Guilty Crown 罪惡王冠,TARI TARI
+只有我不存在的城市
 Related Topic:
-people,作品劇情,世界觀,聲優配音,重視思考
+score,作品劇情,重視思考,動畫品質,題材創意
+
 
 cluster51:
-我們仍未知道那天所看見的花名。
+空之境界劇場版 終章 空之境界
 Related Topic:
-心靈治癒,people,世界觀,大眾取向,聲優配音
+score,動畫品質,作品劇情,角色設定,音樂音效
 
 cluster52:
-這樣算是殭屍嗎？,妄想學生會,笨蛋，測驗，召喚獸,打工吧！魔王大人,日常
+北極熊咖啡廳,悠悠哉哉少女日和,Anne-Happy,飛翔的魔女,請問您今天要來點兔子嗎？,當女孩遇到熊,長騎美眉
 Related Topic:
-people,聲優配音,角色設定,音樂音效,世界觀
+score,輕鬆歡樂,心靈治癒,聲優配音,角色設定
 
 cluster53:
-長騎美眉
+鞋貓劍客,新我們這一家,KILL ME BABY 愛殺寶貝
 Related Topic:
-people,角色設定,發人深省,大眾取向,作品劇情
+score,輕鬆歡樂,角色設定,大眾取向,聲優配音
 
-SSE : 30.0542818122
+SSE : 30.4930919268
