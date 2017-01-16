@@ -9,7 +9,7 @@ vocabulary = []
 data_list = []
 isFirst = True
 # Read Data and Preprocess
-with io.open('animate_re.csv', 'r', encoding = 'utf-8') as f:
+with io.open('animate_re.txt', 'r', encoding = 'utf-8') as f:
 	for row in f.readlines():
 		if not isFirst:
 			name = row.split(",")[0]
@@ -27,7 +27,7 @@ for num in range(4, 65):
 	# return clusters and centeroids
 	[clusters, centeriods] = kmeans.kmeans(data_list, num_of_cluster)	
 
-	with io.open('cluster/kmeans_' + str(num_of_cluster) + '.txt', 'w', encoding = 'utf-8') as output:
+	with io.open('cluster_re/kmeans_' + str(num_of_cluster) + '.txt', 'w', encoding = 'utf-8') as output:
 		# Compute SSE
 		sse = 0
 		for i in range(0, len(clusters)):
