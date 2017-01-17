@@ -1,7 +1,11 @@
 import csv
 import random
 import numpy as np
+from sklearn import svm
+from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 from sklearn.ensemble import GradientBoostingClassifier
 
 # data attributes
@@ -44,10 +48,27 @@ SPLIT_THRESHOLD = len(data) * 6 / 10
 x_train, x_test	= data	[0 : SPLIT_THRESHOLD], data	 [SPLIT_THRESHOLD:]
 y_train, y_test	= target[0 : SPLIT_THRESHOLD], target[SPLIT_THRESHOLD:]
 
+print "AdaBoast"
 # AdaBoast
 clf = GradientBoostingClassifier(n_estimators=100, 
 								learning_rate=0.01,
 								max_depth=1, 
 								random_state=0).fit(x_train, y_train)
 								
-print mean_squared_error(y_test, clf.predict(x_test)) 								
+print mean_squared_error(y_test, clf.predict(x_test)) 				
+print accuracy_score(y_test, clf.predict(x_test))
+print confusion_matrix(y_test, clf.predict(x_test))
+print classification_report(y_test, clf.predict(x_test))
+
+print "SVM"
+# SVM
+clf = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+			decision_function_shape='ovo', degree=3, gamma='auto', kernel='rbf',
+			max_iter=-1, probability=False, random_state=False, shrinking=True,
+			tol=0.001, verbose=False)
+clf.fit(x_train, y_train) 
+								
+print mean_squared_error(y_test, clf.predict(x_test)) 							
+print accuracy_score(y_test, clf.predict(x_test))
+print confusion_matrix(y_test, clf.predict(x_test))
+print classification_report(y_test, clf.predict(x_test))
