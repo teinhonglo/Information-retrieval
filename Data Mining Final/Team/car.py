@@ -2,11 +2,13 @@ import csv
 import random
 import numpy as np
 from sklearn import svm
+from sklearn.cluster import KMeans
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
-from sklearn.ensemble import GradientBoostingClassifier
+
 
 # data attributes
 buying_numeralization 	= {"low"	: 0	, "med" : 1	, "high" : 2	, "vhigh" : 3}
@@ -72,3 +74,9 @@ print mean_squared_error(y_test, clf.predict(x_test))
 print accuracy_score(y_test, clf.predict(x_test))
 print confusion_matrix(y_test, clf.predict(x_test))
 print classification_report(y_test, clf.predict(x_test))
+
+
+print "KMeans"
+kmeans = KMeans(n_clusters=4, random_state=0).fit(x_train + x_test)
+print kmeans.labels_
+print kmeans.cluster_centers_
