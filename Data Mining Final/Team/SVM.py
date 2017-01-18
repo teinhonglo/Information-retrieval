@@ -42,12 +42,10 @@ clf = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
 y_score = clf.fit(x_train, y_train).decision_function(x_test)
 
 print "mean_squared_error"
-print mean_squared_error(y_train, clf.predict(x_train))								
 print mean_squared_error(y_test, clf.predict(x_test))
 print
 
 print "accuracy_score"
-print accuracy_score(y_train, clf.predict(x_train))
 print accuracy_score(y_test, clf.predict(x_test))
 print
 
@@ -59,8 +57,7 @@ print "classification_report"
 print classification_report(y_test, clf.predict(x_test))
 print
 
-print y_score
-
+import plot_precision_recall
 '''
 # Compute Precision-Recall and plot curve
 precision = dict()
