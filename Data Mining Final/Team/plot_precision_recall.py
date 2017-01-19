@@ -22,13 +22,13 @@ y = label_binarize(y, classes=[0, 1, 2, 3])
 n_classes = y.shape[1]
 
 # Add noisy features
+'''
 random_state = np.random.RandomState(0)
 n_samples, n_features = X.shape
 X = np.c_[X, random_state.randn(n_samples, 200 * n_features)]
-
+'''
 # Split into training and test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5,
-                                                    random_state=random_state)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5)
 
 # Run classifier
 classifier = OneVsRestClassifier(svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,

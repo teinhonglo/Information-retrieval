@@ -50,9 +50,10 @@ def preprocess():
 	data, target 	= np.array(data), np.array(target)
 	
 	# normalization
+	'''
 	attr_max = data.max(axis = 0)
 	attr_min = data.min(axis = 0)
 	data = (data - attr_min) / (1.0 * (attr_max - attr_min))
-	
+	'''
 	return [data, target]
 
