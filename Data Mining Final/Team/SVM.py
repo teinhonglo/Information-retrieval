@@ -16,22 +16,10 @@ from sklearn.preprocessing import label_binarize
 [data, target]  = car.preprocess()
 
 # Split Data into Train and Test
-SPLIT_THRESHOLD = len(data) * 4 / 10
+SPLIT_THRESHOLD = int(len(data) * 4 / 10)
 x_train, x_test	= data	[0 : SPLIT_THRESHOLD], data	 [SPLIT_THRESHOLD:]
 y_train, y_test	= target[0 : SPLIT_THRESHOLD], target[SPLIT_THRESHOLD:]
-'''
-print "AdaBoast"
-# AdaBoast
-clf = GradientBoostingClassifier(n_estimators=100, 
-								learning_rate=0.01,
-								max_depth=1, 
-								random_state=0).fit(x_train, y_train)
-										
-print mean_squared_error(y_test, clf.predict(x_test)) 				
-print accuracy_score(y_test, clf.predict(x_test))
-print confusion_matrix(y_test, clf.predict(x_test))
-print classification_report(y_test, clf.predict(x_test))
-'''
+
 print "SVM"
 # SVM
 clf = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
@@ -41,22 +29,32 @@ clf = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
 			
 y_score = clf.fit(x_train, y_train).decision_function(x_test)
 
+<<<<<<< HEAD
 print "mean_squared_error"
 print mean_squared_error(y_test, clf.predict(x_test))
 print
 
 print "accuracy_score"
 print accuracy_score(y_test, clf.predict(x_test))
+=======
+print ("mean_squared_error")
+print (mean_squared_error(y_test, clf.predict(x_test)))
+print
+
+print "accuracy_score"
+print (accuracy_score(y_test, clf.predict(x_test)))
+>>>>>>> ee6e13c82c4ada2554f2cba204c1f9290c34429f
 print
 
 print "confusion_matrix"
-print confusion_matrix(y_test, clf.predict(x_test))
+print (confusion_matrix(y_test, clf.predict(x_test)))
 print
 
 print "classification_report"
-print classification_report(y_test, clf.predict(x_test))
+print (classification_report(y_test, clf.predict(x_test)))
 print
 
+<<<<<<< HEAD
 import plot_precision_recall
 '''
 # Compute Precision-Recall and plot curve
@@ -113,3 +111,6 @@ print kmeans.cluster_centers_
 '''
 	
 	
+=======
+import plot_precision_recall
+>>>>>>> ee6e13c82c4ada2554f2cba204c1f9290c34429f
