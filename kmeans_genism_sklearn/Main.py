@@ -23,9 +23,14 @@ with codecs.open("background_word_count.txt", 'w', "utf-8") as outfile:
 	outfile.write(out_str)	
 
 with codecs.open("cluster_word_prob.txt", 'w', "utf-8") as outfile:	
+	attr_name = "Topic"
+	for word in bg_word.keys():
+		attr_name += "," + word
+	outfile.write(attr_name + "\n")	
 	# clusters			
 	for c_ID, docs in clusters:
 		cluster_word_count = {}
+		
 		# documents in the same cluster
 		# word count of the cluster
 		for docID in docs.split():
@@ -39,13 +44,13 @@ with codecs.open("cluster_word_prob.txt", 'w', "utf-8") as outfile:
 		cluster_word_sum = ProcDoc.word_sum(cluster_word_count) * 1.0
 		#probability of word
 		cluster_word_probability = {}
-		out_str = c_ID + "#"
+		out_str = c_ID
 		for word, num_of_word in bg_word.items():
 			if word in cluster_word_count:
 				word_probability = cluster_word_count[word] / cluster_word_sum
 			else:
 				word_probability = 0.0
 			cluster_word_probability[word] = word_probability
-			out_str += word + " " + str(word_probability) + ","
+			out_str += "," + str(word_probability)
 		outfile.write(out_str)
 		outfile.write("\n")
