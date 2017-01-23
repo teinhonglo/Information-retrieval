@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import codecs
 import io
 import os
@@ -19,16 +20,15 @@ def read_clusters():
 		if os.path.isfile(cluster_item_path):
 			with io.open(cluster_item_path, 'r', encoding = 'utf8') as f:
 				# read content of query document (doc, content)
-				for line in f.readlines():
-					c = raw_input()
-					[cluster_name, words] = line.split("#")
+				content =  f.readlines()
+				words = (content[0]).split(",")
+				for line in content[1:]:
+					cluster_info = line.split(",")
+					cluster_name = cluster_info[0]
 					word_prob_dict = {}
-					for word_prob in words.split(","):
-						try:
-							[word, prob ]= word_prob.split(" ")
-							word_prob_dict[word] = prob
-						except:
-							break
+					for w_index in range(1, len(cluster_info)):
+						[word, prob ]= [words[w_index], cluster_info[w_index]]
+						word_prob_dict[word] = float(prob)
 					clusters[cluster_name] = word_prob_dict
 	# clusters(list)
 	return clusters	

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import ProcDoc
 import PLSA
 import codecs
@@ -55,10 +56,18 @@ def run():
 	
 p_w_d = run()
 with codecs.open("cluster_word_prob.txt", 'w', "utf-8") as outfile:	
+	isFirst = True
 	for d, w_p in p_w_d.items():
-		outfile.write(d + "#")
-		word_prob = ""
-		for w, p in w_p.items():
-			word_prob += w + " " + p + ","
-		outfile.write(word_prob[:end-1])
-		outfile.write("\n")
+		if isFirst:
+			title = "doc"
+			for w in w_p.keys():
+				title += ", " + w
+			outfile.write(title + "\n")	
+			isFirst = False
+		else:	
+			outfile.write(d)
+			word_prob = ""
+			for p in w_p.values():
+				prob += "," + p 
+			outfile.write(prob)
+			outfile.write("\n")
