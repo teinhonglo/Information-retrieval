@@ -51,7 +51,7 @@ def main():
 		_tfidf.append(vector)
 	
 	_tfidf = np.array(_tfidf)
-	cosine_sim = []
+	
 	
 	output = Queue()
 	pipeline = [_tfidf[:len(_tfidf) * 1/ 4], _tfidf[len(_tfidf) * 1/ 4:len(_tfidf) * 2/ 4], _tfidf[len(_tfidf) * 2/ 4:len(_tfidf) * 3/ 4], _tfidf[len(_tfidf) * 3/ 4:]]
@@ -60,13 +60,17 @@ def main():
 		
 	for p in processes:
 		p.start()
-			
-
-			
-	for p in processes:		
-		cosine_sim = cosine_sim + output.get()
+		
+	result = [output.get() for p in processes]
+	result.sort()
+	cosine_sim = []
+	
+	for r in results:
+		cosine_sim += r[1]
+		
+	cosine_sim = sparse.csr_matrix(cosine_sim)
 	print cosine_sim
-	return sparse.csr_matrix(cosine_sim)	
+	return cosine_sim	
 	
 
 if __name__ == '__main__':
