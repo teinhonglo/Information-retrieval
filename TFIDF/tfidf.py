@@ -53,6 +53,9 @@ _tfidf = sparse.csr_matrix(_tfidf)
 similarities = cosine_similarity(_tfidf)
 print('pairwise sparse output:\n {}\n'.format(similarities))
 print similarities.shape
+threshold = np.array(int(total_docs) * [0])
+weight = np.array(int(total_docs) * [1])
+print ((np.array(similarities) > threshold) * weight).sum(axis = 0)
 
 stop = timeit.default_timer()
 print stop - start
