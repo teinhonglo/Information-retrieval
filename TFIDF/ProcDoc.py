@@ -5,11 +5,12 @@ import fileinput
 import collections
 
 
-CNA_path = "Corpus"
+CNA_path = "Dataset_summarization/Sentence_Segment_newSD_aWid"
 Cluster_path = "clusters"
 # read document
 def read_doc():
-	CNATraingSet = []
+	TraingSet = []
+	Doc_Name = []
 	title = "Doc "
 	numOfDoc = 0
 	# CNA_only_utf8
@@ -20,11 +21,12 @@ def read_doc():
 		if os.path.isfile(doc_item_path):
 			with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
 				# read content of query document (doc, content)
-				CNATraingSet.append(f.read())
+				Doc_Name.append(doc_item.split(".")[0])
+				TraingSet.append(f.read())
 	# CNATraingSet(list)
-	return CNATraingSet
+	return [Doc_Name, TraingSet]
 	
-# read document
+# read document line by line
 def read_doc_dict():
 	CNATraingSetDict = {}
 	title = "Doc "
