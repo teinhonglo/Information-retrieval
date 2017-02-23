@@ -13,7 +13,7 @@ start = timeit.default_timer()
 [doc_name, documents] = ProcDoc.read_doc()
 texts = [[word for word in document.lower().split()] for document in documents]
 sentences = [[sentence for sentence in document.lower().split("\n")] for document in documents]
-outputDoc = ["PTSND20020124_1",  "PTSND20020207_2", "PTSND20020225_2", "PTSND20020305_2", "PTSNE20020814_1", "PTSND20020130_1",  "PTSND20020218_2",  "PTSND20020225_3", "PTSND20020613_2",  "PTSNE20020814_4",
+output_list = ["PTSND20020124_1",  "PTSND20020207_2", "PTSND20020225_2", "PTSND20020305_2", "PTSNE20020814_1", "PTSND20020130_1",  "PTSND20020218_2",  "PTSND20020225_3", "PTSND20020613_2",  "PTSNE20020814_4",
 			"PTSND20020131_1",  "PTSND20020220_1",  "PTSND20020226_1",  "PTSND20020624_1",  "PTSNE20020819_1", "PTSND20020201_1",  "PTSND20020221_1", "PTSND20020305_1", "PTSNE20020731_2", "PTSNE20020820_3"]
 
 total_docs = len(texts) * 1.0
@@ -47,7 +47,7 @@ for doc_tf in term_freq:
 	
 # Compute sentence in document
 for doc_index in range(len(tfidf)):	
-	if doc_name[doc_index] in outputDoc:
+	if doc_name[doc_index] in output_list:
 		with codecs.open("result/" + doc_name[doc_index] + ".txt", 'w', "utf-8") as outfile:
 			print "Document:", doc_index + 1
 			# Create BOW(using TFIDF)

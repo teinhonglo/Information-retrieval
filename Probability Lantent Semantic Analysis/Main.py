@@ -24,7 +24,7 @@ def run():
 		for topic, wordProb in topic_word_prob_dict.items():
 			topic_prob[topic] = INIT_PROBABILITY
 		doc_topic_prob_dict[docName] = topic_prob
-
+	'''
 	print "Initialize P(T| w, D)"
 	for docName, wordCount in doc_wc_dict.items():	
 		word_list = {}
@@ -34,7 +34,7 @@ def run():
 				topic_prob[topic] = 0.0
 			word_list[word] = topic_prob
 		doc_word_topic_prob_dict[docName] = word_list
-
+	'''
 	print "start PLSA"
 	[topic_word_prob_dict, doc_topic_prob_dict] = PLSA.Probability_LSA(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict)
 	print "end PLSA"
