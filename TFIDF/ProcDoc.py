@@ -5,7 +5,7 @@ import fileinput
 import collections
 
 
-CNA_path = "Dataset_summarization/Sentence_Segment_newSD_aWid"
+CNA_path = "Dataset_summarization/Sentence_Segment_Human_TD_aWid"
 Cluster_path = "clusters"
 # read document
 def read_doc():
