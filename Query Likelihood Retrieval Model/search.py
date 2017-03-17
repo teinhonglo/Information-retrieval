@@ -62,7 +62,7 @@ data = preprocess(data)
 # count background_word
 for key, value in data.items():
 	background_word = word_count(value, background_word)
-
+print len(background_word)
 background_word_sum = word_sum(background_word)
 
 # 16 query documants
