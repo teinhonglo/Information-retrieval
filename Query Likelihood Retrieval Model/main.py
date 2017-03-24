@@ -5,6 +5,7 @@ from math import log
 import operator
 import numpy as np
 import readAssessment
+import ProcDoc
 
 
 documant_path = os.getcwd() + "/SPLIT_DOC_WDID_NEW"
@@ -13,38 +14,6 @@ data = {}				# content of document (doc, content)
 background_word = {}	# word count of 2265 documant (word, number of words)
 query = {}				# query
 my_lambda = 0.5
-
-# preprocess
-def preprocess(dictionary):
-	dictionary = collections.OrderedDict(sorted(dictionary.items()))
-	for key, value in dictionary.items():
-		content = ""
-		temp_content = ""
-		# split content by special character
-		for line in dictionary[key].split('\n'):
-			for word in line.split('-1'):
-				temp_content += word + " "
-		# delete double white space
-		for word in temp_content.split():
-			content += word + " "
-		# replace old content
-		dictionary[key]	= content
-	return dictionary
-
-# word count
-def word_count(content, bg_word):
-	for part in content.split():
-		if part in bg_word:
-			bg_word[part] += 1
-		else:
-			bg_word[part] = 1
-	return bg_word
-	
-def word_sum(data):
-	num = 0
-	for key, value in data.items():
-		num += int(value)
-	return num
 
 # list all files of a directory(Document)
 for dir_item in os.listdir(documant_path):
@@ -56,14 +25,13 @@ for dir_item in os.listdir(documant_path):
 			# read content of document (doc, content)
             data[dir_item] = f.read()
 
-# preprocess
-data = preprocess(data)
-
 # count background_word
 for key, value in data.items():
-	background_word = word_count(value, background_word)
-print len(background_word)
-background_word_sum = word_sum(background_word)
+	background_word = ProcDoc.word_count(value, background_word)
+
+background_word = ProcDoc.background_word_reprobability(background_word)
+# preprocess
+data = ProcDoc.doc_preprocess(data)
 
 # 16 query documants
 for query_item in os.listdir(query_path):
@@ -76,7 +44,7 @@ for query_item in os.listdir(query_path):
             query[query_item] = f.read()
 
 # preprocess
-query = preprocess(query)
+query = ProcDoc.query_preprocess(query)
 # query process
 assessment = readAssessment.get_assessment()
 lambda_test = {0: 0}
@@ -90,10 +58,7 @@ while isBreak != "exit":
 			AP = 0
 			mAP = 0
 			for q_key, q_val in query.items():
-				for doc_key, doc_val in data.items():
-					doc_words = {}
-					doc_words = word_count(doc_val, doc_words)
-					doc_words_sum = word_sum(doc_words) * 1.0
+				for doc_key, doc_words_prob in data.items():
 					point = 0
 					# calculate each query value for the document
 					for query_word in q_val.split():
@@ -101,13 +66,14 @@ while isBreak != "exit":
 						word_probability = 0			# P(w | D)
 						background_probability = 0		# BG(w | D)
 						# check if word at query exists in the document
-						if query_word in doc_words:
-							count = doc_words[query_word]
-							word_probability = doc_words[query_word] / doc_words_sum
-						if query_word in background_word:	
-							background_probability = (background_word[query_word] + 0.01) / (background_word_sum + 0.01)
-						else:
-							background_probability = (0.01) / (background_word_sum + 0.01)
+						if query_word in doc_words_prob:
+							word_probability = doc_words_prob[query_word]
+											
+						if query_word in background_word:
+							background_probability = background_word[query_word]
+						else:	
+							background_probability = 0.01 / (len(background_word) + 0.01)
+							
 						point += log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 					docs_point[doc_key] = point
 				# sorted each doc of query by point
