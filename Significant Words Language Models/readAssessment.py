@@ -1,7 +1,7 @@
 import os
 import fileinput
 import collections
-assessmentTraingSet_path = "AssessmentTrainSet"
+assessmentTraingSet_path = "../Corpus/AssessmentTrainSet"
 assessmentTraingSetDict = {}
 
 def get_assessment():

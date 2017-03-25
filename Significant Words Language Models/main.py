@@ -8,8 +8,8 @@ import readAssessment
 import ProcDoc
 
 
-documant_path = os.getcwd() + "/SPLIT_DOC_WDID_NEW"
-query_path = os.getcwd() + "/QUERY_WDID_NEW_middle"
+documant_path = "../Corpus/SPLIT_DOC_WDID_NEW"
+query_path = "../Corpus/QUERY_WDID_NEW_middle"
 data = {}				# content of document (doc, content)
 background_word = {}	# word count of 2265 documant (word, number of words)
 query = {}				# query
