@@ -6,8 +6,7 @@ import fileinput
 import collections
 from math import exp
 
-
-bg_modle_path = "background"
+bg_modle_path = "../Corpus/background"
 Cluster_path = "Topic"
 
 # read cluster
