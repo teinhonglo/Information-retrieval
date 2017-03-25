@@ -6,7 +6,7 @@ import collections
 
 
 CNA_path = "Dataset_summarization/Sentence_Segment_Human_TD_aWid"
-Cluster_path = "clusters"
+Cluster_path = "../Corpus/clusters"
 # read document
 def read_doc():
 	TraingSet = []
