@@ -24,14 +24,6 @@ for dir_item in os.listdir(documant_path):
 			# read content of document (doc, content)
             data[dir_item] = f.read()
 
-# count background_word
-for key, value in data.items():
-	background_word = ProcDoc.word_count(value, background_word)
-
-background_word = ProcDoc.background_word_reprobability(background_word)
-# preprocess
-data = ProcDoc.doc_preprocess(data)
-
 # 16 query documants
 for query_item in os.listdir(query_path):
 	# join dir path and file name
@@ -42,11 +34,26 @@ for query_item in os.listdir(query_path):
 			# read content of query documant (doc, content)
             query[query_item] = f.read()
 
-# preprocess
+
+			
+# count background_word
+for key, value in data.items():
+	background_word = ProcDoc.word_count(value, background_word)
+
+for key, value in query.items():
+	background_word = ProcDoc.word_count(value, background_word)
+	
+background_word_sum = ProcDoc.word_sum(background_word)
+# doc preprocess
+data = ProcDoc.doc_preprocess(data)
+
+# query preprocess
 query = ProcDoc.query_preprocess(query)
 query_word_count = {}
 for q, q_content in query.items():
-	query_word_count[q] = ProcDoc.word_count(q_content, {})
+	query_word_count[q] = ProcDoc.word_count(q_content, {})			
+
+
 # query process
 assessment = readAssessment.get_assessment()
 lambda_test = {0: 0}
@@ -72,9 +79,9 @@ while isBreak != "exit":
 							word_probability = doc_words_prob[query_word]
 											
 						if query_word in background_word:
-							background_probability = background_word[query_word]
+							background_probability = (background_word[query_word] + 0.01) / (background_word_sum +0.01)
 						else:	
-							background_probability = 0.01 / (len(background_word) + 0.01)
+							background_probability = 0.01 / (background_word_sum + 0.01)
 							
 						point += query_word_count[q_key][query_word] * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 					docs_point[doc_key] = point

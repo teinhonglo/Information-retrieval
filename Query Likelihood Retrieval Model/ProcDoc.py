@@ -121,4 +121,4 @@ def word_sum(data):
 	num = 0
 	for key, value in data.items():
 		num += int(value)
-	return num	
+	return num
