@@ -72,16 +72,21 @@ def doc_preprocess(dictionary):
 			content += word + " "
 		# replace old content
 		dictionary[key]	= content
+	dict_tf = {}	
+	dictionary_prob = {}
 	# term probablity(word_count / word sum)	
 	for doc_key, doc_content in dictionary.items():
-		doc_words = {}
-		doc_words = word_count(doc_content, doc_words)
+		doc_words = word_count(doc_content, {})
+		# term frequency
+		dict_tf[doc_key] = dict(doc_words)
+		
+		# term probablity
 		doc_words_sum = word_sum(doc_words) * 1.0
 		for word, word_val  in doc_words.items():
 			doc_words[word] = word_val / doc_words_sum
-		dictionary[doc_key] = doc_words
+		dictionary_prob[doc_key] = dict(doc_words)
 		
-	return dictionary
+	return dictionary_prob
 
 def query_preprocess(dictionary):
 	dictionary = collections.OrderedDict(sorted(dictionary.items()))
