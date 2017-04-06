@@ -54,6 +54,7 @@ query_word_count = {}
 for q, q_content in query.items():
 	query_word_count[q] = ProcDoc.word_count(q_content, {})	
 
+feedback_model = []
 # query process
 assessment = readAssessment.get_assessment()
 lambda_test = {0: 0}
@@ -85,10 +86,11 @@ while isBreak != "exit":
 							
 					point += q_word_count * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 				docs_point[doc_key] = point
-			# sorted each doc of query by point
-			docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
-			# write ranking result to file
-			Expansion.outputRank(q_key, docs_point_list, isWrite)
+			if len(feedback_model) == 0:
+				# sorted each doc of query by point
+				docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
+				# write ranking result to file
+				Expansion.outputRank(q_key, docs_point_list, isWrite)
 			# store ranking result
 			store_docs_point_list[q_key] = docs_point_list
 			if isWrite == True:
@@ -109,4 +111,5 @@ while isBreak != "exit":
 	'''
 	isBreak = raw_input("exit ?\n")
 	if (isBreak == "query_ex"):
-		query_word_count = Expansion.extQueryModel(query_word_count, store_docs_point_list, data_tf, 10)
+		top_rank = int(raw_input("docs ?"))
+		[query_word_count, feedback_model] = Expansion.extQueryModel(dict(query_word_count), dict(store_docs_point_list), dict(data_tf), list(feedback_model), top_rank)
