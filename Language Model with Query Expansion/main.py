@@ -78,12 +78,13 @@ while isBreak != "exit":
 					# check if word at query exists in the document
 					if query_word in doc_words_prob:
 						word_probability = doc_words_prob[query_word]
-										
+					'''					
 					if query_word in background_word:
 						background_probability = (background_word[query_word] + 0.01) / (background_word_sum +0.01)
 					else:	
 						background_probability = 0.01 / (background_word_sum + 0.01)
-							
+					'''	
+					background_probability = (background_word[query_word] + 0.01) / (background_word_sum +0.01)		
 					point += q_word_count * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 				docs_point[doc_key] = point
 			if len(feedback_model) == 0:
