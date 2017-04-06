@@ -38,10 +38,10 @@ for query_item in os.listdir(query_path):
 			
 # count background_word
 for key, value in data.items():
-	background_word = ProcDoc.word_count(value, background_word)
+	background_word = ProcDoc.word_count(value, dict(background_word))
 
 for key, value in query.items():
-	background_word = ProcDoc.word_count(value, background_word)
+	background_word = ProcDoc.word_count(value, dict(background_word))
 	
 background_word_sum = ProcDoc.word_sum(background_word)
 # doc preprocess
@@ -66,11 +66,11 @@ while isBreak != "exit":
 			docs_point = {}
 			AP = 0
 			mAP = 0
-			for q_key, q_val in query.items():
+			for q_key, q_w_wc in query_word_count.items():
 				for doc_key, doc_words_prob in data.items():
 					point = 0
 					# calculate each query value for the document
-					for query_word in q_val.split():
+					for query_word, q_word_count in q_w_wc.items():
 						count = 0						# C(w , D)
 						word_probability = 0			# P(w | D)
 						background_probability = 0		# BG(w | D)
@@ -83,7 +83,7 @@ while isBreak != "exit":
 						else:	
 							background_probability = 0.01 / (background_word_sum + 0.01)
 							
-						point += query_word_count[q_key][query_word] * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
+						point += q_word_count * log(my_lambda * word_probability + (1 - my_lambda ) * background_probability)
 					docs_point[doc_key] = point
 				# sorted each doc of query by point
 				docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
