@@ -46,7 +46,6 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         
     hidden_significant_doc_word = {}
     # EM training
-
     for step in range(100):
         # E Step:
         for doc_name, word_count in feedback_doc_wc.items():
@@ -59,7 +58,7 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         denominator = 0.0
         for word in significant_model.keys():
             word_sum = 0
-            for doc_name, word_count in feedback_doc.items():
+            for doc_name, word_count in feedback_doc_wc.items():
                 if word in word_count:
                     word_sum += word_count[word] * hidden_significant_doc_word[doc_name][word]
                     denominator += word_sum
@@ -68,13 +67,12 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         significant_model = {word: word_sum / denominator for word, word_sum in dict(significant_model).items()}
     return significant_model            
 
-def feedback(query_docs_point_dict, query_unigram, doc_unigram, doc_wordcount, general_model, background_model, topN):
+def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, general_model, background_model, topN):
     lambda_bg = 0.1
     lambda_fb = 0.8
-    lambda_q = 1 - lambda_bg - lambda_fb 
+    lambda_q = 0.1
     specific_model = {}
     for q_key, docs_point_list in query_docs_point_dict.items():
-
         feedback_doc = {}
         feedback_doc_wc = {}
         # Extract feedback document 
@@ -88,11 +86,11 @@ def feedback(query_docs_point_dict, query_unigram, doc_unigram, doc_wordcount, g
         
         for word, fb_w_prob in significant_model.items():
             original_prob = 0.0
-            if word in query_unigram[q_key]:
-                original_prob = query_unigram[q_key][word]
+            if word in query_model[q_key]:
+                original_prob = query_model[q_key][word]
             else:
                 original_prob = 0.0
             # update query unigram    
-            query_unigram[q_key][word] = (lambda_q * original_prob) + (lambda_fb * fb_w_prob) + (lambda_bg * background_model[word])    
+            query_model[q_key][word] = (lambda_q * original_prob) + (lambda_fb * fb_w_prob) + (lambda_bg * background_model[word])    
  
-    return query_unigram 
+    return query_model 
