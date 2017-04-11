@@ -45,7 +45,7 @@ query_unigram = ProcDoc.unigram(query_wordcount)
 query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 
 # query process
-print "query process"
+print "query ..."
 assessment = readAssessment.get_assessment()
 for step in range(2):
 	query_docs_point_dict = {}

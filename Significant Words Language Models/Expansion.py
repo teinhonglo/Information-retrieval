@@ -1,7 +1,6 @@
 import ProcDoc
-from numpy.core.test_rational import denominator
 
-def specific_modeling(feedback_doc):\
+def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
     for doc_name, word_unigram in feedback_doc.items():
         prob_sum = 1.0 * ProcDoc.word_sum(word_unigram)
@@ -53,9 +52,7 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         for doc_name, word_count in feedback_doc_wc.items():
             hidden_word_variable = {}
             for word, count in word_count.items():
-                denominator = lambda_sw * significant_model[word]
-                lambda_s * specific_model[word]
-                lambda_g * general_model[word]
+                denominator = lambda_sw * significant_model[word] + lambda_s * specific_model[word] + lambda_g * general_model[word]
                 hidden_word_variable[word] = lambda_sw * significant_model[word] / denominator
             hidden_significant_doc_word[doc_name] = hidden_word_variable 
         # M Step:
@@ -68,7 +65,7 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
                     denominator += word_sum
             significant_model[word] = word_sum
         
-        significant_model = {word: word_sum / denominator for word,word_sum in dict(significant_model).items()}
+        significant_model = {word: word_sum / denominator for word, word_sum in dict(significant_model).items()}
     return significant_model            
 
 def feedback(query_docs_point_dict, query_unigram, doc_unigram, doc_wordcount, general_model, background_model, topN):
