@@ -12,7 +12,7 @@ bg_modle_path = "../Corpus/background"
 Cluster_path = "Topic"
 
 
-# read cluster
+# read file(query or document)
 def read_file(filepath):
 	data = {}				# content of document (doc, content)
 	# list all files of a directory(Document)
@@ -27,10 +27,10 @@ def read_file(filepath):
 	# data(dict)
 	return data	
 	
-# read document
+# read background model
 def read_background_dict():
 	BGTraingSetDict = {}
-	# CNA_only_utf8
+	# XIN1998
 	for doc_item in os.listdir(bg_modle_path):
 		# join dir path and file name
 		doc_item_path = os.path.join(bg_modle_path, doc_item)
@@ -43,10 +43,10 @@ def read_background_dict():
 					[id, prob] = line.split()
 					prob = exp(float(prob))
 					BGTraingSetDict[id] = prob
-	# CNATraingSetDict(No., content)
+	# Background{word, probability}
 	return BGTraingSetDict
 
-# preprocess
+# document preprocess
 def doc_preprocess(dictionary):
 	dictionary = collections.OrderedDict(sorted(dictionary.items()))
 	for key, value in dictionary.items():
@@ -73,6 +73,7 @@ def doc_preprocess(dictionary):
 		
 	return dictionary
 
+# query preprocess
 def query_preprocess(dictionary):
 	dictionary = collections.OrderedDict(sorted(dictionary.items()))
 	for key, value in dictionary.items():
@@ -89,6 +90,7 @@ def query_preprocess(dictionary):
 		dictionary[key]	= content
 	return dictionary
 
+# create unigram
 def unigram(topic_wordcount_dict):
 	topic_wordprob_dict = {}
 	for topic, wordcount in topic_wordcount_dict.items():
@@ -123,7 +125,4 @@ def word_count(content, bg_word):
 # input dict
 # output sum of word
 def word_sum(data):
-	num = 0
-	for key, value in data.items():
-		num += int(value)
-	return num	
+	return np.array(data.values()).sum(axis = 0)	
