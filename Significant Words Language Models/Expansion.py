@@ -56,7 +56,7 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
             hidden_significant_doc_word[doc_name] = hidden_word_variable 
         # M Step:
         denominator = 0.0
-        for word in significant_model.keys():
+        for word in list(significant_model.keys()):
             word_sum = 0
             for doc_name, word_count in feedback_doc_wc.items():
                 if word in word_count:

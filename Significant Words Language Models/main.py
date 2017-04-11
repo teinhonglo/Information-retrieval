@@ -73,4 +73,5 @@ for step in range(2):
 	print "mAP"
 	print mAP
 	
-	query_model = Expansion.feedback(dict(query_docs_point_dict), dict(query_model), dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), 10)
+	if step < 1:
+		query_model = Expansion.feedback(dict(query_docs_point_dict), dict(query_model), dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), 10)
