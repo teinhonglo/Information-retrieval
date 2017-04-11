@@ -16,12 +16,12 @@ doc_lambda = 0.8
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/QUERY_WDID_NEW_middle"
 
-# preprocess
+# document model
 data = ProcDoc.read_file(document_path)
 doc_wordcount = ProcDoc.doc_preprocess(data)
 doc_unigram = ProcDoc.unigram(doc_wordcount)
 
-# count background_model
+# background_model
 '''
 for key, value in data.items():
 	background_model = ProcDoc.word_count(value, background_model)
@@ -30,7 +30,7 @@ background_word_sum = ProcDoc.word_sum(background_model)
 '''
 background_model = ProcDoc.read_background_dict()
 
-# preprocess
+# query model
 query = ProcDoc.read_file(query_path)
 query = ProcDoc.query_preprocess(query)
 query_wordcount = {}
@@ -52,12 +52,11 @@ for q_key, q_word_prob in query_model.items():
 		point = 0
 		# calculate each query value for the document
 		for query_word, query_prob in q_word_prob.items():
-			count = 0						# C(w , D)
 			word_probability = 0			# P(w | D)
 			# check if word at query exists in the document
 			if query_word in doc_words_prob:
 				word_probability = doc_words_prob[query_word]
-			
+			# KL divergence 
 			# (query model) * log(doc_model) 			
 			point += query_model[q_key][query_word] * log((1-doc_lambda) * word_probability + doc_lambda * background_model[query_word])
 		docs_point[doc_key] = point
