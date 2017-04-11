@@ -34,8 +34,6 @@ for query_item in os.listdir(query_path):
         with open(query_item_path, 'r') as f:
 			# read content of query documant (doc, content)
             query[query_item] = f.read()
-
-
 			
 # count background_word
 for key, value in data.items():
