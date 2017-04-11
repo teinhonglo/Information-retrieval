@@ -41,3 +41,11 @@ def precision(result, assessment_list):
 	
 	precision /= len(assessment)
 	return precision
+	
+def mean_average_precision(query_docs_point_dict, assessment):
+	mAP = 0
+	AP = 0
+	for q_key, docs_point_list in query_docs_point_dict.items():
+		AP += precision(docs_point_list, assessment[q_key])
+	mAP = AP / len(query_docs_point_dict.keys())
+	return mAP
