@@ -41,3 +41,4 @@ for key, value in results.items():
 	print key
 	precision_sum += readAssessment.precision(value , assessment[key])
 print precision_sum	/ 16
+
