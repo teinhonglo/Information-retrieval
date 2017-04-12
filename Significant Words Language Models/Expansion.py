@@ -4,11 +4,10 @@ import plot_diagram
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
+
     for doc_name, word_unigram in feedback_doc.items():
-        prob_sum = 1.0 * ProcDoc.word_sum(word_unigram)
-        uni_normalize = {w: w_uni / prob_sum for w, w_uni in word_unigram.items()}
-        feedback_doc[doc_name] = uni_normalize
-        
+        feedback_doc[doc_name] = ProcDoc.softmax(word_unigram)
+
     # specific modeling
     # if the term frequency is supported by almost all documents 
     # the term will be penalized because of its low prevalence.
@@ -106,7 +105,7 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
             query_model[q_key][word] = (lambda_q * original_prob) + (lambda_fb * fb_w_prob) + (lambda_bg * background_model[word])
 			
         query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))	
-        '''	
-        plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
-        '''
+        
+        #plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
+        
     return query_model 

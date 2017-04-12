@@ -102,13 +102,14 @@ def unigram(topic_wordcount_dict):
 	topic_wordprob_dict = collections.OrderedDict(sorted(topic_wordprob_dict.items()))	
 	return topic_wordprob_dict 
 
+# modeling	
 def modeling(topic_wordprob_dict, background_model, alpha):
 	modeling_dict = {}
 	for topic, wordprob in topic_wordprob_dict.items():
 		word_model = {}
 		for word in wordprob.keys():
 			word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
-		modeling_dict[topic] = word_model
+		modeling_dict[topic] = dict(word_model)
 	modeling_dict = collections.OrderedDict(sorted(modeling_dict.items()))		
 	return modeling_dict
 
@@ -127,6 +128,7 @@ def word_count(content, bg_word):
 def word_sum(data):
 	return np.array(data.values()).sum(axis = 0)
 
+# output ranking list	
 def outputRank(query_docs_point_dict):
 	cquery_docs_point_dict = collections.OrderedDict(sorted(query_docs_point_dict.items()))
 	operation = "w"
@@ -139,6 +141,7 @@ def outputRank(query_docs_point_dict):
 			outfile.write(out_str)
 			outfile.write("\n")		
 
+# softmax			
 def softmax(model):
 	model_word_sum  = 1.0 * word_sum(model)
 	model = {w: c / model_word_sum for w, c in dict(model).items()}

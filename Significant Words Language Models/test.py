@@ -33,9 +33,13 @@ def specific_modeling(feedback_doc):
 
 
 feedback_doc = {"1100":{"a": 0.5, "b": 0.1}, "1101":{"c": 0.1, "b": 0.2}, "1103":{"a": 0.4, "e": 0.2}}	
-
+feedback_doc_wc = {"1100":{"a": 5, "b": 1}, "1101":{"c": 1, "b": 2}, "1103":{"a": 4, "e": 2}}
 [feedback_doc_n, specific_model] = specific_modeling(dict(feedback_doc))
 from pprint import pprint  # pretty-printer
 pprint(feedback_doc)
 pprint(feedback_doc_n)
 pprint(specific_model)
+specific_model = ProcDoc.softmax(specific_model)
+pprint(specific_model)
+
+plot_diagram.plotModel(specific_model, specific_model, specific_model, feedback_doc_wc, feedback_doc)
