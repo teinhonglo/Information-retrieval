@@ -1,4 +1,6 @@
 import ProcDoc
+from math import log
+import plot_diagram
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
@@ -25,7 +27,9 @@ def specific_modeling(feedback_doc):
                 specific_model[word] += prob
             else:            
                 specific_model[word] = prob
-                
+	# softmax
+    specific_model = ProcDoc.softmax(dict(specific_model))
+	
     return specific_model
 
 def significant_modeling(general_model, specific_model, feedback_doc, feedback_doc_wc):
@@ -65,6 +69,14 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
             significant_model[word] = word_sum
         
         significant_model = {word: word_sum / denominator for word, word_sum in dict(significant_model).items()}
+		# softmax
+        significant_model = ProcDoc.softmax(dict(significant_model))
+		# Objective function
+        Objective_value = 0.0
+        for doc_name, word_count in feedback_doc_wc.items():
+            for word, count in word_count.items():
+                Objective_value += count * log(lambda_sw * significant_model[word] + lambda_g * general_model[word] + lambda_s * specific_model[word])
+        # print Objective_value
     return significant_model            
 
 def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, general_model, background_model, topN):
@@ -90,7 +102,11 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
                 original_prob = query_model[q_key][word]
             else:
                 original_prob = 0.0
-            # update query unigram    
-            query_model[q_key][word] = (lambda_q * original_prob) + (lambda_fb * fb_w_prob) + (lambda_bg * background_model[word])    
- 
+            # update query unigram  
+            query_model[q_key][word] = (lambda_q * original_prob) + (lambda_fb * fb_w_prob) + (lambda_bg * background_model[word])
+			
+        query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))	
+        '''	
+        plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
+        '''
     return query_model 

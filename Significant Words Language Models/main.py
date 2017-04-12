@@ -28,9 +28,14 @@ background_model = ProcDoc.read_background_dict()
 
 # general model
 collection = {}
-for key, value in data.items():
-	collection = ProcDoc.word_count(value, collection)
-collection_word_sum = ProcDoc.word_sum(collection)
+for key, value in doc_wordcount.items():
+	for word, count in value.items():
+		if word in collection:
+			collection[word] += count
+		else:
+			collection[word] = count
+			
+collection_word_sum = 1.0 * ProcDoc.word_sum(collection)
 general_model = {k : v / collection_word_sum for k, v in collection.items()}
 
 # query model
@@ -72,6 +77,7 @@ for step in range(2):
 	mAP = readAssessment.mean_average_precision(query_docs_point_dict, assessment)
 	print "mAP"
 	print mAP
-	
 	if step < 1:
+		ProcDoc.outputRank(query_docs_point_dict)
 		query_model = Expansion.feedback(dict(query_docs_point_dict), dict(query_model), dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), 10)
+	
