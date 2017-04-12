@@ -125,4 +125,34 @@ def word_count(content, bg_word):
 # input dict
 # output sum of word
 def word_sum(data):
-	return np.array(data.values()).sum(axis = 0)	
+	return np.array(data.values()).sum(axis = 0)
+
+def outputRank(query_docs_point_dict):
+	cquery_docs_point_dict = collections.OrderedDict(sorted(query_docs_point_dict.items()))
+	operation = "w"
+	with codecs.open("Query_Results.txt", operation, "utf-8") as outfile:
+		for query, docs_point_list in query_docs_point_dict.items():
+			outfile.write(query + "\n")	
+			out_str = ""
+			for docname, score in docs_point_list:
+				out_str += docname + " " + str(score) + "\n"
+			outfile.write(out_str)
+			outfile.write("\n")		
+
+def softmax(model):
+	model_word_sum  = 1.0 * word_sum(model)
+	model = {w: c / model_word_sum for w, c in dict(model).items()}
+	return model
+			
+			
+def outputModel(model):
+	cquery_docs_point_dict = collections.OrderedDict(sorted(query_docs_point_dict.items()))
+	operation = "w"
+	with codecs.open("Query_Results.txt", operation, "utf-8") as outfile:
+		for query, docs_point_list in query_docs_point_dict.items():
+			outfile.write(query + "\n")	
+			out_str = ""
+			for docname, score in docs_point_list:
+				out_str += docname + " " + str(score) + "\n"
+			outfile.write(out_str)
+			outfile.write("\n")				
