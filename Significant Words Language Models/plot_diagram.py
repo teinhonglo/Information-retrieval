@@ -24,17 +24,18 @@ def plotModel(general_model, specific_model, significant_model, feedback_doc_wc,
 			
 			
 	feedback_wc = sorted(feedback_wc.items(), key=operator.itemgetter(1), reverse = True)
+	total_word_sum = ProcDoc.word_sum(dict(feedback_wc))
 	for word, count in feedback_wc:
 		general_list.append(count)
-		specific_list.append(feedback_wc[0][1] * specific_model[word])
-		significant_list.append(feedback_wc[0][1] * significant_model[word])
+		specific_list.append(total_word_sum * specific_model[word])
+		significant_list.append(total_word_sum * significant_model[word])
 		unigram_list.append(feedback_wu[word])
 
 	import matplotlib.pyplot as plt
 	plt.figure(8)
 	plt.plot(range(len(general_list)), general_list,label='general')
 	plt.plot(range(len(specific_list)), specific_list,label='specific')
-	plt.plot(range(len(significant_list)), significant_list,label='significant')
+	#plt.plot(range(len(significant_list)), significant_list,label='significant')
 	#plt.plot(range(len(unigram_list)), unigram_list,label='unigram')
 	plt.title('Loss')
 	plt.legend(loc='upper left')
