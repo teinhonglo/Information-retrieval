@@ -104,7 +104,7 @@ def inverse_document_frequency(doc_word_unigram_dcit):
 				continue
 			document_list.append(doc)	
 	total_doc_length = 1.0 * len(document_list)
-	word_idf = {word: log(1 + total_doc_length / df) for word, df in dict(word_idf).items()}
+	word_idf = {word: 1 / log(1 + total_doc_length / df) for word, df in dict(word_idf).items()}
 	return word_idf
 	
 def inverted_word_doc(doc_word_unigram_dcit):	
