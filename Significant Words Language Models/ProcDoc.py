@@ -5,6 +5,7 @@ import os
 import fileinput
 import collections
 import numpy as np
+import operator
 from math import exp
 from webbrowser import BackgroundBrowser
 
@@ -130,7 +131,7 @@ def word_sum(data):
 
 # output ranking list	
 def outputRank(query_docs_point_dict):
-	cquery_docs_point_dict = collections.OrderedDict(sorted(query_docs_point_dict.items()))
+	cquery_docs_point_dict = sorted(query_docs_point_dict.items(), key=operator.itemgetter(0))
 	operation = "w"
 	with codecs.open("Query_Results.txt", operation, "utf-8") as outfile:
 		for query, docs_point_list in query_docs_point_dict.items():
