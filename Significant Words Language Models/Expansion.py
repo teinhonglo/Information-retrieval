@@ -1,31 +1,29 @@
 import ProcDoc
 from math import log
 import plot_diagram
+from collections import defaultdict
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
-
-    for doc_name, word_unigram in feedback_doc.items():
-        feedback_doc[doc_name] = ProcDoc.softmax(word_unigram)
+    feedback_w_doc = ProcDoc.inverted_word_doc(dict(feedback_doc))
+    for word, doc_unigram in feedback_w_doc.items():
+        feedback_w_doc[word] = ProcDoc.softmax(dict(doc_unigram))
 
     # specific modeling
     # if the term frequency is supported by almost all documents 
     # the term will be penalized because of its low prevalence.
     specific_model = {}
-    for cur_doc_name, cur_word_unigram in feedback_doc.items():
+    for word, doc_unigram in feedback_w_doc.items():
         # calculate each word in current document
-        for word, prob in cur_word_unigram.items():
-            # calculate each word in other document
-            for other_doc_name, other_word_unigram in feedback_doc.items():
-                if cur_doc_name == other_doc_name:
+        word_specific_level = 0
+        for doc_name, prob in doc_unigram.items():
+            cur_doc_word_prob = prob
+            for other_doc_name, other_prob in doc_unigram.items():
+                if doc_name == other_doc_name:
                     continue
-                # penalize term frequency is supported by other documents
-                if word in other_word_unigram:
-                    prob *= (1 - other_word_unigram[word])   
-            if word in specific_model:
-                specific_model[word] += prob
-            else:            
-                specific_model[word] = prob
+                cur_doc_word_prob *= (1 - other_prob)
+            word_specific_level += cur_doc_word_prob	
+        specific_model[word] = word_specific_level
 	# softmax
     specific_model = ProcDoc.softmax(dict(specific_model))
 	
@@ -48,6 +46,7 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         significant_model[s_word] =  1.0 / len(feedback_word)
         
     hidden_significant_doc_word = {}
+    objective_value_list = []
     # EM training
     for step in range(100):
         # E Step:
@@ -68,14 +67,16 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
             significant_model[word] = word_sum
         
         significant_model = {word: word_sum / denominator for word, word_sum in dict(significant_model).items()}
+		
 		# softmax
         significant_model = ProcDoc.softmax(dict(significant_model))
 		# Objective function
-        Objective_value = 0.0
+        objective_value = 0.0
         for doc_name, word_count in feedback_doc_wc.items():
             for word, count in word_count.items():
-                Objective_value += count * log(lambda_sw * significant_model[word] + lambda_g * general_model[word] + lambda_s * specific_model[word])
-        # print Objective_value
+                objective_value += count * log(lambda_sw * significant_model[word] + lambda_g * general_model[word] + lambda_s * specific_model[word])
+        objective_value_list.append(objective_value)
+    #plot_diagram.plotList(objective_value_list)
     return significant_model            
 
 def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, general_model, background_model, topN):
@@ -106,6 +107,6 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
 			
         query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))	
         
-        #plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
+        # plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
         
     return query_model 
