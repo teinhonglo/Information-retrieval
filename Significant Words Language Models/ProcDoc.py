@@ -8,6 +8,7 @@ import numpy as np
 import operator
 from math import exp
 from webbrowser import BackgroundBrowser
+from collections import defaultdict
 
 bg_modle_path = "../Corpus/background"
 Cluster_path = "Topic"
@@ -91,6 +92,13 @@ def query_preprocess(dictionary):
 		dictionary[key]	= content
 	return dictionary
 
+def inverted_word_doc(doc_word_unigram_dcit):	
+    inverted_w_doc = defaultdict(dict)
+    for doc_name, word_unigram in doc_word_unigram_dcit.items(): 
+        for word, prob in word_unigram.items():
+            inverted_w_doc[word][doc_name] = prob	
+    return inverted_w_doc		
+	
 # create unigram
 def unigram(topic_wordcount_dict):
 	topic_wordprob_dict = {}

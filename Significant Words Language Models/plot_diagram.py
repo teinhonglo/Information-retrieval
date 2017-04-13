@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import ProcDoc
 import operator
 
@@ -42,3 +43,17 @@ def plotModel(general_model, specific_model, significant_model, feedback_doc_wc,
 	plt.title('Accuracy')
 	plt.show()
 	r = raw_input()
+	
+def plotList(objList):
+	draw_list = np.array(objList)
+	maxVal = 1.0 * draw_list.max(axis = 0)
+	# draw_list /= maxVal
+	import matplotlib.pyplot as plt
+	plt.figure(8)
+	plt.plot(range(len(draw_list)), draw_list,label='log-likelihood')
+	plt.title('Loss')
+	plt.legend(loc='upper left')
+	plt.title('Accuracy')
+	plt.show()
+	#r = raw_input()
+	
