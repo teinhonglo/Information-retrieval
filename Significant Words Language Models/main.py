@@ -22,6 +22,7 @@ query_path = "../Corpus/QUERY_WDID_NEW_middle"
 data = ProcDoc.read_file(document_path)
 doc_wordcount = ProcDoc.doc_preprocess(data)
 doc_unigram = ProcDoc.unigram(doc_wordcount)
+#word_idf = ProcDoc.inverse_document_frequency(doc_wordcount)
 
 # background_model
 background_model = ProcDoc.read_background_dict()

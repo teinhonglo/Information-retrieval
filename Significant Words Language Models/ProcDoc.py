@@ -9,6 +9,7 @@ import operator
 from math import exp
 from webbrowser import BackgroundBrowser
 from collections import defaultdict
+from math import log
 
 bg_modle_path = "../Corpus/background"
 Cluster_path = "Topic"
@@ -92,6 +93,20 @@ def query_preprocess(dictionary):
 		dictionary[key]	= content
 	return dictionary
 
+def inverse_document_frequency(doc_word_unigram_dcit):
+	invert_word_document = inverted_word_doc(doc_word_unigram_dcit)
+	word_idf = {}
+	document_list = []
+	for word, doc_wordcount in invert_word_document.items():
+		word_idf[word] = len(doc_wordcount.keys())
+		for doc, count in doc_wordcount.items():
+			if doc in document_list:
+				continue
+			document_list.append(doc)	
+	total_doc_length = 1.0 * len(document_list)
+	word_idf = {word: log(1 + total_doc_length / df) for word, df in dict(word_idf).items()}
+	return word_idf
+	
 def inverted_word_doc(doc_word_unigram_dcit):	
     inverted_w_doc = defaultdict(dict)
     for doc_name, word_unigram in doc_word_unigram_dcit.items(): 
@@ -136,7 +151,7 @@ def word_count(content, bg_word):
 # output sum of word
 def word_sum(data):
 	return np.array(data.values()).sum(axis = 0)
-
+	
 # output ranking list	
 def outputRank(query_docs_point_dict):
 	cquery_docs_point_dict = sorted(query_docs_point_dict.items(), key=operator.itemgetter(0))
