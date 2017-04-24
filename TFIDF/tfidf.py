@@ -41,7 +41,7 @@ for doc_tf in term_freq:
 	doc_tfidf = {}
 	for term, tf in doc_tf.items():
 		idf = log(1 + total_docs / doc_freq[term])
-		doc_tfidf[term] = (1 + log(tf)) / idf	
+		doc_tfidf[term] = (1 + log(tf)) * idf	
 	tfidf.append(doc_tfidf)	
 
 	
