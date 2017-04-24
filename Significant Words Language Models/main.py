@@ -53,7 +53,7 @@ query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 # query process
 print "query ..."
 assessment = readAssessment.get_assessment()
-for step in range(2):
+for step in range(10):
 	query_docs_point_dict = {}
 	AP = 0
 	mAP = 0
@@ -80,5 +80,8 @@ for step in range(2):
 	print mAP
 	if step < 1:
 		ProcDoc.outputRank(query_docs_point_dict)
-		query_model = Expansion.feedback(dict(query_docs_point_dict), dict(query_model), dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), 9)
+		fb_query_docs_point_dict = dict(query_docs_point_dict)
+		fb_query_model = dict(query_model)
+	
+	query_model = Expansion.feedback(fb_query_docs_point_dict, fb_query_model, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
 	
