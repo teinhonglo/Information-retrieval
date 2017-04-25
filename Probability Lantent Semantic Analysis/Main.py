@@ -2,14 +2,15 @@
 import ProcDoc
 import PLSA
 import codecs
+from collections import defaultdict
 import numpy as np
 
 def run():
 	INIT_PROBABILITY = 1.0 / 60
-	topic_word_prob_dict = ProcDoc.read_clusters()		# read cluster P(W|T), {T: {W:Prob}}
-	doc_topic_prob_dict = {}							# P(T|D),{D:{T:Prob}} 
-	doc_word_topic_prob_dict = {}						# P(T| w, D), {D: {word:{T:prob}}}
-	doc_wc_dict = ProcDoc.read_doc_dict()  				# read document (Doc No.,Doc content)  
+	topic_word_prob_dict = ProcDoc.read_clusters()									# read cluster P(W|T), {T: {W:Prob}}
+	doc_topic_prob_dict = defaultdict(dict)														# P(T|D),{D:{T:Prob}} 
+	doc_word_topic_prob_dict = defaultdict(dict)									# P(T| w, D), {D: {word:{T:prob}}}
+	doc_wc_dict = ProcDoc.read_doc_dict()  											# read document (Doc No.,Doc content)  
 	
 	# calculate word of the background
 	# convert (Doc No.,Doc content) to (Doc_No, {word, count})
@@ -22,8 +23,8 @@ def run():
 	for docName, wordCount in doc_wc_dict.items():
 		topic_prob = {}
 		for topic, wordProb in topic_word_prob_dict.items():
-			topic_prob[topic] = INIT_PROBABILITY
-		doc_topic_prob_dict[docName] = topic_prob
+			doc_topic_prob_dict[docName][topic] = INIT_PROBABILITY
+			
 	'''
 	print "Initialize P(T| w, D)"
 	for docName, wordCount in doc_wc_dict.items():	
