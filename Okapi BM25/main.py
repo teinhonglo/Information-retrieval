@@ -13,7 +13,7 @@ import timeit
 data = {}				# content of document (doc, content)
 query = {}				# query
 doc_freq ={}
-k1 = 1.0
+k1 = 1.4
 b = 0.75
 
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
