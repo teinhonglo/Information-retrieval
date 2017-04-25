@@ -69,11 +69,12 @@ def doc_preprocess(dictionary):
 			content += word + " "
 		# replace old content
 		dictionary[key]	= content
+	doc_freq = {}	
 	# term probability(word_count / word sum)	
 	for doc_key, doc_content in dictionary.items():
 		doc_words = word_count(doc_content, {})
 		dictionary[doc_key] = doc_words
-		
+	#dictionary = TFIDF(dictionary)	
 	return dictionary
 
 # query preprocess
@@ -183,3 +184,23 @@ def outputModel(model):
 				out_str += docname + " " + str(score) + "\n"
 			outfile.write(out_str)
 			outfile.write("\n")				
+			
+def TFIDF(docs_words_dict):
+	doc_freq = {}
+	total_docs = len(docs_words_dict.keys()) * 1.0
+	# compute document frequency
+	for doc, words_dict in docs_words_dict.items():
+		for word in words_dict.keys():
+			if word in doc_freq:
+				doc_freq[word] += 1
+			else:
+				doc_freq[word] = 1
+	# tfidf
+	set_tfidf = {}
+	for doc, words_list in docs_words_dict.items():
+		doc_tfidf = {}
+		for word, tf in words_list.items():
+			idf = 1 / log(1 + total_docs / doc_freq[word])
+			doc_tfidf[word] = (1 + log(tf)) * idf
+		set_tfidf[doc] = doc_tfidf
+	return set_tfidf		
