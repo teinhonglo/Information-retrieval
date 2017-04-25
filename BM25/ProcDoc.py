@@ -209,7 +209,7 @@ def compute_TFIDF(doc_wordcount):
 		
 def compute_average_doc_length(doc_wordcount):
 	ave_length = 0.0
-	total_docs = len(doc_wordcount.keys())
+	total_docs = len(doc_wordcount.keys()) * 1.0
 	for doc, wordcount in doc_wordcount.items():
 		ave_length += word_sum(wordcount)
 	ave_length /= total_docs
