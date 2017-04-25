@@ -7,6 +7,7 @@ import numpy as np
 import readAssessment
 import ProcDoc
 import Expansion
+import plot_diagram
 
 data = {}				# content of document (doc, content)
 background_model = {}	# word count of 2265 document (word, number of words)
@@ -22,6 +23,7 @@ query_path = "../Corpus/QUERY_WDID_NEW_middle"
 data = ProcDoc.read_file(document_path)
 doc_wordcount = ProcDoc.doc_preprocess(data)
 doc_unigram = ProcDoc.unigram(doc_wordcount)
+
 #word_idf = ProcDoc.inverse_document_frequency(doc_wordcount)
 
 # background_model
@@ -53,7 +55,10 @@ query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 # query process
 print "query ..."
 assessment = readAssessment.get_assessment()
-for step in range(10):
+query_docs_point_fb = {}
+query_model_fb = {}
+mAP_list = []
+for step in range(15):
 	query_docs_point_dict = {}
 	AP = 0
 	mAP = 0
@@ -76,12 +81,13 @@ for step in range(10):
 		query_docs_point_dict[q_key] = docs_point_list
 	# mean average precision	
 	mAP = readAssessment.mean_average_precision(query_docs_point_dict, assessment)
+	mAP_list.append(mAP)
 	print "mAP"
 	print mAP
 	if step < 1:
-		ProcDoc.outputRank(query_docs_point_dict)
-		fb_query_docs_point_dict = dict(query_docs_point_dict)
-		fb_query_model = dict(query_model)
+		query_docs_point_fb = dict(query_docs_point_dict)
+		query_model_fb = dict(query_model)
 	
-	query_model = Expansion.feedback(fb_query_docs_point_dict, fb_query_model, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
+	query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
+plot_diagram.plotList(mAP_list)
 	
