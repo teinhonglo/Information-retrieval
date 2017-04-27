@@ -51,12 +51,12 @@ feedback_model = []
 feedback_ranking_list = []
 doc_length = {}
 
-for step in range(15):
+for step in range(1):
 	query_docs_point_dict = {}
 	AP = 0
 	mAP = 0
 	for q_key, q_words_count_list in query_model.items():
-		docs_point = {}
+		docs_point = defaultdict(int)
 		for doc_key, doc_words_count_dict in doc_model.items():
 			relevant_point = 0
 			query_length = 1
