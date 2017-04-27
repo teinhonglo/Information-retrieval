@@ -49,6 +49,8 @@ start = timeit.default_timer()
 assessment = readAssessment.get_assessment()
 feedback_model = []
 feedback_ranking_list = []
+doc_length = {}
+
 for step in range(15):
 	query_docs_point_dict = {}
 	AP = 0
@@ -57,26 +59,29 @@ for step in range(15):
 		docs_point = {}
 		for doc_key, doc_words_count_dict in doc_model.items():
 			relevant_point = 0
-			irrelevant_point = 0
 			query_length = 1
-			doc_length = 0
 			
 			# calculate each query value for the document
 			for doc_word, doc_word_count in doc_words_count_dict.items():
-				if doc_word in q_words_count_list:
+				if not doc_word in q_words_count_list:
+					continue
+				else:	
 					relevant_point += q_words_count_list[doc_word] * doc_word_count
 				
-			doc_length = sqrt((np.array(doc_words_count_dict.values()) ** 2).sum(axis = 0))
+			if not doc_key in doc_length:
+				doc_length[doc_key] = sqrt((np.array(doc_words_count_dict.values()) ** 2).sum(axis = 0))
+				
 			# cosine measure
-			relevant_point /= (query_length * doc_length)
+			relevant_point /= (query_length * doc_length[doc_key])
 			docs_point[doc_key] = relevant_point
-			# sorted each doc of query by point
+		# sorted each doc of query by point
 		docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
 		query_docs_point_dict[q_key] = docs_point_list
 	# mean average precision	
 	mAP = readAssessment.mean_average_precision(query_docs_point_dict, assessment)
 	print "mAP:", mAP
 	print "feedback:", step
+	
 	if step < 1:
 		feedback_ranking_list = dict(query_docs_point_dict)
 	[query_model, feedback_model] = Expansion.extQueryModel(query_model, feedback_ranking_list, doc_model, feedback_model, step + 1)
