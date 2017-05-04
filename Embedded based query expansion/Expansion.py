@@ -126,3 +126,91 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
         # plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
         
     return query_model 
+'''
+Query Expansion using global analysis
+	embedded_query_expansion_ci: # Conditional Independence of Query Terms
+	embedded_query_expansion_qi: # Query-Independent Term Similarities
+	
+'''	
+# Conditional Independence of Query Terms	
+def embedded_query_expansion_ci(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m):
+	embedded_query_expansion = dict(query_model)
+	update_embedded_query_expansion = defaultdict(dict)
+	# calculate every query
+	for query, query_word_count_dict in query_wordcount.items():
+		minimum_prob = 1.0
+		minimum_key = ""
+		top_prob_dict = {}
+		# calculate every word in collection
+		for word in collection.keys():
+			total_probability = word2vec.sumOfTotalSimiliary(word, collection.keys())
+			p_w_q = total_probability				# p(w|q)
+			# total probability theory(for every query term)
+			for query_term in query_word_count_dict.keys():
+				cur_word_similarity = word2vec.getWordSimilarity(query_term, word)
+				p_w_q *= (cur_word_similarity / total_probability)
+			# storage top N
+			if len(top_prob_dict.keys()) <= m:
+				top_prob_dict[word] = p_w_q
+			else:
+				if p_w_q > minimum_prob:
+					top_prob_dict.pop(minimum_key, None)
+					top_prob_dict[word] = p_w_q
+			# set minimum key & value	
+			minimum_key = min(top_prob_dict, key = top_prob_dict.get)
+			minimum_prob = top_prob_dict[minimum_key]
+		update_embedded_query_expansion[query] = top_prob_dict
+
+	# update query model	
+	for query, update_query_word_dict in update_embedded_query_expansion.items():
+		for update_word, update_count in update_query_word_dict.items():
+			if update_word in embedded_query_expansion[update_query]:
+				origin = embedded_query_expansion[update_query][update_word]
+				update = update_count
+				embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
+			else:
+				embedded_query_expansion[update_query][update_word] = update_count	
+	return 	embedded_query_expansion		
+	
+# Query-Independent Term Similarities
+def embedded_query_expansion_qi(query_model ,query_wordcount, collection, word2vec, interpolated_aplpha, m):
+	embedded_query_expansion = dict(query_model)
+	update_embedded_query_expansion = defaultdict(dict)
+	# calculate every query
+	for query, query_word_count_dict in query_wordcount.items():
+		minimum_prob = 1.0
+		minimum_key = ""
+		top_prob_dict = {}
+		# calculate every word in collection
+		for word in collection.keys():
+			# for every word in current query
+			query_length = ProcDoc.word_sum(query_word_count_dict)
+			# p(w|q)
+			p_w_q = 0
+			for word_sq, word_sq_count in query_word_count_dict.items():
+				total_probability = word2vec.sumOfTotalSimiliary(word_sq, collection.keys())
+				cur_word_similarity = word2vec.getWordSimilarity(word, word_sq)
+				p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
+			
+			# storage top N
+			if len(top_prob_dict.keys()) <= m:
+				top_prob_dict[word] = p_w_q
+			else:
+				if p_w_q > minimum_prob:
+					top_prob_dict.pop(minimum_key, None)
+					top_prob_dict[word] = p_w_q
+			# set minimum key & value	
+			minimum_key = min(top_prob_dict, key = top_prob_dict.get)
+			minimum_prob = top_prob_dict[minimum_key]
+		update_embedded_query_expansion[query] = top_prob_dict
+
+	# update query model	
+	for query, update_query_word_dict in update_embedded_query_expansion.items():
+		for update_word, update_count in update_query_word_dict.items():
+			if update_word in embedded_query_expansion[update_query]:
+				origin = embedded_query_expansion[update_query][update_word]
+				update = update_count
+				embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
+			else:
+				embedded_query_expansion[update_query][update_word] = update_count	
+	return 	embedded_query_expansion			
