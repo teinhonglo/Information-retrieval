@@ -55,45 +55,13 @@ query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 # Conditional Independence of Query Terms
 m = 50
 interpolated_aplpha = 0.5
-embedded_query_expansion = dict(query_model)
-update_embedded_query_expansion = defaultdict(dict)
 word2vec = word2vec_model.word2vec_model()
-# calculate every query
-for query, query_word_count_dict in query_wordcount.items():
-	minimum_prob = 1.0
-	minimum_key = ""
-	top_prob_dict = {}
-	# calculate every word in collection
-	for word in collection.keys():
-		total_probability = word2vec.sumOftotalSimiliary(word, collection.keys())
-		p_w_q = total_probability				# p(w|q)
-		# total probability theory(for every query term)
-		for query_term in query_word_count_dict.keys():
-			cur_word_similarity = word2vec.getWordSimilarity(query_term, word)
-			p_w_q *= (cur_word_similarity / total_probability)
-		# storage top N
-		if len(top_prob_dict.keys()) <= m:
-			top_prob_dict[word] = p_w_q
-		else:
-			if p_w_q > minimum_prob:
-				top_prob_dict.pop(minimum_key, None)
-				top_prob_dict[word] = p_w_q
-		# set minimum value		
-		minimum_key = min(top_prob_dict, key = top_prob_dict.get)
-		minimum_prob = top_prob_dict[minimum_key]
-	update_embedded_query_expansion[query] = top_prob_dict
 
-# update query model	
-for query, update_query_word_dict in update_embedded_query_expansion.items():
-	for update_word, update_count in update_query_word_dict.items():
-		if update_word in embedded_query_expansion[update_query]:
-			origin = embedded_query_expansion[update_query][update_word]
-			update = update_count
-			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
-		else:
-			embedded_query_expansion[update_query][update_word] = update_count
+# Conditional Independence of Query Terms
+query_model_eqe1 = Expansion.embedded_query_expansion_ci(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m)
 		
 # Query-Independent Term Similarities
+query_model_eqe2 = Expansion.embedded_query_expansion_qi(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m)
 
 # query process
 print "query ..."

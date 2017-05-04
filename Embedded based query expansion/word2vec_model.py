@@ -17,9 +17,9 @@ class word2vec_model():
 		word2vec = word2vec.wv
 		return word2vec
 
-	def sumOftotalSimiliary(self,cur_word, collection):
-		word2vec = self.word2vec
+	def sumOfTotalSimiliary(self,cur_word, collection):
 		total_similiary = 0
+		word2vec = self.word2vec
 		for word_sq in collection:
 			total_similiary += self.sigmoid(word2vec.similarity(cur_word, word_sq))
 		return total_similiary
