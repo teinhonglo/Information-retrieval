@@ -6,7 +6,7 @@ import fileinput
 import collections
 
 
-CNA_path = "Corpus"
+CNA_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 Cluster_path = "Topic"
 
 # read cluster
@@ -22,9 +22,12 @@ def read_clusters():
 				# read content of query document (doc, content)
 				content =  f.readlines()
 				words = (content[0]).split(",")
+				
 				for line in content[1:]:
+					
 					cluster_info = line.split(",")
 					cluster_name = cluster_info[0]
+					
 					word_prob_dict = {}
 					for w_index in range(1, len(cluster_info)):
 						[word, prob ]= [words[w_index], cluster_info[w_index]]
@@ -50,6 +53,30 @@ def read_doc_dict():
 				numOfDoc += 1
 	# CNATraingSetDict(No., content)
 	return CNATraingSetDict
+
+# document preprocess
+def doc_preprocess(dictionary):
+	dictionary = collections.OrderedDict(sorted(dictionary.items()))
+	for key, value in dictionary.items():
+		content = ""
+		temp_content = ""
+		count = 0
+		# split content by special character
+		for line in dictionary[key].split('\n'):
+			if count < 3:
+				count += 1
+				continue
+			else:	
+				for word in line.split('-1'):
+					temp_content += word + " "
+		# delete double white space
+		for word in temp_content.split():
+			content += str(int(word)) + " "
+		# replace old content
+		dictionary[key]	= content
+
+	#dictionary = TFIDF(dictionary)	
+	return dictionary
 	
 # word count
 def word_count(content, bg_word):
