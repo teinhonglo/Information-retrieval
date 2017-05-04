@@ -24,6 +24,27 @@ def read_doc():
 	# CNATraingSet(list)
 	return CNATraingSet
 
+def doc_preprocess(doc_list):
+	pseudo_doc_list = []
+	for doc_content in doc_list:
+		content = ""
+		temp_content = ""
+		count = 0
+		# split content by special character
+		for line in doc_content.split('\n'):
+			if count < 3:
+				count += 1
+				continue
+			else:	
+				for word in line.split('-1'):
+					temp_content += word + " "
+		# delete double white space
+		for word in temp_content.split():
+			content += word + " "
+		# replace old content
+		pseudo_doc_list.append(content)
+	return pseudo_doc_list	
+	
 # read cluster
 def read_clusters():
 	clusters = []

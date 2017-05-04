@@ -3,7 +3,8 @@ import ProcDoc
 from gensim import corpora, models, matutils
 from sklearn.cluster import KMeans
 documents = ProcDoc.read_doc()
-			 
+documents = ProcDoc.doc_preprocess(documents)
+
 # remove common words and tokenize
 texts = [[word for word in document.lower().split()] for document in documents]
 
@@ -28,7 +29,6 @@ doc_index = 0
 for cluster in doc_cluster:
 	clusters[cluster].append(doc_index)
 	doc_index += 1
-print clusters
 
 cluster_Num = 0
 

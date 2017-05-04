@@ -11,7 +11,7 @@ def run():
 	doc_topic_prob_dict = defaultdict(dict)														# P(T|D),{D:{T:Prob}} 
 	doc_word_topic_prob_dict = defaultdict(dict)									# P(T| w, D), {D: {word:{T:prob}}}
 	doc_wc_dict = ProcDoc.read_doc_dict()  											# read document (Doc No.,Doc content)  
-	
+	doc_wc_dict = ProcDoc.doc_preprocess(doc_wc_dict)
 	# calculate word of the background
 	# convert (Doc No.,Doc content) to (Doc_No, {word, count})
 	for docName, content in doc_wc_dict.items():
