@@ -1,7 +1,10 @@
 import os
-from sklearn.metrics.pairwise import cosine_similarity
+from scipy.spatial.distance import cosine
 from math import exp
 import cPickle as Pickle
+from collections import defaultdict
+import warnings
+warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
 	def __init__(self, vocabulary_length = 22738, alpha = 50, c = 0.7):
@@ -17,18 +20,20 @@ class word2vec_model():
 		word2vec = word2vec.wv
 		return word2vec
 
-	def sumOfTotalSimiliary(self,cur_word, collection):
+	def sumOfTotalSimiliary(self, cur_word_vec, collection):
 		total_similiary = 0
-		word2vec = self.word2vec
-		for word_sq in collection:
-			total_similiary += self.sigmoid(word2vec.similarity(cur_word, word_sq))
+		for word_sq, word_sq_vec in collection.items():
+			total_similiary += self.sigmoid(1 - cosine(cur_word_vec, word_sq_vec))
 		return total_similiary
 	
-	def getWordSimilarity(self, w1, w2):
+	def getWordSimilarity(self, w1_vec, w2_vec):
 		word2vec = self.word2vec
-		return self.sigmoid(word2vec.similarity(w1, w2))
+		return self.sigmoid(1 - cosine(w1_vec, w2_vec))
 		
 	def sigmoid(self, x):
 		return 1 / (1 + exp(-self.alpha * (x - self.c)))
+	
+	def getWord2Vec(self):
+		return self.word2vec
 	
 
