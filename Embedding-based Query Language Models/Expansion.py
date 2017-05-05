@@ -133,7 +133,7 @@ Query Expansion using global analysis
 	
 '''	
 # Conditional Independence of Query Terms	
-def embedded_query_expansion_ci(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m):
+def embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
 	embedded_query_expansion = dict(query_model)
 	update_embedded_query_expansion = defaultdict(dict)
 	# calculate every query
@@ -143,11 +143,11 @@ def embedded_query_expansion_ci(query_model, query_wordcount, collection, word2v
 		top_prob_dict = {}
 		# calculate every word in collection
 		for word in collection.keys():
-			total_probability = word2vec.sumOfTotalSimiliary(word, collection.keys())
+			total_probability = collection_total_similarity[word]
 			p_w_q = total_probability				# p(w|q)
 			# total probability theory(for every query term)
 			for query_term in query_word_count_dict.keys():
-				cur_word_similarity = word2vec.getWordSimilarity(query_term, word)
+				cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
 				p_w_q *= (cur_word_similarity / total_probability)
 			# storage top N
 			if len(top_prob_dict.keys()) <= m:
@@ -162,7 +162,7 @@ def embedded_query_expansion_ci(query_model, query_wordcount, collection, word2v
 		update_embedded_query_expansion[query] = top_prob_dict
 
 	# update query model	
-	for query, update_query_word_dict in update_embedded_query_expansion.items():
+	for update_query, update_query_word_dict in update_embedded_query_expansion.items():
 		for update_word, update_count in update_query_word_dict.items():
 			if update_word in embedded_query_expansion[update_query]:
 				origin = embedded_query_expansion[update_query][update_word]
@@ -173,7 +173,7 @@ def embedded_query_expansion_ci(query_model, query_wordcount, collection, word2v
 	return 	embedded_query_expansion		
 	
 # Query-Independent Term Similarities
-def embedded_query_expansion_qi(query_model ,query_wordcount, collection, word2vec, interpolated_aplpha, m):
+def embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
 	embedded_query_expansion = dict(query_model)
 	update_embedded_query_expansion = defaultdict(dict)
 	# calculate every query
@@ -188,8 +188,8 @@ def embedded_query_expansion_qi(query_model ,query_wordcount, collection, word2v
 			# p(w|q)
 			p_w_q = 0
 			for word_sq, word_sq_count in query_word_count_dict.items():
-				total_probability = word2vec.sumOfTotalSimiliary(word_sq, collection.keys())
-				cur_word_similarity = word2vec.getWordSimilarity(word, word_sq)
+				total_probability = collection_total_similarity[word_sq]
+				cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
 				p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
 			
 			# storage top N
@@ -205,7 +205,7 @@ def embedded_query_expansion_qi(query_model ,query_wordcount, collection, word2v
 		update_embedded_query_expansion[query] = top_prob_dict
 
 	# update query model	
-	for query, update_query_word_dict in update_embedded_query_expansion.items():
+	for update_query, update_query_word_dict in update_embedded_query_expansion.items():
 		for update_word, update_count in update_query_word_dict.items():
 			if update_word in embedded_query_expansion[update_query]:
 				origin = embedded_query_expansion[update_query][update_word]

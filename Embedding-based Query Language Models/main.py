@@ -7,7 +7,7 @@ import plot_diagram
 import word2vec_model
 from collections import defaultdict
 from math import log
-
+import cPickle as Pickle
 
 data = {}				# content of document (doc, content)
 background_model = {}	# word count of 2265 document (word, number of words)
@@ -22,15 +22,14 @@ query_path = "../Corpus/QUERY_WDID_NEW_middle"
 # document model
 data = ProcDoc.read_file(document_path)
 doc_wordcount = ProcDoc.doc_preprocess(data)
-doc_unigram = ProcDoc.unigram(doc_wordcount)
-
-#word_idf = ProcDoc.inverse_document_frequency(doc_wordcount)
+doc_unigram = ProcDoc.unigram(dict(doc_wordcount))
 
 # background_model
 background_model = ProcDoc.read_background_dict()
 
 # general model
 collection = {}
+collection_total_similarity = {}
 for key, value in doc_wordcount.items():
 	for word, count in value.items():
 		if word in collection:
@@ -45,9 +44,12 @@ general_model = {k : v / collection_word_sum for k, v in collection.items()}
 query = ProcDoc.read_file(query_path)
 query = ProcDoc.query_preprocess(query)
 query_wordcount = {}
+query_embedded = {}
 
 for q, q_content in query.items():
 	query_wordcount[q] = ProcDoc.word_count(q_content, {})
+	for word in query_wordcount[q].keys():
+		query_embedded[word] = 0
 
 query_unigram = ProcDoc.unigram(query_wordcount)
 query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
@@ -56,12 +58,50 @@ query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 m = 50
 interpolated_aplpha = 0.5
 word2vec = word2vec_model.word2vec_model()
+word2vec_wv = word2vec.getWord2Vec()
+vocab = word2vec_wv.vocab
+vocab_length = 100
 
+# assign word vector to collection
+for word, count in collection.items():
+	if word in vocab:
+		collection[word] = word2vec_wv[word]
+	else:
+		collection[word] = np.random.rand(vocab_length) * 5 - 2.5
+
+# assign word vector to query embedded
+for word, count in query_embedded.items():
+	if word in vocab:
+		query_embedded[word] = word2vec_wv[word]
+	else:
+		query_embedded[word] = np.random.rand(vocab_length) * 5 - 2.5
+
+count_of_summation = 1		
+# sum of total similarity, adding collection
+for word, w_vec in collection.items():
+	print count_of_summation
+	collection_total_similarity[word] = word2vec.sumOfTotalSimiliary(w_vec, collection)
+	count_of_summation += 1
+
+# sum of total similarity, adding query
+for word, w_vec in query_embedded.items():
+	if word in collection:
+		continue
+	print count_of_summation	
+	collection_total_similarity[word] = word2vec.sumOfTotalSimiliary(w_vec, collection)
+	count_of_summation += 1
+	
+Pickle.dump(collection_total_similarity, open("collection_total_similarity.pkl", "wb"), True)
+
+print "Conditional Independence of Query Terms"	
 # Conditional Independence of Query Terms
-query_model_eqe1 = Expansion.embedded_query_expansion_ci(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m)
-		
+query_model_eqe1 = Expansion.embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m)
+Pickle.dump(query_model_eqe1, open("eqe1.pkl", "wb"), True)
+
+print "Query-Independent Term Similarities"	
 # Query-Independent Term Similarities
-query_model_eqe2 = Expansion.embedded_query_expansion_qi(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m)
+query_model_eqe2 = Expansion.embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m)
+Pickle.dump(query_model_eqe2, open("eqe2.pkl", "wb"), True)
 
 # query process
 print "query ..."
@@ -99,6 +139,6 @@ for step in range(1):
 		query_docs_point_fb = dict(query_docs_point_dict)
 		query_model_fb = dict(query_model)
 	
-	query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
-plot_diagram.plotList(mAP_list)
+	# query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
+#plot_diagram.plotList(mAP_list)
 	
