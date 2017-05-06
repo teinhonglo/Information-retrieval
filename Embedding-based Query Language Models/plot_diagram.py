@@ -44,13 +44,13 @@ def plotModel(general_model, specific_model, significant_model, feedback_doc_wc,
 	plt.show()
 	r = raw_input()
 	
-def plotList(objList):
+def plotList(x_axis, objList, title):
 	draw_list = np.array(objList)
 	maxVal = 1.0 * draw_list.max(axis = 0)
 	# draw_list /= maxVal
 	import matplotlib.pyplot as plt
 	plt.figure(8)
-	plt.plot(range(len(draw_list)), draw_list,label='log-likelihood')
+	plt.plot(x_axis, draw_list, title)
 	plt.title('Loss')
 	plt.legend(loc='upper left')
 	plt.title('Objective function')
