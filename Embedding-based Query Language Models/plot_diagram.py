@@ -44,16 +44,14 @@ def plotModel(general_model, specific_model, significant_model, feedback_doc_wc,
 	plt.show()
 	r = raw_input()
 	
-def plotList(x_axis, objList, title):
+def plotList(x_axis, objList, title, curve):
 	draw_list = np.array(objList)
 	maxVal = 1.0 * draw_list.max(axis = 0)
-	# draw_list /= maxVal
-	import matplotlib.pyplot as plt
 	plt.figure(8)
-	plt.plot(x_axis, draw_list, title)
+	plt.plot(x_axis, objList, label = curve)
 	plt.title('Loss')
 	plt.legend(loc='upper left')
-	plt.title('Objective function')
+	plt.title(title)
 	plt.show()
 	#r = raw_input()
 	
