@@ -53,7 +53,7 @@ query_unigram = ProcDoc.unigram(dict(query_wordcount))
 query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 
 
-# Conditional Independence of Query Terms
+# Embedding-based Query Language
 m = 50
 interpolated_aplpha_list = np.linspace(0.1, 1.0, num=10)
 interpolated_aplpha = interpolated_aplpha_list[5]
