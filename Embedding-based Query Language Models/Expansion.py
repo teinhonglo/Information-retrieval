@@ -134,7 +134,7 @@ Query Expansion using global analysis
 '''	
 # Conditional Independence of Query Terms	
 def embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
-	embedded_query_expansion = dict(query_model)
+	embedded_query_expansion = defaultdict(dict)
 	update_embedded_query_expansion = defaultdict(dict)
 	# calculate every query
 	for query, query_word_count_dict in query_wordcount.items():
@@ -160,21 +160,21 @@ def embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, co
 			minimum_key = min(top_prob_dict, key = top_prob_dict.get)
 			minimum_prob = top_prob_dict[minimum_key]
 		update_embedded_query_expansion[query] = top_prob_dict
-
+	#print hex(id(query_model)), hex(id(embedded_query_expansion))
 	# update query model	
 	for update_query, update_query_word_dict in update_embedded_query_expansion.items():
 		for update_word, update_count in update_query_word_dict.items():
-			if update_word in embedded_query_expansion[update_query]:
-				origin = embedded_query_expansion[update_query][update_word]
+			if update_word in query_model[update_query]:
+				origin = query_model[update_query][update_word]
 				update = update_count
 				embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
 			else:
-				embedded_query_expansion[update_query][update_word] = update_count	
+				embedded_query_expansion[update_query][update_word] = (1 - interpolated_aplpha) * update_count	
 	return 	embedded_query_expansion		
 	
 # Query-Independent Term Similarities
 def embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
-	embedded_query_expansion = dict(query_model)
+	embedded_query_expansion = defaultdict(dict)
 	update_embedded_query_expansion = defaultdict(dict)
 	# calculate every query
 	for query, query_word_count_dict in query_wordcount.items():
@@ -207,10 +207,10 @@ def embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, co
 	# update query model	
 	for update_query, update_query_word_dict in update_embedded_query_expansion.items():
 		for update_word, update_count in update_query_word_dict.items():
-			if update_word in embedded_query_expansion[update_query]:
-				origin = embedded_query_expansion[update_query][update_word]
+			if update_word in query_model[update_query]:
+				origin = query_model[update_query][update_word]
 				update = update_count
 				embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
 			else:
-				embedded_query_expansion[update_query][update_word] = update_count	
+				embedded_query_expansion[update_query][update_word] = (1 - interpolated_aplpha) * update_count	
 	return 	embedded_query_expansion			
