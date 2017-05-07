@@ -53,11 +53,18 @@ query_unigram = ProcDoc.unigram(dict(query_wordcount))
 query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 
 
-# Embedding-based Query Language
+# Conditional Independence of Query Terms
 m = 50
 interpolated_aplpha_list = np.linspace(0.1, 1.0, num=10)
 interpolated_aplpha = interpolated_aplpha_list[5]
-Embedded_based.EmbeddedQuery(query_model, query_wordcount, collection, interpolated_aplpha, m)
+word2vec = word2vec_model.word2vec_model()
+
+EQE1 = []
+EQE2 = []
+for interpolated_aplpha in interpolated_aplpha_list:
+	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_unigram, query_wordcount, collection, word2vec, interpolated_aplpha, m)
+	EQE1.append(tmp_eqe1)
+	EQE2.append(tmp_eqe2)
 
 # query process
 print "query ..."
@@ -100,4 +107,3 @@ for step in range(15):
 plot_diagram.plotList(X_list, mAP_list[::2], "Conditional Independence of Query Terms", "mAP")
 plot_diagram.plotList(X_list, mAP_list[1::2], "Conditional Independence of Query Terms", "mAP")
 '''
-	
