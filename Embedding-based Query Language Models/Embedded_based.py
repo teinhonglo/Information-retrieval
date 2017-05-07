@@ -3,8 +3,8 @@ import Expansion
 import word2vec_model
 import cPickle as Pickle
 
-def EmbeddedQuery(query_model, query_wordcount, collection, interpolated_aplpha, m):
-	word2vec = word2vec_model.word2vec_model()
+def EmbeddedQuery(query_model, query_wordcount, collection, word2vec, interpolated_aplpha, m):
+	
 	word2vec_wv = word2vec.getWord2Vec()
 	vocab = word2vec_wv.vocab
 	vocab_length = 100
