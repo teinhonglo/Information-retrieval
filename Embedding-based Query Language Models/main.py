@@ -66,6 +66,9 @@ for interpolated_aplpha in interpolated_aplpha_list:
 	EQE1.append(tmp_eqe1)
 	EQE2.append(tmp_eqe2)
 
+Pickle.dump(EQE1, open("model/eqe1_10.pkl", "wb"), True)
+Pickle.dump(EQE2, open("model/eqe2_10.pkl", "wb"), True)
+
 # query process
 print "query ..."
 assessment = readAssessment.get_assessment()
