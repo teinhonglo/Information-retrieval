@@ -2,6 +2,9 @@ import ProcDoc
 from math import log
 import plot_diagram
 from collections import defaultdict
+import cPickle as Pickle
+import operator
+import copy
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
@@ -133,9 +136,12 @@ Query Expansion using global analysis
 	
 '''	
 # Conditional Independence of Query Terms	
-def embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
-	embedded_query_expansion = defaultdict(dict)
-	update_embedded_query_expansion = defaultdict(dict)
+def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
+	# load query model
+	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
+	embedded_query_expansion = query_model
+	
+	update_embedded_query_expansion = {}
 	# calculate every query
 	for query, query_word_count_dict in query_wordcount.items():
 		minimum_prob = 1.0
@@ -149,32 +155,31 @@ def embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, co
 			for query_term in query_word_count_dict.keys():
 				cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
 				p_w_q *= (cur_word_similarity / total_probability)
-			# storage top N
-			if len(top_prob_dict.keys()) <= m:
-				top_prob_dict[word] = p_w_q
-			else:
-				if p_w_q > minimum_prob:
-					top_prob_dict.pop(minimum_key, None)
-					top_prob_dict[word] = p_w_q
-			# set minimum key & value	
-			minimum_key = min(top_prob_dict, key = top_prob_dict.get)
-			minimum_prob = top_prob_dict[minimum_key]
-		update_embedded_query_expansion[query] = top_prob_dict
-	#print hex(id(query_model)), hex(id(embedded_query_expansion))
+			# storage probability
+			top_prob_dict[word] = p_w_q
+		# softmax
+		top_prob_dict = ProcDoc.softmax(top_prob_dict)
+		# sorted top_prob_dict by value(probability)
+		top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+		update_embedded_query_expansion[query] = top_prob_list[:m]
+
 	# update query model	
-	for update_query, update_query_word_dict in update_embedded_query_expansion.items():
-		for update_word, update_count in update_query_word_dict.items():
+	for update_query, update_query_word_list in update_embedded_query_expansion.items():
+		for update_word, update_count in update_query_word_list:
+			update = update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
-				update = update_count
-				embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
 			else:
-				embedded_query_expansion[update_query][update_word] = (1 - interpolated_aplpha) * update_count	
+				origin = 0
+			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
 	return 	embedded_query_expansion		
 	
 # Query-Independent Term Similarities
-def embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
-	embedded_query_expansion = defaultdict(dict)
+def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
+	# copy query model
+	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
+	embedded_query_expansion = query_model
+	
 	update_embedded_query_expansion = defaultdict(dict)
 	# calculate every query
 	for query, query_word_count_dict in query_wordcount.items():
@@ -184,7 +189,7 @@ def embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, co
 		# calculate every word in collection
 		for word in collection.keys():
 			# for every word in current query
-			query_length = ProcDoc.word_sum(query_word_count_dict)
+			query_length = ProcDoc.word_sum(query_word_count_dict) * 1.0
 			# p(w|q)
 			p_w_q = 0
 			for word_sq, word_sq_count in query_word_count_dict.items():
@@ -192,25 +197,21 @@ def embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, co
 				cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
 				p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
 			
-			# storage top N
-			if len(top_prob_dict.keys()) <= m:
-				top_prob_dict[word] = p_w_q
-			else:
-				if p_w_q > minimum_prob:
-					top_prob_dict.pop(minimum_key, None)
-					top_prob_dict[word] = p_w_q
-			# set minimum key & value	
-			minimum_key = min(top_prob_dict, key = top_prob_dict.get)
-			minimum_prob = top_prob_dict[minimum_key]
-		update_embedded_query_expansion[query] = top_prob_dict
-
+			# storage probability
+			top_prob_dict[word] = p_w_q
+		# softmax	
+		top_prob_dict = ProcDoc.softmax(top_prob_dict)
+		# sorted top_prob_dict by value(probability)
+		top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+		# storage update query model value
+		update_embedded_query_expansion[query] = top_prob_list[:m]
 	# update query model	
-	for update_query, update_query_word_dict in update_embedded_query_expansion.items():
-		for update_word, update_count in update_query_word_dict.items():
+	for update_query, update_query_word_list in update_embedded_query_expansion.items():
+		for update_word, update_count in update_query_word_list:
+			update = update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
-				update = update_count
-				embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
 			else:
-				embedded_query_expansion[update_query][update_word] = (1 - interpolated_aplpha) * update_count	
+				origin = 0
+			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
 	return 	embedded_query_expansion			
