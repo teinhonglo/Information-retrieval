@@ -46,11 +46,11 @@ def EmbeddedQuery(query_model, query_wordcount, collection, word2vec, interpolat
 	print "Conditional Independence of Query Terms"	
 	# Conditional Independence of Query Terms
 	query_model_eqe1 = Expansion.embedded_query_expansion_ci(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m)
-	Pickle.dump(query_model_eqe1, open("model/eqe1.pkl", "wb"), True)
+	#Pickle.dump(query_model_eqe1, open("model/eqe1.pkl", "wb"), True)
 
 	print "Query-Independent Term Similarities"	
 	# Query-Independent Term Similarities
 	query_model_eqe2 = Expansion.embedded_query_expansion_qi(query_model, query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m)
-	Pickle.dump(query_model_eqe2, open("model/eqe2.pkl", "wb"), True)
+	#Pickle.dump(query_model_eqe2, open("model/eqe2.pkl", "wb"), True)
 	
 	return [query_model_eqe1, query_model_eqe2]
