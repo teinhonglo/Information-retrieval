@@ -1,5 +1,6 @@
 import os
 from scipy.spatial.distance import cosine
+import numpy as np
 from math import exp
 import cPickle as Pickle
 from collections import defaultdict
@@ -7,11 +8,13 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-	def __init__(self, vocabulary_length = 22738, alpha = 50, c = 0.7):
+	def __init__(self, vocabulary_length = 22738, word_vec_length = 100, alpha = 50, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
 		self.vocabulary_length = vocabulary_length
+		self.word_vec_length = word_vec_length
 		self.alpha = alpha
 		self.c = c
+		self.mean_vector = self.calcMeanVec()
 		
 	def readWord2VecModel(self):
 		word2vec = []
@@ -19,6 +22,19 @@ class word2vec_model():
 			word2vec = Pickle.load(file)
 		word2vec = word2vec.wv
 		return word2vec
+	
+	def calcMeanVec(self):
+		w2v = self.word2vec
+		w2v_vocab = w2v.vocab
+		mean_vector = np.zeros(self.word_vec_length)
+		length = self.vocabulary_length
+		for word in w2v_vocab:
+			mean_vector += w2v[word]
+		mean_vector /= self.vocabulary_length
+		return mean_vector
+	
+	def getMeanVec(self):
+		return self.mean_vector
 
 	def sumOfTotalSimiliary(self, cur_word_vec, collection):
 		total_similiary = 0

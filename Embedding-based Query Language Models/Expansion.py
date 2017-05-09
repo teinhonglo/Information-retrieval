@@ -5,6 +5,7 @@ from collections import defaultdict
 import cPickle as Pickle
 import operator
 import copy
+import os.path
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
@@ -141,28 +142,34 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
 	embedded_query_expansion = query_model
 	
+	
 	update_embedded_query_expansion = {}
-	# calculate every query
-	for query, query_word_count_dict in query_wordcount.items():
-		minimum_prob = 1.0
-		minimum_key = ""
-		top_prob_dict = {}
-		# calculate every word in collection
-		for word in collection.keys():
-			total_probability = collection_total_similarity[word]
-			p_w_q = total_probability				# p(w|q)
-			# total probability theory(for every query term)
-			for query_term in query_word_count_dict.keys():
-				cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
-				p_w_q *= (cur_word_similarity / total_probability)
-			# storage probability
-			top_prob_dict[word] = p_w_q
-		# softmax
-		top_prob_dict = ProcDoc.softmax(top_prob_dict)
-		# sorted top_prob_dict by value(probability)
-		top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
-		update_embedded_query_expansion[query] = top_prob_list[:m]
-
+	if os.path.isfile("model/update_embedded_query_expansion_ci.pkl") == True:
+		# check if a file exist
+		update_embedded_query_expansion = Pickle.load(open("model/update_embedded_query_expansion_ci.pkl", "rb"))
+	else:	
+		# calculate every query
+		for query, query_word_count_dict in query_wordcount.items():
+			top_prob_dict = {}
+			# calculate every word in collection
+			for word in collection.keys():
+				total_probability = collection_total_similarity[word]
+				p_w_q = total_probability				# p(w|q)
+				# total probability theory(for every query term)
+				for query_term in query_word_count_dict.keys():
+					if query_term in query_embedded:
+						cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
+					p_w_q *= (cur_word_similarity / total_probability)
+				# storage probability
+				top_prob_dict[word] = p_w_q
+			# softmax
+			top_prob_dict = ProcDoc.softmax(top_prob_dict)
+			# sorted top_prob_dict by value(probability)
+			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+			update_embedded_query_expansion[query] = top_prob_list[:m]
+		# storage update expansion	
+		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_ci.pkl", "wb"), True)
+	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
 		for update_word, update_count in update_query_word_list:
@@ -180,31 +187,35 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
 	embedded_query_expansion = query_model
 	
-	update_embedded_query_expansion = defaultdict(dict)
-	# calculate every query
-	for query, query_word_count_dict in query_wordcount.items():
-		minimum_prob = 1.0
-		minimum_key = ""
-		top_prob_dict = {}
-		# calculate every word in collection
-		for word in collection.keys():
-			# for every word in current query
-			query_length = ProcDoc.word_sum(query_word_count_dict) * 1.0
-			# p(w|q)
-			p_w_q = 0
-			for word_sq, word_sq_count in query_word_count_dict.items():
-				total_probability = collection_total_similarity[word_sq]
-				cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
-				p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
-			
-			# storage probability
-			top_prob_dict[word] = p_w_q
-		# softmax	
-		top_prob_dict = ProcDoc.softmax(top_prob_dict)
-		# sorted top_prob_dict by value(probability)
-		top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
-		# storage update query model value
-		update_embedded_query_expansion[query] = top_prob_list[:m]
+	update_embedded_query_expansion = {}
+	if os.path.isfile("model/update_embedded_query_expansion_qi.pkl") == True:
+		# check if a file exist
+		update_embedded_query_expansion = Pickle.load(open("model/update_embedded_query_expansion_qi.pkl", "rb"))
+	else:	
+		# calculate every query
+		for query, query_word_count_dict in query_wordcount.items():
+			top_prob_dict = {}
+			# calculate every word in collection
+			for word in collection.keys():
+				# for every word in current query
+				query_length = ProcDoc.word_sum(query_word_count_dict) * 1.0
+				# p(w|q)
+				p_w_q = 0
+				for word_sq, word_sq_count in query_word_count_dict.items():
+					total_probability = collection_total_similarity[word_sq]
+					if word_sq in query_embedded:
+						cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
+					p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
+				
+				# storage probability
+				top_prob_dict[word] = p_w_q
+			# softmax	
+			top_prob_dict = ProcDoc.softmax(top_prob_dict)
+			# sorted top_prob_dict by value(probability)
+			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+			# storage update query model value
+			update_embedded_query_expansion[query] = top_prob_list[:m]
+		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_qi.pkl", "wb"), True)	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
 		for update_word, update_count in update_query_word_list:
