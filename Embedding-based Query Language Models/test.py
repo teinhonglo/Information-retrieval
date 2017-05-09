@@ -1,7 +1,10 @@
 import word2vec_model
 import cPickle as Pickle
 
-query_model = {}
+word_model = word2vec_model.word2vec_model()
+#voca = word_model.vocab
+print word_model.getMeanVec()
+'''
 with open("query_model_prev.pkl", "rb") as file:
 	query_model = Pickle.load(file)
 #print (query_model)	
@@ -33,3 +36,4 @@ for d_key, d_wordcount in doc_model.items():
 		if doc_model[d_key][word] != doc_model_aft[d_key][word]:
 			print d_key, word
 			print "False"			
+'''			

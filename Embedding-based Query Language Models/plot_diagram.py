@@ -48,7 +48,7 @@ def plotList(x_axis, objList, title, curve):
 	draw_list = np.array(objList)
 	maxVal = 1.0 * draw_list.max(axis = 0)
 	plt.figure(8)
-	plt.plot(x_axis, objList, label = curve)
+	plt.plot(x_axis, objList,label = curve)
 	plt.title('Loss')
 	plt.legend(loc='upper left')
 	plt.title(title)
