@@ -172,16 +172,14 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
-		time_to_break = m
-		for update_word, update_count in update_query_word_list:
-			if time_to_break == 0: 	break
+		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 			else:
 				origin = 0
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
-			time_to_break -=1
+			
 		# softmax	
 		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
 	return 	embedded_query_expansion		
@@ -224,16 +222,13 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
-		time_to_break = m
-		for update_word, update_count in update_query_word_list:
-			if time_to_break == 0:	break
+		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 			else:
 				origin = 0
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
-			time_to_break -=1
 		# softmax		
 		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
 	return 	embedded_query_expansion			

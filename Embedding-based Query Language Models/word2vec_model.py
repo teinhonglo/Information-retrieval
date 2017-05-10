@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-	def __init__(self, alpha = 30, c = 0.7):
+	def __init__(self, alpha = 50, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
 		self.vocabulary_length = len(self.word2vec.vocab)
 		first_word = self.word2vec.vocab.keys()[0]
@@ -33,9 +33,6 @@ class word2vec_model():
 			mean_vector += w2v[word]
 		mean_vector /= self.vocabulary_length
 		return mean_vector
-	
-	def getMeanVec(self):
-		return self.mean_vector
 
 	def sumOfTotalSimiliary(self, cur_set, collection):
 		'''
@@ -63,7 +60,7 @@ class word2vec_model():
 	def getWordSimilarity(self, w1_vec, w2_vec):
 		word2vec = self.word2vec
 		return self.sigmoid(1 - cosine(w1_vec, w2_vec))
-		
+	
 	def sigmoid(self, x):
 		gamma = self.alpha * (x - self.c)
 		# overflow
@@ -71,8 +68,14 @@ class word2vec_model():
 			return 1 - 1 / (1 + exp(gamma))
 		else:
 			return 1 / (1 + exp(-gamma))
-	
+		
+	def setAlpha(self, a):
+		self.alpha = a
+		
 	def getWord2Vec(self):
-		return self.word2vec
+		return self.word2vec	
+	
+	def getMeanVec(self):
+		return self.mean_vector	
 	
 
