@@ -8,10 +8,11 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-	def __init__(self, vocabulary_length = 22738, word_vec_length = 100, alpha = 50, c = 0.7):
+	def __init__(self, alpha = 30, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
-		self.vocabulary_length = vocabulary_length
-		self.word_vec_length = word_vec_length
+		self.vocabulary_length = len(self.word2vec.vocab)
+		first_word = self.word2vec.vocab.keys()[0]
+		self.word_vec_length = len(self.word2vec[first_word])
 		self.alpha = alpha
 		self.c = c
 		self.mean_vector = self.calcMeanVec()
@@ -36,10 +37,27 @@ class word2vec_model():
 	def getMeanVec(self):
 		return self.mean_vector
 
-	def sumOfTotalSimiliary(self, cur_word_vec, collection):
+	def sumOfTotalSimiliary(self, cur_set, collection):
+		'''
 		total_similiary = 0
 		for word_sq, word_sq_vec in collection.items():
 			total_similiary += self.sigmoid(1 - cosine(cur_word_vec, word_sq_vec))
+		'''
+		word_list = cur_set.keys()
+		word_pointer = 0
+		total_similiary = {}
+		cur_set_val = np.array(cur_set.values())
+		collection_val = np.array(collection.values())
+		# cross product
+		cosine_result = np.dot(cur_set_val, collection_val.T)
+		
+		for word_cosine_vector in cosine_result:
+			current_word_similiary = 0
+			for cosine_similiary in word_cosine_vector:
+				current_word_similiary += self.sigmoid(cosine_similiary)
+			total_similiary[word_list[word_pointer]] = current_word_similiary
+			word_pointer += 1
+			print word_pointer
 		return total_similiary
 	
 	def getWordSimilarity(self, w1_vec, w2_vec):
@@ -47,7 +65,12 @@ class word2vec_model():
 		return self.sigmoid(1 - cosine(w1_vec, w2_vec))
 		
 	def sigmoid(self, x):
-		return 1 / (1 + exp(-self.alpha * (x - self.c)))
+		gamma = self.alpha * (x - self.c)
+		# overflow
+		if gamma < 0:
+			return 1 - 1 / (1 + exp(gamma))
+		else:
+			return 1 / (1 + exp(-gamma))
 	
 	def getWord2Vec(self):
 		return self.word2vec

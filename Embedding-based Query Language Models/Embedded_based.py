@@ -8,7 +8,7 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 	
 	word2vec_wv = word2vec.getWord2Vec()
 	vocab = word2vec_wv.vocab
-	vocab_length = 100
+	vocab_length = len(word2vec_wv[vocab.keys()[0]])
 	query_embedded = {}
 	collection_total_similarity = {}
 	
@@ -25,6 +25,9 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 				collection[word] = np.random.rand(vocab_length) * 5 - 2.5
 				#collection[word] = word2vec.getMeanVec()
 				#collection.pop(word, None)
+				
+			collection[word] /= (collection[word] ** 2).sum(axis = 0)
+				
 		Pickle.dump(collection, open("model/collection_embedded.pkl", "wb"), True)
 	
 	# assign word vector to query embedded	
@@ -42,25 +45,20 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 						query_embedded[word] = np.random.rand(vocab_length) * 5 - 2.5
 						#query_embedded[word] = word2vec.getMeanVec()
 						#pass
+					query_embedded[word] /= (query_embedded[word] ** 2).sum(axis = 0) 	
 		Pickle.dump(query_embedded, open("model/query_embedded.pkl", "wb"), True)				
 	
 	if os.path.isfile("model/collection_total_similarity.pkl") == True: 
 		collection_total_similarity = Pickle.load(open("model/collection_total_similarity.pkl", "rb"))
 	else:
-		count_of_summation = 1		
 		# sum of total similarity, adding collection
-		for word, w_vec in collection.items():
-			print count_of_summation
-			collection_total_similarity[word] = word2vec.sumOfTotalSimiliary(w_vec, collection)
-			count_of_summation += 1
+		collection_total_similarity = word2vec.sumOfTotalSimiliary(collection, collection)
 
 		# sum of total similarity, adding query
-		for word, w_vec in query_embedded.items():
-			if word in collection:
-				continue
-			print count_of_summation	
-			collection_total_similarity[word] = word2vec.sumOfTotalSimiliary(w_vec, collection)
-			count_of_summation += 1
+		query_total_similarity = {}
+		query_total_similarity = word2vec.sumOfTotalSimiliary(query_embedded, collection)
+		for word, word_vec in query_total_similarity.items():
+			collection_total_similarity[word] = word_vec
 
 		Pickle.dump(collection_total_similarity, open("model/collection_total_similarity.pkl", "wb"), True)
 		

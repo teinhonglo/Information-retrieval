@@ -17,7 +17,7 @@ general_model = {}
 query = {}				# query
 query_lambda = 0.4
 doc_lambda = 0.8
-remove_list = ["collection_embedded.pkl", "query_embedded.pkl", "update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl"]
+remove_list = ["collection_embedded.pkl", "query_embedded.pkl", "update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_total_similarity.pkl"]
 
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/QUERY_WDID_NEW_middle"
@@ -61,14 +61,14 @@ for rm_file in remove_list:
 		os.remove("model/" + rm_file)
 		
 # Embedded Query Expansion
-m = 50
+m_list = np.linspace(20, 70, num=51)
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
 
 EQE1 = []
 EQE2 = []
-for interpolated_aplpha in interpolated_aplpha_list:
-	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha, m)
+for m in m_list:
+	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 0.5, m)
 	EQE1.append(tmp_eqe1)
 	EQE2.append(tmp_eqe2)
 

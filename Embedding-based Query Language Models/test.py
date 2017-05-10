@@ -1,9 +1,9 @@
 import word2vec_model
 import cPickle as Pickle
 
-word_model = word2vec_model.word2vec_model()
-#voca = word_model.vocab
-print word_model.getMeanVec()
+word_model = word2vec_model.word2vec_model().getWord2Vec()
+voca = word_model.vocab
+print len(word_model[voca.keys()[0]])
 '''
 with open("query_model_prev.pkl", "rb") as file:
 	query_model = Pickle.load(file)

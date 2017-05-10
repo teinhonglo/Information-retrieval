@@ -166,19 +166,24 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 			top_prob_dict = ProcDoc.softmax(top_prob_dict)
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
-			update_embedded_query_expansion[query] = top_prob_list[:m]
+			update_embedded_query_expansion[query] = top_prob_list
 		# storage update expansion	
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_ci.pkl", "wb"), True)
 	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
+		time_to_break = m
 		for update_word, update_count in update_query_word_list:
+			if time_to_break == 0: 	break
 			update = update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 			else:
 				origin = 0
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
+			time_to_break -=1
+		# softmax	
+		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
 	return 	embedded_query_expansion		
 	
 # Query-Independent Term Similarities
@@ -214,15 +219,21 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
 			# storage update query model value
-			update_embedded_query_expansion[query] = top_prob_list[:m]
+			update_embedded_query_expansion[query] = top_prob_list
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_qi.pkl", "wb"), True)	
+	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
+		time_to_break = m
 		for update_word, update_count in update_query_word_list:
+			if time_to_break == 0:	break
 			update = update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 			else:
 				origin = 0
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
+			time_to_break -=1
+		# softmax		
+		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
 	return 	embedded_query_expansion			
