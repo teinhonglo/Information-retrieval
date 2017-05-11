@@ -52,11 +52,11 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 		collection_total_similarity = Pickle.load(open("model/collection_total_similarity.pkl", "rb"))
 	else:
 		# sum of total similarity, adding collection
-		collection_total_similarity = word2vec.sumOfTotalSimiliary(collection, collection)
+		collection_total_similarity = word2vec.sumOfTotalSimilarity(collection, collection)
 
 		# sum of total similarity, adding query
 		query_total_similarity = {}
-		query_total_similarity = word2vec.sumOfTotalSimiliary(query_embedded, collection)
+		query_total_similarity = word2vec.sumOfTotalSimilarity(query_embedded, collection)
 		for word, word_vec in query_total_similarity.items():
 			collection_total_similarity[word] = word_vec
 

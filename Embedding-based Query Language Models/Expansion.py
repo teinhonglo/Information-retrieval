@@ -168,6 +168,26 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 			top_prob_dict = ProcDoc.softmax(top_prob_dict)
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+			'''
+			# divergence
+			cur_word = top_prob_list[0][0]
+			cur_word_similarity = top_prob_list[0][1]
+			top_prob_dict[cur_word] = cur_word_similarity * 1
+			for i in range(1, len(top_prob_list)):
+				cur_word = top_prob_list[i][0]
+				cur_word_similarity = top_prob_list[i][1]
+				max_similarity = 0
+				for word_sq, word_sq_similarity in top_prob_list[:i]:
+					cur_similarity = word2vec.getWordSimilarity(collection[cur_word], collection[word_sq])
+					if cur_similarity > max_similarity:
+						max_similarity = cur_similarity
+				top_prob_dict[cur_word]	= cur_word_similarity * ( 1 - max_similarity)
+				
+			# softmax
+			top_prob_dict = ProcDoc.softmax(top_prob_dict)
+			# sorted top_prob_dict by value(probability)
+			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)	
+			'''	
 			update_embedded_query_expansion[query] = top_prob_list
 		# storage update expansion	
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_ci.pkl", "wb"), True)
@@ -221,6 +241,25 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 			top_prob_dict = ProcDoc.softmax(top_prob_dict)
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+			'''
+			# divergence
+			cur_word = top_prob_list[0][0]
+			cur_word_similarity = top_prob_list[0][1]
+			top_prob_dict[cur_word] = cur_word_similarity * 1
+			for i in range(1, len(top_prob_list)):
+				cur_word = top_prob_list[i][0]
+				cur_word_similarity = top_prob_list[i][1]
+				max_similarity = 0
+				for word_sq, word_sq_similarity in top_prob_list[:i]:
+					cur_similarity = word2vec.getWordSimilarity(collection[cur_word], collection[word_sq])
+					if cur_similarity > max_similarity:
+						max_similarity = cur_similarity
+				top_prob_dict[cur_word]	= cur_word_similarity * ( 1 - max_similarity)
+			# softmax
+			top_prob_dict = ProcDoc.softmax(top_prob_dict)
+			# sorted top_prob_dict by value(probability)
+			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
+			'''
 			# storage update query model value
 			update_embedded_query_expansion[query] = top_prob_list
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_qi.pkl", "wb"), True)	
