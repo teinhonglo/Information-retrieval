@@ -36,9 +36,13 @@ class word2vec_model():
 
 	def sumOfTotalSimiliary(self, cur_set, collection):
 		'''
-		total_similiary = 0
-		for word_sq, word_sq_vec in collection.items():
-			total_similiary += self.sigmoid(1 - cosine(cur_word_vec, word_sq_vec))
+		# avoid memory error
+		total_similiary[word] = 0
+		for word, word_vec in cur_set.items():
+			total_similiary[word] = 0
+			for word_sq, word_sq_vec in collection.items():
+				total_similiary[word] += self.sigmoid(1 - cosine(cur_word_vec, word_sq_vec))
+		return total_similiary		
 		'''
 		word_list = cur_set.keys()
 		word_pointer = 0
