@@ -34,19 +34,25 @@ class word2vec_model():
 		mean_vector /= self.vocabulary_length
 		return mean_vector
 
-	def sumOfTotalSimiliary(self, cur_set, collection):
-		'''
+	def sumOfTotalSimilarity(self, cur_set, collection):
+		
 		# avoid memory error
-		total_similiary[word] = 0
-		for word, word_vec in cur_set.items():
-			total_similiary[word] = 0
-			for word_sq, word_sq_vec in collection.items():
-				total_similiary[word] += self.sigmoid(1 - cosine(cur_word_vec, word_sq_vec))
-		return total_similiary		
+		word_pointer = 0
+		total_similarity ={}
+		
+		for word, cur_word_vec in cur_set.items():
+			total_similarity[word] = 0
+			word_sq_vec = np.array(collection.values())
+			result = (cur_word_vec * word_sq_vec).sum(axis = 0)
+			for r in result:
+				total_similarity[word] += self.sigmoid(r)
+			word_pointer += 1
+			print word_pointer
+		return total_similarity		
 		'''
 		word_list = cur_set.keys()
 		word_pointer = 0
-		total_similiary = {}
+		total_similarity = {}
 		cur_set_val = np.array(cur_set.values())
 		collection_val = np.array(collection.values())
 		# cross product
@@ -56,14 +62,16 @@ class word2vec_model():
 			current_word_similiary = 0
 			for cosine_similiary in word_cosine_vector:
 				current_word_similiary += self.sigmoid(cosine_similiary)
-			total_similiary[word_list[word_pointer]] = current_word_similiary
+			total_similarity[word_list[word_pointer]] = current_word_similiary
 			word_pointer += 1
 			print word_pointer
-		return total_similiary
+			
+		return total_similarity
+		'''
 	
 	def getWordSimilarity(self, w1_vec, w2_vec):
 		word2vec = self.word2vec
-		return self.sigmoid(1 - cosine(w1_vec, w2_vec))
+		return self.sigmoid((w1_vec * w2_vec).sum(axis = 0))
 	
 	def sigmoid(self, x):
 		gamma = self.alpha * (x - self.c)
