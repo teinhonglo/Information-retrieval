@@ -62,14 +62,14 @@ for rm_file in remove_list:
 		
 # Embedded Query Expansion
 m_list = np.linspace(10, 80, num=71)
-m = 33
+m = 43
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
 
 EQE1 = []
 EQE2 = []
-for m in m_list:
-	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 0.5, int(m))
+for interpolated_aplpha in interpolated_aplpha_list:
+	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha, int(m))
 	EQE1.append(tmp_eqe1)
 	EQE2.append(tmp_eqe2)
 
@@ -119,5 +119,5 @@ for query_model in EQE2:
 		#query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
 	
 print np.argmax(np.array(mAP_list), axis = 0), mAP_list[np.argmax(np.array(mAP_list), axis = 0)]
-plot_diagram.plotList(m_list, mAP_list, "Query-Independent Term Similarities", "mAP")
+plot_diagram.plotList(interpolated_aplpha_list, mAP_list, "Query-Independent Term Similarities", "mAP")
 
