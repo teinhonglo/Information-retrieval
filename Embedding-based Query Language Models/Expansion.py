@@ -142,7 +142,6 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
 	embedded_query_expansion = query_model
 	
-	
 	update_embedded_query_expansion = {}
 	if os.path.isfile("model/update_embedded_query_expansion_ci.pkl") == True:
 		# check if a file exist

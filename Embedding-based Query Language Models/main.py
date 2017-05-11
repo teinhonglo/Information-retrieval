@@ -17,7 +17,7 @@ general_model = {}
 query = {}				# query
 query_lambda = 0.4
 doc_lambda = 0.8
-remove_list = ["collection_embedded.pkl", "query_embedded.pkl", "update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_total_similarity.pkl"]
+remove_list = ["collection_embedded.pkl", "query_embedded.pkl", "update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl"]
 
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/QUERY_WDID_NEW_middle"
@@ -65,7 +65,7 @@ m_list = np.linspace(10, 80, num=71)
 m = 43
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
-
+'''
 EQE1 = []
 EQE2 = []
 for interpolated_aplpha in interpolated_aplpha_list:
@@ -78,15 +78,15 @@ Pickle.dump(EQE2, open("model/eqe2_10.pkl", "wb"), True)
 '''
 EQE1 = Pickle.load(open("model/eqe1_10.pkl", "rb"))
 EQE2 = Pickle.load(open("model/eqe2_10.pkl", "rb"))
-'''
+
 # query process
 print "query ..."
 assessment = readAssessment.get_assessment()
 query_docs_point_fb = {}
 query_model_fb = {}
 mAP_list = []
-for query_model in EQE2:
-	for step in range(1):
+for query_model in [EQE2[5]]:
+	for step in range(15):
 		query_docs_point_dict = {}
 		AP = 0
 		mAP = 0
@@ -116,8 +116,8 @@ for query_model in EQE2:
 			query_docs_point_fb = dict(query_docs_point_dict)
 			query_model_fb = dict(query_model)
 			
-		#query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
+		query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
 	
 print np.argmax(np.array(mAP_list), axis = 0), mAP_list[np.argmax(np.array(mAP_list), axis = 0)]
-plot_diagram.plotList(interpolated_aplpha_list, mAP_list, "Query-Independent Term Similarities", "mAP")
+plot_diagram.plotList(range(15), mAP_list, "Query-Independent Term Similarities", "mAP")
 
