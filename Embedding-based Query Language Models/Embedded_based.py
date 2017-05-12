@@ -21,12 +21,14 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 		for word, count in collection.items():
 			if word in vocab:
 				collection[word] = word2vec_wv[word]
+				collection[word] = collection[word] / np.sqrt((collection[word] ** 2).sum(axis = 0))
 			else:
 				#collection[word] = np.random.rand(vocab_length) * 5 - 2.5
 				collection[word] = word2vec.getMeanVec()
+				print word
 				#collection.pop(word, None)
 				
-			collection[word] = collection[word] / np.sqrt((collection[word] ** 2).sum(axis = 0))
+			
 		Pickle.dump(collection, open("model/collection_embedded.pkl", "wb"), True)
 	
 	# assign word vector to query embedded	
@@ -39,12 +41,14 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 				if not word in query_embedded:
 					if word in vocab:
 						query_embedded[word] = word2vec_wv[word]
-						
+						query_embedded[word] = query_embedded[word] / np.sqrt((query_embedded[word] ** 2).sum(axis = 0))
 					else:
+						print word
+						raw_input()
 						#query_embedded[word] = np.random.rand(vocab_length) * 5 - 2.5
-						query_embedded[word] = word2vec.getMeanVec()
-						#pass
-					query_embedded[word] = query_embedded[word] / np.sqrt((query_embedded[word] ** 2).sum(axis = 0))
+						#query_embedded[word] = word2vec.getMeanVec()
+						pass
+					
 					
 		Pickle.dump(query_embedded, open("model/query_embedded.pkl", "wb"), True)				
 	

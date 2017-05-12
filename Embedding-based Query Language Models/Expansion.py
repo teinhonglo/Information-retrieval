@@ -188,6 +188,8 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)	
 			'''	
+			print top_prob_list[0]
+			raw_input()
 			update_embedded_query_expansion[query] = top_prob_list
 		# storage update expansion	
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_ci.pkl", "wb"), True)
@@ -197,7 +199,7 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
-			print update_word
+			print update_word, update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 				print "in"
@@ -263,6 +265,8 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
 			'''
+			print top_prob_list
+			raw_input()
 			# storage update query model value
 			update_embedded_query_expansion[query] = top_prob_list
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_qi.pkl", "wb"), True)	
@@ -272,7 +276,7 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
-			print update_word
+			print update_word, update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 				print "in"
