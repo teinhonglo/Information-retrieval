@@ -4,8 +4,9 @@ from scipy.spatial.distance import cosine
 
 word_model = word2vec_model.word2vec_model().getWord2Vec()
 voca = word_model.vocab
-print type(voca)
-word1 = word_model["30802"]
+print len(voca.keys())
+word1 = word_model["30319"]
+print word1
 word2 = word_model["3478"]
 print (word1 ** 2).sum(axis = 0)
 print (word1 * word2).sum(axis = 0)
