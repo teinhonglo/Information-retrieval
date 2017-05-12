@@ -1,9 +1,16 @@
 import word2vec_model
 import cPickle as Pickle
+from scipy.spatial.distance import cosine
 
 word_model = word2vec_model.word2vec_model().getWord2Vec()
 voca = word_model.vocab
-print len(word_model[voca.keys()[0]])
+print type(voca)
+word1 = word_model["30802"]
+word2 = word_model["3478"]
+print (word1 ** 2).sum(axis = 0)
+print (word1 * word2).sum(axis = 0)
+print cosine(word1, word2)
+
 '''
 with open("query_model_prev.pkl", "rb") as file:
 	query_model = Pickle.load(file)

@@ -35,7 +35,7 @@ class word2vec_model():
 		return mean_vector
 
 	def sumOfTotalSimilarity(self, cur_set, collection):
-		
+		'''
 		# avoid memory error
 		word_pointer = 0
 		total_similarity ={}
@@ -50,6 +50,7 @@ class word2vec_model():
 			print word_pointer
 		return total_similarity		
 		'''
+		
 		word_list = cur_set.keys()
 		word_pointer = 0
 		total_similarity = {}
@@ -67,14 +68,14 @@ class word2vec_model():
 			print word_pointer
 			
 		return total_similarity
-		'''
+		
 	
 	def getWordSimilarity(self, w1_vec, w2_vec):
 		word2vec = self.word2vec
 		return self.sigmoid((w1_vec * w2_vec).sum(axis = 0))
 	
 	def sigmoid(self, x):
-		gamma = self.alpha * (x - self.c)
+		gamma = -self.alpha * (x - self.c)
 		# overflow
 		if gamma < 0:
 			return 1 - 1 / (1 + exp(gamma))
