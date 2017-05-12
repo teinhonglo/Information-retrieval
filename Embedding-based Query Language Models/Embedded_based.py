@@ -22,12 +22,11 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 			if word in vocab:
 				collection[word] = word2vec_wv[word]
 			else:
-				collection[word] = np.random.rand(vocab_length) * 5 - 2.5
-				#collection[word] = word2vec.getMeanVec()
+				#collection[word] = np.random.rand(vocab_length) * 5 - 2.5
+				collection[word] = word2vec.getMeanVec()
 				#collection.pop(word, None)
 				
-			collection[word] /= np.sqrt((collection[word] ** 2).sum(axis = 0))
-				
+			collection[word] = collection[word] / np.sqrt((collection[word] ** 2).sum(axis = 0))
 		Pickle.dump(collection, open("model/collection_embedded.pkl", "wb"), True)
 	
 	# assign word vector to query embedded	
@@ -42,10 +41,11 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 						query_embedded[word] = word2vec_wv[word]
 						
 					else:
-						query_embedded[word] = np.random.rand(vocab_length) * 5 - 2.5
-						#query_embedded[word] = word2vec.getMeanVec()
+						#query_embedded[word] = np.random.rand(vocab_length) * 5 - 2.5
+						query_embedded[word] = word2vec.getMeanVec()
 						#pass
-					query_embedded[word] /= np.sqrt((query_embedded[word] ** 2).sum(axis = 0))
+					query_embedded[word] = query_embedded[word] / np.sqrt((query_embedded[word] ** 2).sum(axis = 0))
+					
 		Pickle.dump(query_embedded, open("model/query_embedded.pkl", "wb"), True)				
 	
 	if os.path.isfile("model/collection_total_similarity.pkl") == True: 
