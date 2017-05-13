@@ -156,11 +156,8 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 				p_w_q = total_probability				# p(w|q)
 				# total probability theory(for every query term)
 				for query_term in query_word_count_dict.keys():
-					'''
 					if query_term in query_embedded:
 						cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
-					'''	
-					cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
 					p_w_q *= (cur_word_similarity / total_probability)
 				# storage probability
 				top_prob_dict[word] = p_w_q
@@ -188,8 +185,6 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)	
 			'''	
-			print top_prob_list[0]
-			raw_input()
 			update_embedded_query_expansion[query] = top_prob_list
 		# storage update expansion	
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_ci.pkl", "wb"), True)
@@ -199,12 +194,14 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
-			print update_word, update_count
+			'''
+			from pprint import pprint
+			pprint(update_query_word_list[:m])
+			'''
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
-				print "in"
-				raw_input()
-				
+
+			#raw_input()
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
 			
 		# softmax	
@@ -232,13 +229,11 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 				# p(w|q)
 				p_w_q = 0
 				for word_sq, word_sq_count in query_word_count_dict.items():
-					total_probability = collection_total_similarity[word_sq]
-					'''
 					if word_sq in query_embedded:
+						total_probability = collection_total_similarity[word_sq]
 						cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
-					'''	
-					cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
-					p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
+				
+				p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
 				
 				# storage probability
 				top_prob_dict[word] = p_w_q
@@ -265,8 +260,6 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 			# sorted top_prob_dict by value(probability)
 			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
 			'''
-			print top_prob_list
-			raw_input()
 			# storage update query model value
 			update_embedded_query_expansion[query] = top_prob_list
 		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_qi.pkl", "wb"), True)	
@@ -276,12 +269,12 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
-			print update_word, update_count
+			
+			#print update_word, update_count
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
-				print "in"
-				raw_input()
 				
+			#raw_input = ()	
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
 		# softmax		
 		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	

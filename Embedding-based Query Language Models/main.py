@@ -65,7 +65,7 @@ m_list = np.linspace(10, 80, num=71)
 m = 43
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
-
+'''
 EQE1 = []
 EQE2 = []
 for m in m_list:
@@ -78,7 +78,7 @@ Pickle.dump(EQE2, open("model/eqe2_10.pkl", "wb"), True)
 '''
 EQE1 = Pickle.load(open("model/eqe1_10.pkl", "rb"))
 EQE2 = Pickle.load(open("model/eqe2_10.pkl", "rb"))
-'''
+
 # query process
 print "query ..."
 assessment = readAssessment.get_assessment()
