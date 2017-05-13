@@ -74,7 +74,7 @@ class word2vec_model():
 		return self.sigmoid(1 - cosine(w1_vec, w2_vec))
 	
 	def sigmoid(self, x):
-		gamma = -self.alpha * (x - self.c)
+		gamma = self.alpha * (x - self.c)
 		# overflow
 		if gamma < 0:
 			return 1 - 1 / (1 + exp(gamma))

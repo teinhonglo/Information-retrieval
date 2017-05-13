@@ -24,9 +24,8 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 				collection[word] = collection[word] / np.sqrt((collection[word] ** 2).sum(axis = 0))
 			else:
 				#collection[word] = np.random.rand(vocab_length) * 5 - 2.5
-				collection[word] = word2vec.getMeanVec()
-				print word
-				#collection.pop(word, None)
+				#collection[word] = word2vec.getMeanVec()
+				collection.pop(word, None)
 				
 			
 		Pickle.dump(collection, open("model/collection_embedded.pkl", "wb"), True)
@@ -43,8 +42,6 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
 						query_embedded[word] = word2vec_wv[word]
 						query_embedded[word] = query_embedded[word] / np.sqrt((query_embedded[word] ** 2).sum(axis = 0))
 					else:
-						print word
-						raw_input()
 						#query_embedded[word] = np.random.rand(vocab_length) * 5 - 2.5
 						#query_embedded[word] = word2vec.getMeanVec()
 						pass
