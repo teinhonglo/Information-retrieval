@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-	def __init__(self, alpha = 20, c = 0.7):
+	def __init__(self, alpha = 10, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
 		self.vocabulary_length = len(self.word2vec.vocab)
 		first_word = self.word2vec.vocab.keys()[0]
@@ -43,9 +43,9 @@ class word2vec_model():
 		for word, cur_word_vec in cur_set.items():
 			total_similarity[word] = 0
 			word_sq_vec = np.array(collection.values())
-			result = (cur_word_vec * word_sq_vec).sum(axis = 0)
-			for r in result:
-				total_similarity[word] += self.sigmoid(r)
+			cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 0)
+			for cosine_result in cosine_vectors:
+				total_similarity[word] += self.sigmoid(cosine_result)
 			word_pointer += 1
 			print word_pointer
 		return total_similarity		
@@ -70,8 +70,8 @@ class word2vec_model():
 		'''
 	
 	def getWordSimilarity(self, w1_vec, w2_vec):
-		word2vec = self.word2vec
-		return self.sigmoid(1 - cosine(w1_vec, w2_vec))
+		cosine_result = (w1_vec* w2_vec).sum(axis = 0)
+		return self.sigmoid(cosine_result)
 	
 	def sigmoid(self, x):
 		gamma = self.alpha * (x - self.c)
