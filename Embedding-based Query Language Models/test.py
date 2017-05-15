@@ -1,23 +1,9 @@
 import word2vec_model
 import cPickle as Pickle
-from scipy.spatial.distance import cosine
-import numpy as np
-import timeit
 
-word_model = word2vec_model.word2vec_model()
-word_vec = word_model.getWord2Vec()
-word = word_vec["3478"]
-w_vec = word / np.sqrt((word ** 2).sum(axis = 0))
-word *= -1
-inv_vec = word / np.sqrt((word ** 2).sum(axis = 0))
-print inv_vec
-print 1-cosine(w_vec, inv_vec)
-print (w_vec * inv_vec).sum(axis = 0)
-
-print word_model.getWordSimilarity(w_vec, inv_vec)
-stop = timeit.default_timer()
-
-
+word_model = word2vec_model.word2vec_model().getWord2Vec()
+voca = word_model.vocab
+print len(word_model[voca.keys()[0]])
 '''
 with open("query_model_prev.pkl", "rb") as file:
 	query_model = Pickle.load(file)
