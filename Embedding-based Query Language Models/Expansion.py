@@ -200,7 +200,7 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 
-			#raw_input()
+			raw_input()
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
 		from pprint import pprint
 		pprint(update_query_word_list[:m])	
@@ -274,7 +274,7 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
 
-			#raw_input()
+			raw_input()
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
 		from pprint import pprint
 		pprint(update_query_word_list[:m])	

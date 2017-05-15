@@ -47,7 +47,7 @@ class word2vec_model():
 			for cosine_result in cosine_vectors:
 				total_similarity[word] += self.sigmoid(cosine_result)
 			word_pointer += 1
-			print word_pointer
+			#print word_pointer
 		return total_similarity		
 		'''
 		word_list = cur_set.keys()
