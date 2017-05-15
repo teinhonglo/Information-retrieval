@@ -17,7 +17,7 @@ general_model = {}
 query = {}				# query
 query_lambda = 0.4
 doc_lambda = 0.8
-remove_list = []#["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
+remove_list = []# ["collection_embedded.pkl", "query_embedded.pkl", "update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_total_similarity.pkl"]
 
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/QUERY_WDID_NEW_middle"
@@ -62,7 +62,7 @@ for rm_file in remove_list:
 		
 # Embedded Query Expansion
 m_list = np.linspace(10, 80, num=71)
-m = 43
+m = 33
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
 

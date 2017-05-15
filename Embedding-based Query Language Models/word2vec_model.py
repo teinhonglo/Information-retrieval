@@ -36,7 +36,7 @@ class word2vec_model():
 
 	def sumOfTotalSimilarity(self, cur_set, collection):
 		# avoid memory error
-		#word_pointer = 0
+		word_pointer = 0
 		total_similarity ={}
 		
 		for word, cur_word_vec in cur_set.items():
@@ -45,8 +45,8 @@ class word2vec_model():
 			cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 1)
 			for cosine_result in cosine_vectors:
 				total_similarity[word] += self.sigmoid(cosine_result)
-			#word_pointer += 1
-			#print word_pointer
+			word_pointer += 1
+			print word_pointer
 		return total_similarity		
 	
 	def getWordSimilarity(self, w1_vec, w2_vec):
