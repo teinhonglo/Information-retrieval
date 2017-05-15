@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-	def __init__(self, alpha = 10, c = 0.7):
+	def __init__(self, alpha = 50, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
 		self.vocabulary_length = len(self.word2vec.vocab)
 		first_word = self.word2vec.vocab.keys()[0]
@@ -35,51 +35,27 @@ class word2vec_model():
 		return mean_vector
 
 	def sumOfTotalSimilarity(self, cur_set, collection):
-		
 		# avoid memory error
-		word_pointer = 0
+		#word_pointer = 0
 		total_similarity ={}
 		
 		for word, cur_word_vec in cur_set.items():
 			total_similarity[word] = 0
 			word_sq_vec = np.array(collection.values())
-			cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 0)
+			cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 1)
 			for cosine_result in cosine_vectors:
 				total_similarity[word] += self.sigmoid(cosine_result)
-			word_pointer += 1
+			#word_pointer += 1
 			#print word_pointer
 		return total_similarity		
-		'''
-		word_list = cur_set.keys()
-		word_pointer = 0
-		total_similarity = {}
-		cur_set_val = np.array(cur_set.values())
-		collection_val = np.array(collection.values())
-		# cross product
-		cosine_result = np.dot(cur_set_val, collection_val.T)
-		
-		for word_cosine_vector in cosine_result:
-			current_word_similiary = 0
-			for cosine_similiary in word_cosine_vector:
-				current_word_similiary += self.sigmoid(cosine_similiary)
-			total_similarity[word_list[word_pointer]] = current_word_similiary
-			word_pointer += 1
-			print word_pointer
-			
-		return total_similarity
-		'''
 	
 	def getWordSimilarity(self, w1_vec, w2_vec):
 		cosine_result = (w1_vec* w2_vec).sum(axis = 0)
 		return self.sigmoid(cosine_result)
 	
 	def sigmoid(self, x):
-		gamma = self.alpha * (x - self.c)
-		# overflow
-		if gamma < 0:
-			return 1 - 1 / (1 + exp(gamma))
-		else:
-			return 1 / (1 + exp(-gamma))
+		gamma = -self.alpha * (x - self.c)
+		return 1 / (1 + exp(gamma))
 		
 	def setAlpha(self, a):
 		self.alpha = a
