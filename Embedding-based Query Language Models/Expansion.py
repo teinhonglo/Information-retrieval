@@ -6,6 +6,7 @@ import cPickle as Pickle
 import operator
 import copy
 import os.path
+import visualization
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
@@ -172,6 +173,8 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
+		if os.path.isfile("visual/" + update_query + "_ci.png") == False:
+			visualization.visualization(collection, update_query_word_list, update_query + "_ci.png")
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
@@ -222,6 +225,8 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 	
 	# update query model	
 	for update_query, update_query_word_list in update_embedded_query_expansion.items():
+		if os.path.isfile("visual/" + update_query + "_qi.png") == False:
+			visualization.visualization(collection, update_query_word_list, update_query + "_qi.png")
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
