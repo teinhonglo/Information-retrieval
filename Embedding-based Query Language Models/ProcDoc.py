@@ -135,7 +135,6 @@ def modeling(topic_wordprob_dict, background_model, alpha):
 		for word in wordprob.keys():
 			word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
 		modeling_dict[topic] = dict(word_model)
-	modeling_dict = collections.OrderedDict(sorted(modeling_dict.items()))		
 	return modeling_dict
 
 # word count
