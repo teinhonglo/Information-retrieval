@@ -7,6 +7,7 @@ import numpy as np
 import readAssessment
 import ProcDoc
 import Expansion
+import cPickle as Pickle
 import plot_diagram
 
 data = {}				# content of document (doc, content)
@@ -85,8 +86,12 @@ for step in range(15):
 	print "mAP"
 	print mAP
 	if step < 1:
-		query_docs_point_fb = dict(query_docs_point_dict)
-		query_model_fb = dict(query_model)
+		# save one shot result
+		Pickle.dump(query_model, open("query_model.pkl", "wb"), True)
+		Pickle.dump(query_docs_point_dict, open("query_docs_point_dict.pkl", "wb"), True)
+		# save load shot result
+	query_docs_point_fb = Pickle.load(open("query_docs_point_dict.pkl", "rb"))
+	query_model_fb = Pickle.load(open("query_model.pkl", "rb"))
 	
 	query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
 plot_diagram.plotList(mAP_list)
