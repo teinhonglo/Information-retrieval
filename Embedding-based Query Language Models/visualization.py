@@ -46,7 +46,7 @@ def visualization(collection, similiarity, filename):
 	
 	for label, x, y in zip(vocabulary, Y[:, 0], Y[:, 1]):
 		plt.annotate(label, xy=(x, y), xytext=(0, 0), textcoords='offset points')
-	plt.savefig("visual/" + filename, format='png')
+	plt.savefig(filename, format='png')
 	plt.close()
 	
 def load_embeddings(word_model):
