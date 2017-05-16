@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import ProcDoc
 import operator
+import cPickle as Pickle
 
 def plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc_unigram):
 	
@@ -54,4 +55,40 @@ def plotList(x_axis, objList, title, curve):
 	plt.title(title)
 	plt.show()
 	#r = raw_input()
+
+def main():
+	a_list = np.linspace(10, 50, num=5)
+	m_list = np.linspace(10, 80, num=71)
+	line_style = ["g", "r", "y", "c", "m"]
+	eqe1 = []
+	eqe2 = []
+	for a in a_list:
+		with open("model/mAP_list_a" + str(int(a)) + "_EQE1.pkl", "rb") as file:
+			eqe1.append(Pickle.load(file))
+		with open("model/mAP_list_a" + str(int(a)) + "_EQE2.pkl", "rb") as file:
+			eqe2.append(Pickle.load(file))
+			
+	plt.figure(8)
+	plt.title("Conditional Independence of Query Terms")
+	plt.xlabel("m")
+	plt.ylabel("mAP")
+	for a_val in a_list:
+		a_idx = int(a_val / 10 - 1)
+		plt.plot(m_list, eqe1[a_idx], line_style[a_idx], label = "a = " + str(a_val))
+	plt.legend(loc='upper right')	
+	plt.show()
+	
+	plt.figure(9)	
+	plt.title("Query-Independent Term Similarities")
+	plt.xlabel("m")
+	plt.ylabel("mAP")
+	for	a_val in a_list:
+		a_idx = int(a_val / 10 - 1)
+		plt.plot(m_list, eqe2[a_idx], line_style[a_idx], label = "a = " + str(a_val))
+	plt.legend(loc='upper right')	
+	plt.show()	
+	
+	
+if __name__ == "__main__":
+	main()
 	

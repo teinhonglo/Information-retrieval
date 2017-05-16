@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-	def __init__(self, alpha = 10, c = 0.7):
+	def __init__(self, alpha = 50, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
 		self.vocabulary_length = len(self.word2vec.vocab)
 		first_word = self.word2vec.vocab.keys()[0]
