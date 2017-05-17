@@ -160,7 +160,7 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 				for query_term in query_word_count_dict.keys():
 					if query_term in query_embedded:
 						cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
-					p_w_q *= (cur_word_similarity / total_probability)
+						p_w_q *= (cur_word_similarity / total_probability)
 				# storage probability
 				top_prob_dict[word] = p_w_q
 			# softmax
@@ -212,7 +212,7 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 					total_probability = collection_total_similarity[word_sq]
 					if word_sq in query_embedded:
 						cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
-					p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
+						p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
 				
 				# storage probability
 				top_prob_dict[word] = p_w_q
