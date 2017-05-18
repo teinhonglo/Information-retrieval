@@ -1,39 +1,49 @@
 import word2vec_model
 import cPickle as Pickle
+import plot_diagram
+import operator
+import numpy as np
 
-word_model = word2vec_model.word2vec_model().getWord2Vec()
-voca = word_model.vocab
-print len(word_model[voca.keys()[0]])
-'''
-with open("query_model_prev.pkl", "rb") as file:
-	query_model = Pickle.load(file)
-#print (query_model)	
+word_model = word2vec_model.word2vec_model()
+wv = word_model.getWord2Vec()
+vocab = wv.vocab
+w1 = vocab.keys()[0]
+word_sim_dict = {}
 
-query_model_aft = {}
-with open("query_model_aft.pkl", "rb") as file:
-	query_model_aft = Pickle.load(file)
-#print (query_model_aft)
+for v in vocab:
+	word_sim_dict[v] = word_model.getWordSimilarity(wv[w1] / np.sqrt((wv[w1] ** 2 ).sum(axis = 0)), wv[v] / np.sqrt((wv[v] ** 2 ).sum(axis = 0)))
+word_list = sorted(word_sim_dict.items(), key=operator.itemgetter(1), reverse = True)
+word_rank = [i[1] for i in word_list]
 
-for q_key, q_wordcount in query_model.items():
-	for word, count in q_wordcount.items():
-		if query_model[q_key][word] != query_model_aft[q_key][word]:
-			print q_key, word
-			print query_model[q_key][word], query_model_aft[q_key][word]
-			print "False"
-			
-doc_model = {}
-with open("doc_unigram_prev.pkl", "rb") as file:
-	doc_model = Pickle.load(file)
-#print (query_model)	
+import matplotlib.pyplot as plt
+plt.figure(8)
+plt.plot(range(1000), word_rank[:1000],label = "a = 50")
 
-doc_model_aft = {}
-with open("doc_unigram_prev.pkl", "rb") as file:
-	doc_model_aft = Pickle.load(file)
-#print (query_model_aft)
+word_model.setAlpha(20)
+for v in vocab:
+	word_sim_dict[v] = word_model.getWordSimilarity(wv[w1] / np.sqrt((wv[w1] ** 2 ).sum(axis = 0)), wv[v] / np.sqrt((wv[v] ** 2 ).sum(axis = 0)))
+word_list = sorted(word_sim_dict.items(), key=operator.itemgetter(1), reverse = True)
+word_rank = [i[1] for i in word_list]
 
-for d_key, d_wordcount in doc_model.items():
-	for word, count in d_wordcount.items():
-		if doc_model[d_key][word] != doc_model_aft[d_key][word]:
-			print d_key, word
-			print "False"			
-'''			
+plt.plot(range(1000), word_rank[:1000],label = "a = 20")
+
+word_model.setAlpha(10)
+for v in vocab:
+	word_sim_dict[v] = word_model.getWordSimilarity(wv[w1] / np.sqrt((wv[w1] ** 2 ).sum(axis = 0)), wv[v] / np.sqrt((wv[v] ** 2 ).sum(axis = 0)))
+word_list = sorted(word_sim_dict.items(), key=operator.itemgetter(1), reverse = True)
+word_rank = [i[1] for i in word_list]
+
+plt.plot(range(1000), word_rank[:1000],label = "a = 10")
+
+for v in vocab:
+	word_sim_dict[v] = word_model.getWordSimilarityCosine(wv[w1] / np.sqrt((wv[w1] ** 2 ).sum(axis = 0)), wv[v] / np.sqrt((wv[v] ** 2 ).sum(axis = 0)))
+word_list = sorted(word_sim_dict.items(), key=operator.itemgetter(1), reverse = True)
+word_rank = [i[1] for i in word_list]
+
+plt.plot(range(1000), word_rank[:1000],label = "cosine_measure")
+
+plt.title('Similiarity')
+plt.legend(loc='upper left')
+plt.title("Word " + w1)
+plt.show()
+

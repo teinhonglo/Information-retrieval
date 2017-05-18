@@ -50,6 +50,10 @@ class word2vec_model():
 		cosine_result = (w1_vec* w2_vec).sum(axis = 0)
 		return self.sigmoid(cosine_result)
 	
+	def getWordSimilarityCosine(self, w1_vec, w2_vec):
+		cosine_result = (w1_vec* w2_vec).sum(axis = 0)
+		return cosine_result
+	
 	def sigmoid(self, x):
 		gamma = -self.alpha * (x - self.c)
 		return 1 / (1 + exp(gamma))

@@ -115,7 +115,7 @@ for query_model in EQE2:
 		mAP_list.append(mAP)
 		print "mAP"
 		print mAP
-		'''
+		
 		if step < 1:
 			# save one shot result
 			Pickle.dump(query_model, open("model/query_model.pkl", "wb"), True)
@@ -125,7 +125,6 @@ for query_model in EQE2:
 		query_model_fb = Pickle.load(open("model/query_model.pkl", "rb"))
 			
 		query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
-		'''
 	
 print np.argmax(np.array(mAP_list), axis = 0), mAP_list[np.argmax(np.array(mAP_list), axis = 0)]
 plot_diagram.plotList(interpolated_aplpha_list, mAP_list, "Query-Independent Term Similarities", "mAP")

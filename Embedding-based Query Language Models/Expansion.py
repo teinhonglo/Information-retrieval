@@ -95,8 +95,8 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
         feedback_doc_wc = {}
         # Extract feedback document 
         for doc_name, point in docs_point_list[0:topN]:
-            feedback_doc[doc_name] = doc_unigram[doc_name]
-            feedback_doc_wc[doc_name] = doc_wordcount[doc_name]
+            feedback_doc[doc_name] = copy.deepcopy(doc_unigram[doc_name])
+            feedback_doc_wc[doc_name] = copy.deepcopy(doc_wordcount[doc_name])
         # generate specific model    
         specific_model = specific_modeling(dict(feedback_doc))
         # generate significant model
@@ -160,7 +160,7 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 				for query_term in query_word_count_dict.keys():
 					if query_term in query_embedded:
 						cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
-						p_w_q *= (cur_word_similarity / total_probability)
+						p_w_q * = (cur_word_similarity / total_probability)
 				# storage probability
 				top_prob_dict[word] = p_w_q
 			# softmax
