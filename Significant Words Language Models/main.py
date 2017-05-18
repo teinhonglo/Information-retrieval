@@ -93,6 +93,6 @@ for step in range(15):
 	query_docs_point_fb = Pickle.load(open("query_docs_point_dict.pkl", "rb"))
 	query_model_fb = Pickle.load(open("query_model.pkl", "rb"))
 	
-	query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
+	query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, doc_unigram, doc_wordcount, general_model, background_model, step + 1)
 plot_diagram.plotList(mAP_list)
 	
