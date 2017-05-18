@@ -6,6 +6,7 @@ import cPickle as Pickle
 import operator
 import copy
 import os.path
+import copy
 import visualization
 
 def specific_modeling(feedback_doc):
@@ -95,8 +96,8 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
         feedback_doc_wc = {}
         # Extract feedback document 
         for doc_name, point in docs_point_list[0:topN]:
-            feedback_doc[doc_name] = doc_unigram[doc_name]
-            feedback_doc_wc[doc_name] = doc_wordcount[doc_name]
+            feedback_doc[doc_name] = copy.deepcopy(doc_unigram[doc_name])
+            feedback_doc_wc[doc_name] = copy.deepcopy(doc_wordcount[doc_name])
         # generate specific model    
         specific_model = specific_modeling(dict(feedback_doc))
         # generate significant model
@@ -155,12 +156,14 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 			# calculate every word in collection
 			for word in collection.keys():
 				total_probability = collection_total_similarity[word]
-				p_w_q = total_probability				# p(w|q)
-				# total probability theory(for every query term)
-				for query_term in query_word_count_dict.keys():
-					if query_term in query_embedded:
-						cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
-						p_w_q *= (cur_word_similarity / total_probability)
+				p_w_q = 0
+				if not word in query_word_count_dict:
+					p_w_q = total_probability				# p(w|q)
+					# total probability theory(for every query term)
+					for query_term in query_word_count_dict.keys():
+						if query_term in query_embedded:
+							cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
+							p_w_q *= (cur_word_similarity / total_probability)
 				# storage probability
 				top_prob_dict[word] = p_w_q
 			# softmax
@@ -208,11 +211,12 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 				query_length = ProcDoc.word_sum(query_word_count_dict) * 1.0
 				# p(w|q)
 				p_w_q = 0
-				for word_sq, word_sq_count in query_word_count_dict.items():
-					total_probability = collection_total_similarity[word_sq]
-					if word_sq in query_embedded:
-						cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
-						p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
+				if not word in query_word_count_dict:
+					for word_sq, word_sq_count in query_word_count_dict.items():
+						total_probability = collection_total_similarity[word_sq]
+						if word_sq in query_embedded:
+							cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
+							p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
 				
 				# storage probability
 				top_prob_dict[word] = p_w_q

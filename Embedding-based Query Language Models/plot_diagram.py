@@ -49,16 +49,18 @@ def plotList(x_axis, objList, title, curve):
 	draw_list = np.array(objList)
 	maxVal = 1.0 * draw_list.max(axis = 0)
 	plt.figure(8)
-	plt.plot(x_axis, objList,label = curve)
+	plt.plot(x_axis, objList)
 	plt.title('Loss')
 	plt.legend(loc='upper left')
+	plt.xlabel("Interploated alpha")
+	plt.ylabel("mAP")
 	plt.title(title)
 	plt.show()
 	#r = raw_input()
 
 def main():
 	a_list = np.linspace(10, 50, num=5)
-	m_list = np.linspace(10, 80, num=71)
+	m_list = np.linspace(0, 80, num=81)
 	line_style = ["g", "r", "y", "c", "m"]
 	eqe1 = []
 	eqe2 = []
