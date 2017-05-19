@@ -68,8 +68,8 @@ word2vec = word2vec_model.word2vec_model()
 
 EQE1 = []
 EQE2 = []
-for interpolated_aplpha in interpolated_aplpha_list:
-	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha, int(m))
+for m in m_list:
+	[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 0.5, int(m))
 	tmp_eqe1 = ProcDoc.modeling(tmp_eqe1, background_model, query_lambda)
 	tmp_eqe2 = ProcDoc.modeling(tmp_eqe2, background_model, query_lambda)
 	EQE1.append(tmp_eqe1)
