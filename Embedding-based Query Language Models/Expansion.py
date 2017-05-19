@@ -179,14 +179,19 @@ def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, col
 		filepath = "visual/" + update_query + "_ci.png"
 		if os.path.isfile(filepath) == False:
 			visualization.visualization(collection, update_query_word_list, filepath)
+			
 		for update_word, update_count in update_query_word_list[:m]:
 			update = update_count
 			origin = 0
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
+				query_model[update_query].pop(update_word, None)
 				
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
-			
+		
+		for un_changed_word in query_model[update_query].keys():
+			embedded_query_expansion[update_query][un_changed_word] *= interpolated_aplpha
+		
 		# softmax	
 		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
 	return 	embedded_query_expansion		
@@ -238,8 +243,12 @@ def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, col
 			origin = 0
 			if update_word in query_model[update_query]:
 				origin = query_model[update_query][update_word]
+				query_model[update_query].pop(update_word, None)
 				
 			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
+			
+		for un_changed_word in query_model[update_query].keys():
+			embedded_query_expansion[update_query][un_changed_word] *= interpolated_aplpha	
 		# softmax		
 		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
 	return 	embedded_query_expansion			
