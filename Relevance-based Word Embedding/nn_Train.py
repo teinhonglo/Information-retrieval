@@ -27,8 +27,8 @@ from keras.layers.core import Dense, Activation
 print 'Building a model whose optimizer=adam, activation function=softplus'
 model = Sequential()
 model.add(Dense(embedding_dimensionality, input_dim = vocabulary_size))
-model.add(Activation('softmax'))
 model.add(Dense(vocabulary_size))
+model.add(Activation('softmax'))
 
 ''' Setting optimizer as Adam '''
 from keras.optimizers import Adam
