@@ -17,7 +17,7 @@ general_model = {}
 query = {}				# query
 query_lambda = 0.4
 doc_lambda = 0.8
-remove_list = []#["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
+remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
 
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/QUERY_WDID_NEW_middle"
@@ -65,7 +65,7 @@ m_list = np.linspace(0, 80, num=81)
 m = 1
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
-
+'''
 EQE1 = []
 EQE2 = []
 for m in m_list:
@@ -81,15 +81,15 @@ Pickle.dump(EQE2, open("model/eqe2_10.pkl", "wb"), True)
 
 EQE1 = Pickle.load(open("model/eqe1_10.pkl", "rb"))
 EQE2 = Pickle.load(open("model/eqe2_10.pkl", "rb"))
-'''
+
 # query process
 print "query ..."
 assessment = readAssessment.get_assessment()
 query_docs_point_fb = {}
 query_model_fb = {}
 mAP_list = []
-for query_model in EQE1:
-	for step in range(1):
+for query_model in [EQE2[23]]:
+	for step in range(15):
 		query_docs_point_dict = {}
 		AP = 0
 		mAP = 0
@@ -115,7 +115,7 @@ for query_model in EQE1:
 		mAP_list.append(mAP)
 		print "mAP"
 		print mAP
-		'''
+		
 		if step < 1:
 			# save one shot result
 			Pickle.dump(query_model, open("model/query_model.pkl", "wb"), True)
@@ -125,7 +125,7 @@ for query_model in EQE1:
 		query_model_fb = Pickle.load(open("model/query_model.pkl", "rb"))
 			
 		query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
-		'''
+		
 	
 print np.argmax(np.array(mAP_list), axis = 0), mAP_list[np.argmax(np.array(mAP_list), axis = 0)]
 plot_diagram.plotList(interpolated_aplpha_list, mAP_list, "Conditional Independence of Query Terms", "mAP")
