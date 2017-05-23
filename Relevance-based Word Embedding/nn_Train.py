@@ -10,8 +10,8 @@ Y_train = query_relevance
 
 ''' set the size of mini-batch and number of epochs'''
 batch_size = 16
-nb_epoch = 30
-embedding_dimensionality = 300
+nb_epoch = 50
+embedding_dimensionality = 350
 vocabulary_size = 51253
 
 ''' Import keras to build a DL model '''

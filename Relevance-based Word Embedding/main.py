@@ -9,9 +9,9 @@ rel_qry_lambda = 0.
 qry_lambda = 0.1
 doc_lambda = 0.8
 
-query_model = Pickle.load(open("query_model.pkl", "rb"))
-rel_query_model = Pickle.load(open("relevance.pkl", "rb"))
-query_list = Pickle.load(open("q_list.pkl", "rb"))
+query_model = Pickle.load(open("test_query_model.pkl", "rb"))
+rel_query_model = Pickle.load(open("query_relevance_model_RLE.pkl", "rb"))
+query_list = Pickle.load(open("test_query_list.pkl", "rb"))
 print query_model.shape
 
 doc_model = Pickle.load(open("doc_model.pkl", "rb"))
@@ -34,7 +34,7 @@ query_bg_list = []
 doc_model = np.log(doc_model)	
 
 for rel_qry_lambda in np.linspace(0, 1.0, num=11):
-	query_model = Pickle.load(open("query_model.pkl", "rb"))
+	query_model = Pickle.load(open("test_query_model.pkl", "rb"))
 	''' query smoothing '''	
 	for qry_idx in range(query_model.shape[0]):
 		qry_vec = query_model[qry_idx]
