@@ -5,7 +5,7 @@ from collections import defaultdict
 
 class evaluate_model():
 	def __init__(self):
-		self.assessmentTraingSet_path = "../Corpus/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+		self.assessmentTraingSet_path = "../Corpus/AssessmentTrainSet/AssessmentTrainSet.txt"
 		self.assessment = self.get_assessment()
 		
 	def get_assessment(self):
@@ -16,9 +16,13 @@ class evaluate_model():
 			title = ""
 			for line in file.readlines():
 				result = line.split()
-				if len(result) > 1:
-					title = result[1]
+				
+				if len(result) == 0:
 					continue
+				if len(result) > 1:
+					title = result[2]
+					continue
+
 				assessmentTraingSetDict[title].append(result[0])
 		
 		return assessmentTraingSetDict
