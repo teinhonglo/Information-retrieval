@@ -46,6 +46,25 @@ def read_relevance_dict():
 	# HMMTraingSetDict{word, probability}
 	return HMMTraingSetDict	
 
+# read background model
+def read_background_dict():
+	BGTraingSet = np.zeros(51253)
+	# XIN1998
+	for doc_item in os.listdir(bg_modle_path):
+		# join dir path and file name
+		doc_item_path = os.path.join(bg_modle_path, doc_item)
+		# check whether a file exists before read
+		if os.path.isfile(doc_item_path):
+			with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
+				# read content of query document (doc, content)
+				lines = f.readlines()
+				for line in lines:
+					[id, prob] = line.split()
+					prob = exp(float(prob))
+					BGTraingSet[int(id)] = prob
+	# Background{word, probability}
+	return np.array([BGTraingSet])
+
 	
 # document preprocess
 def doc_preprocess(dictionary):
