@@ -4,58 +4,49 @@ import ProcDoc
 from collections import defaultdict
 from math import log
 import cPickle as Pickle
-import os
+import evaluate
+rel_qry_lambda = 0.1
+qry_lambda = 0.1
+doc_lambda = 0.8
 
-data = {}				# content of document (doc, content)
-background_model = {}	# word count of 2265 document (word, number of words)
-general_model = {}
-query = {}				# query
-vocabulary = np.zeros(51253)
+query_model = Pickle.load(open("test_query_model.pkl", "rb"))
+rel_query_model = Pickle.load(open("query_relevance_model_RLE.pkl", "rb"))
+query_list = Pickle.load(open("test_query_list.pkl", "rb"))
+print query_model.shape
 
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+doc_model = Pickle.load(open("doc_model.pkl", "rb"))
+doc_list = Pickle.load(open("doc_list.pkl", "rb"))
+print doc_model.shape
 
-# document model
-data = ProcDoc.read_file(document_path)
-doc_wordcount = ProcDoc.doc_preprocess(data)
+background_model = ProcDoc.read_background_dict()
+print background_model.shape
 
-# HMMTraingSet
-HMMTraingSetDict = ProcDoc.read_relevance_dict()
-query_relevance = {}
+eval = evaluate.evaluate_model()
 
+''' document smoothing '''
+for doc_idx in range(doc_model.shape[0]):
+	doc_vec = doc_model[doc_idx]
+	doc_model[doc_idx] = (1 - doc_lambda) * doc_vec + doc_lambda * background_model
 
-query = ProcDoc.read_file(query_path)
-query = ProcDoc.query_preprocess(query)
-query_wordcount = {}
+mAP_list = []
+query_rel_list = []
+query_bg_list = []	
+doc_model = np.log(doc_model)	
 
-for q, q_content in query.items():
-	query_wordcount[q] = ProcDoc.word_count(q_content, {})
+''' query smoothing '''	
+for qry_idx in range(query_model.shape[0]):
+	qry_vec = query_model[qry_idx]
+	query_model[qry_idx] = (1 - rel_qry_lambda) * qry_vec + rel_qry_lambda * rel_query_model[qry_idx]
+	#query_model[qry_idx] = (1 - qry_lambda) * qry_vec + qry_lambda * background_model
+			
+''' query '''	
+query_docs_ranking = {}
+for query_key, query_vec in  zip(query_list, query_model):
+	query_result = np.argsort(-(query_vec * doc_model).sum(axis = 1))
+	docs_ranking = []
+	for doc_idx in query_result:
+		docs_ranking.append(doc_list[doc_idx])
+		query_docs_ranking[query_key] = docs_ranking
 
-query_unigram = ProcDoc.unigram(query_wordcount)
-
-
-# query model
-query_model = []
-q_list = query_unigram.keys()
-for q, w_uni in query_unigram.items():
-	if q in HMMTraingSetDict:
-		vocabulary = np.zeros(51253)
-		for w, uni in w_uni.items():
-			vocabulary[int(w)] = uni
-		query_model.append(np.copy(vocabulary))
-	else:
-		q_list.remove(q)
-query_model = np.array(query_model)
-
-
-# relevance model
-query_relevance = []
-for q in q_list:
-	vocabulary = np.zeros(51253)
-	for doc_name in HMMTraingSetDict[q]:
-		for word, count in doc_wordcount[doc_name].items():
-			vocabulary[int(word)] += count
-	vocabulary /= vocabulary.sum(axis = 0)
-	query_relevance.append(np.copy(vocabulary))
-query_relevance = np.array(query_relevance)
-
+mAP = eval.mean_average_precision(query_docs_ranking)	
+print mAP, qry_lambda, rel_qry_lambda
