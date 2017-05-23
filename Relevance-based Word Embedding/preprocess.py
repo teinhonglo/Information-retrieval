@@ -46,7 +46,8 @@ for q, w_uni in query_unigram.items():
 	else:
 		q_list.remove(q)
 query_model = np.array(query_model)
-
+Pickle.dump(query_model, open("query_model.pkl", "wb"), True)
+Pickle.dump(q_list, open("q_list.pkl", "wb"), True)
 
 # relevance model
 query_relevance = []
@@ -58,6 +59,8 @@ for q in q_list:
 	vocabulary /= vocabulary.sum(axis = 0)
 	query_relevance.append(np.copy(vocabulary))
 query_relevance = np.array(query_relevance)
+Pickle.dump(query_relevance, open("relevance.pkl", "wb"), True)
+
 
 # document model
 doc_list = doc_wordcount.keys()
