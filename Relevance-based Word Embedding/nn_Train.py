@@ -26,7 +26,7 @@ model.add(Activation('softmax'))
 
 ''' Setting optimizer as Adam '''
 from keras.optimizers import Adam
-model.compile(loss= 'categorical_crossentropy',
+model.compile(loss= 'kullback_leibler_divergence',
               		optimizer='Adam',
               		metrics=['accuracy'])
 
@@ -43,11 +43,6 @@ history_adam = model.fit(X_train, Y_train,
                     		)
 ''' Create a HDF5 file '''							
 model.save('RLE.h5')
-
-import cPickle as Pickle
-# save as JSON
-json_string = model.to_json()
-Pickle.dump(json_string, open("RLE_model_structure.pkl", "wb"), True)
 
 loss = history_adam.history.get('loss')
 acc = history_adam.history.get('acc')
