@@ -47,7 +47,7 @@ for q, w_uni in query_unigram.items():
 		q_list.remove(q)
 query_model = np.array(query_model)
 Pickle.dump(query_model, open("query_model.pkl", "wb"), True)
-Pickle.dump(q_list, open("q_list.pkl", "wb"), True)
+Pickle.dump(q_list, open("query_list.pkl", "wb"), True)
 
 # relevance model
 query_relevance = []
