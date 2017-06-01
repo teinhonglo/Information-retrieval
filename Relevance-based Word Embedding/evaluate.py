@@ -26,7 +26,6 @@ class evaluate_model():
 					continue
 
 				assessmentTraingSetDict[title].append(result[0])
-		
 		return assessmentTraingSetDict
 
 	# result : list [(doc, point)]

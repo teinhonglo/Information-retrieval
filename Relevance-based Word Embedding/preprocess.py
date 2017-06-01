@@ -62,7 +62,11 @@ for q in q_list:
 	vocabulary /= vocabulary.sum(axis = 0)
 	query_relevance.append(np.copy(vocabulary))
 query_relevance = np.array(query_relevance)
-Pickle.dump(query_relevance, open("relevance.pkl", "wb"), True)
+
+with open("relevance.pkl", "wb") as file:
+	Pickle.dump(query_relevance, file, True)
+with open("HMMTraingSetDict.pkl", "wb")	as file:
+	Pickle.dump(HMMTraingSetDict, file, True)
 
 
 # document model
@@ -74,6 +78,7 @@ for doc_name in doc_list:
 		vocabulary[int(word)] = count
 	vocabulary /= vocabulary.sum(axis = 0)
 	doc_model.append(np.copy(vocabulary))
+	raw_input()
 doc_model = np.array(doc_model)	
 
 with open("doc_list.pkl", "wb") as file:
@@ -82,7 +87,7 @@ with open("doc_model.pkl", "wb") as file:
 	Pickle.dump(doc_model, file, True)
 
 # test query model
-query_path = "../Corpus/QUERY_WDID_NEW"
+query_path = "../Corpus/QUERY_WDID_NEW_middle"
 test_query = ProcDoc.read_file(query_path)
 test_query = ProcDoc.query_preprocess(test_query)
 test_query_wordcount = {}
