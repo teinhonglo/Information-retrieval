@@ -13,10 +13,14 @@ topM = 10
 vocabulary_size = 51253
 
 ''' load data'''
-query_list = pickle.load(open("query_list.pkl", "rb"))
-query_model = pickle.load(open("query_model.pkl", "rb"))
-doc_list = pickle.load(open("doc_list.pkl", "rb"))
-doc_model = pickle.load(open("doc_model.pkl", "rb"))
+with open("query_list.pkl", "rb") as file:
+	query_list = pickle.load(file)
+with open("query_model.pkl", "rb") as file:	
+	query_model = pickle.load(file)
+with open("doc_list.pkl", "rb") as file:
+	doc_list = pickle.load(file)
+with open("doc_model.pkl", "rb") as file:	
+	doc_model = pickle.load(file)
 
 ''' relevace model '''
 for q_idx, q_key in enumerate(query_list):
