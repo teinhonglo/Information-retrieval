@@ -45,7 +45,7 @@ for q, w_uni in query_unigram.items():
 		query_model.append(np.copy(vocabulary))
 	else:
 		q_list.remove(q)
-query_model = np.array(query_model)
+query_model = np.array(query_model).astype(np.float32)
 
 with open("query_model.pkl", "wb") as file:
 	Pickle.dump(query_model, file, True)
@@ -78,13 +78,10 @@ for doc_name in doc_list:
 		vocabulary[int(word)] = count
 	vocabulary /= vocabulary.sum(axis = 0)
 	doc_model.append(np.copy(vocabulary))
-	raw_input()
-doc_model = np.array(doc_model)	
+doc_model = np.array(doc_model).astype(np.float32)	
 
-with open("doc_list.pkl", "wb") as file:
-	Pickle.dump(doc_list, file, True)
-with open("doc_model.pkl", "wb") as file:
-	Pickle.dump(doc_model, file, True)
+with open("doc_list.pkl", "wb") as file: Pickle.dump(doc_list, file, True)
+with open("doc_model.pkl", "wb") as file: Pickle.dump(doc_model, file, True)
 
 # test query model
 query_path = "../Corpus/QUERY_WDID_NEW_middle"
@@ -104,9 +101,10 @@ for q in test_query_list:
 	for word, unigram in test_query_unigram[q].items():
 		vocabulary[int(word)] = unigram
 	test_query_model.append(np.copy(vocabulary))
-test_query_model = np.array(test_query_model)
+test_query_model = np.array(test_query_model).astype(np.float32)
 
 with open("test_query_list.pkl", "wb") as file:
 	Pickle.dump(test_query_list, file, True)
 with open("test_query_model.pkl", "wb") as file:
 	Pickle.dump(test_query_model, file, True)
+
