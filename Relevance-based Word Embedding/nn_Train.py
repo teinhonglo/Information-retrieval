@@ -1,11 +1,14 @@
 #-*- coding: utf-8 -*-
 ''' Import theano and numpy '''
 import theano
+import cPickle as pickle
 import numpy as np
 
 
-execfile('preprocess.py')
+#execfile('preprocess.py')
+with open("query_model.pkl", "rb") as file: query_model = pickle.load(file)
 X_train = query_model
+with open("relevance_model_RM.pkl", "rb") as file: query_relevance = pickle.load(file)
 Y_train = query_relevance
 
 ''' set the size of mini-batch and number of epochs'''
