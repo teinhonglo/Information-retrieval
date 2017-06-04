@@ -4,6 +4,9 @@ import theano
 import cPickle as pickle
 import numpy as np
 
+filepath = "RLE_best.h5"
+from keras.callbacks import ModelCheckpoint
+modelCheckpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
 #execfile('preprocess.py')
 with open("query_model.pkl", "rb") as file: query_model = pickle.load(file)
@@ -14,12 +17,13 @@ Y_train = query_relevance
 ''' set the size of mini-batch and number of epochs'''
 batch_size = 16
 nb_epoch = 50
-embedding_dimensionality = 350
 vocabulary_size = 51253
+embedding_dimensionality = 350
+
 
 ''' Import keras to build a DL model '''
 from keras.models import Sequential
-from keras.layers.core import Dense, Activation
+from keras.layers.core import Dense, Activation, Dropout
 
 print 'Building a model whose optimizer=adam, activation function=softmax'
 model = Sequential()
@@ -27,23 +31,25 @@ model.add(Dense(embedding_dimensionality, input_dim = vocabulary_size))
 model.add(Dense(vocabulary_size))
 model.add(Activation('softmax'))
 
+
 ''' Setting optimizer as Adam '''
-from keras.optimizers import Adam
+from keras.optimizers import Adam, SGD
 model.compile(loss= 'kullback_leibler_divergence',
-              		optimizer='Adam',
+              		optimizer='Nadam',
               		metrics=['accuracy'])
 
 model.summary()
 ''' Fit models and use validation_split=0.1 '''
 history_adam = model.fit(X_train, Y_train,
-							batch_size=batch_size,
-							nb_epoch=nb_epoch,
-							verbose=1,
-							shuffle=True,
-                    		validation_split=0.1
-                    		# earlyStopping callbacks
-							#callbacks = [earlyStopping]
-                    		)
+			batch_size=batch_size,
+			nb_epoch=nb_epoch,
+			verbose=1,
+			shuffle=True,
+               		validation_split=0.0
+			#callbacks = [modelCheckpoint]
+                 		# earlyStopping callbacks
+				#callbacks = [earlyStopping]
+                   		)
 ''' Create a HDF5 file '''							
 model.save('RLE.h5')
 
