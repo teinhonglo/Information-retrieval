@@ -12,6 +12,7 @@ import cPickle as pickle
 import numpy as np
 import ProcDoc
 from math import exp
+import copy
 
 topM = 9
 
@@ -27,7 +28,7 @@ with open("query_ranking_list.pkl", "rb") as file:
 '''	
 class RM_FB:
 	def __init__(self, query_model):
-		self.query_model = list(query_model)
+		self.query_model = copy.deepcopy(query_model)
 		self.vocabulary_size = 51253
 		smoothing = 0.1
 		with open("test_query_list.pkl", "rb") as file:
@@ -47,7 +48,7 @@ class RM_FB:
 		self.doc_model = doc_model
 		
 	def PRF(self, query_docs_ranking, topM):
-		query_model = self.query_model
+		query_model = copy.deepcopy(self.query_model)
 		query_list = self.query_list
 		doc_model = self.doc_model
 		doc_list = self.doc_list
