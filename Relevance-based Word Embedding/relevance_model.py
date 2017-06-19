@@ -5,7 +5,7 @@
 	query_model 			numpy		[[query_unigram], ....]
 	doc_list				list		[d_key, .....]
 	doc_model				numpy		[[doc_unigram]]
-	
+	HMMTraingSetDict		
 '''
 
 import cPickle as pickle
@@ -13,7 +13,7 @@ import numpy as np
 import ProcDoc
 from math import exp
 
-topM = 10
+topM = 15
 vocabulary_size = 51253
 smoothing = 0.1
 
@@ -26,7 +26,7 @@ with open("doc_list.pkl", "rb") as file:
 	doc_list = pickle.load(file)
 with open("doc_model.pkl", "rb") as file:	
 	doc_model = pickle.load(file)
-with open("HMMTraingSetDict.pkl", "rb") as file:
+with open("one_shot.pkl", "rb") as file:
 	query_docs_ranking = pickle.load(file)
 
 background_model =  ProcDoc.read_background_dict()	
@@ -39,9 +39,9 @@ for d_idx, doc_vec in enumerate(doc_model):
 for q_idx, q_key in enumerate(query_list):
 	q_vec = query_model[q_idx]
 	# relevance top M document
-	q_t_d = np.zeros(len(query_docs_ranking[q_key]))
+	q_t_d = np.zeros(len(query_docs_ranking[q_key][:topM]))
 	w_d = np.zeros(vocabulary_size)
-	for rank_idx, doc_key in enumerate(query_docs_ranking[q_key]):
+	for rank_idx, doc_key in enumerate(query_docs_ranking[q_key][:topM]):
 		doc_idx = doc_list.index(doc_key)
 		doc_vec = doc_model[doc_idx]
 		# probability of query term in document
@@ -58,5 +58,5 @@ for q_idx, q_key in enumerate(query_list):
 	w_d /= q_t_d.sum(axis = 0)
 	query_model[q_idx] = w_d
 	
-with open("relevance_model_RM.pkl", "wb") as file:	
+with open("relevance_model_RM_"+str(topM)+".pkl", "wb") as file:	
 	pickle.dump(query_model, file, True)

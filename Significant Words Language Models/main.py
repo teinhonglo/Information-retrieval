@@ -4,7 +4,7 @@ import collections
 from math import log
 import operator
 import numpy as np
-import readAssessment
+import evaluate
 import ProcDoc
 import Expansion
 import cPickle as Pickle
@@ -18,7 +18,7 @@ query_lambda = 0.4
 doc_lambda = 0.8
 
 document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/QUERY_WDID_NEW_middle"
+query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
 
 # document model
 data = ProcDoc.read_file(document_path)
@@ -42,6 +42,9 @@ for key, value in doc_wordcount.items():
 collection_word_sum = 1.0 * ProcDoc.word_sum(collection)
 general_model = {k : v / collection_word_sum for k, v in collection.items()}
 
+# HMMTraingSet
+HMMTraingSetDict = ProcDoc.read_relevance_dict()
+
 # query model
 query = ProcDoc.read_file(query_path)
 query = ProcDoc.query_preprocess(query)
@@ -53,9 +56,17 @@ for q, q_content in query.items():
 query_unigram = ProcDoc.unigram(query_wordcount)
 query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 
+for q, w_uni in query_model.items():
+	if q in HMMTraingSetDict:
+		continue
+	else:
+		query_model.pop(q, None)
+	
+print len(query_model.keys())
+
 # query process
 print "query ..."
-assessment = readAssessment.get_assessment()
+assessment = evaluate.evaluate_model()
 query_docs_point_fb = {}
 query_model_fb = {}
 mAP_list = []
@@ -81,7 +92,7 @@ for step in range(15):
 		docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
 		query_docs_point_dict[q_key] = docs_point_list
 	# mean average precision	
-	mAP = readAssessment.mean_average_precision(query_docs_point_dict, assessment)
+	mAP = assessment.mean_average_precision(query_docs_point_dict)
 	mAP_list.append(mAP)
 	print "mAP"
 	print mAP
@@ -92,7 +103,6 @@ for step in range(15):
 		# save load shot result
 	query_docs_point_fb = Pickle.load(open("query_docs_point_dict.pkl", "rb"))
 	query_model_fb = Pickle.load(open("query_model.pkl", "rb"))
-	
 	query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, doc_unigram, doc_wordcount, general_model, background_model, step + 1)
 plot_diagram.plotList(mAP_list)
 	
