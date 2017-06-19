@@ -6,6 +6,7 @@ from math import log
 import cPickle as Pickle
 import evaluate
 import relevance_model
+import copy
 
 rel_qry_lambda = 0.7
 qry_lambda = 0.1
@@ -64,16 +65,17 @@ rm_feedback_list = []
 for step in np.linspace(1, 15., num=15):
 	rm_feedback_list.append(rm_feedback.PRF(query_docs_ranking, int(step)))
 
-fb_query_model = list(query_model)	
+fb_query_model = copy.deepcopy(query_model)	
 for step, relevance_model in enumerate(rm_feedback_list):
-	print step
+	print step + 1
+	mAP_list = []
 	for fb_lambda in np.linspace(0, 1., num=11):
 		''' query smoothing '''	
 		for qry_idx in range(query_model.shape[0]):
 			qry_vec = query_model[qry_idx]
-			fb_query_model[qry_idx] = (1 - fb_lambda) * qry_vec + fb_lambda * rel_query_model[qry_idx]
+			fb_query_model[qry_idx] = (1 - fb_lambda) * qry_vec + fb_lambda * relevance_model[qry_idx]
 		query_docs_ranking = search(fb_query_model, query_list, doc_model, doc_list)
 		mAP = eval.mean_average_precision(query_docs_ranking)	
-		print fb_lambda, mAP
-
+		mAP_list.append(mAP)
+	print max(mAP_list)
 #with open("query_ranking_list.pkl", "wb") as file: Pickle.dump(query_docs_ranking, file, True)	
