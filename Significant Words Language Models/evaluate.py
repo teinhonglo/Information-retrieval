@@ -35,7 +35,7 @@ class evaluate_model():
 		count = 0
 		precision = 0
 		assessment = self.assessment[q_key]
-		for doc_name in result:
+		for doc_name, point in result:
 			iterative += 1
 			if count == len(assessment): break
 				

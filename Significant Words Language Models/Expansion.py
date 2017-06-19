@@ -3,6 +3,7 @@ from math import log
 import plot_diagram
 from collections import defaultdict
 import copy
+import cPickle as Pickle
 
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
@@ -86,17 +87,19 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
     lambda_ir_fb = 0.2
     lambda_q = 0.1
     specific_model = {}
+    significant_model_dict = {}
     for q_key, docs_point_list in query_docs_point_dict.items():
         feedback_doc = {}
         feedback_doc_wc = {}
-        # Extract feedback document 
+        # Extract feedback document
         for doc_name, point in docs_point_list[0:topN]:
             feedback_doc[doc_name] = copy.deepcopy(doc_unigram[doc_name])
             feedback_doc_wc[doc_name] = copy.deepcopy(doc_wordcount[doc_name])
-        # generate specific model    
+        # generate specific model
         specific_model = specific_modeling(dict(feedback_doc))
         # generate significant model
         significant_model = significant_modeling(general_model, specific_model, feedback_doc, feedback_doc_wc)
+        
         '''
         ir_feedback_doc = {}
         ir_feedback_doc_wc = {}
@@ -117,13 +120,15 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
                 original_prob = 0.0
             # update query unigram  
             query_model[q_key][word] = (lambda_q * original_prob) + (lambda_fb * fb_w_prob) + (lambda_bg * background_model[word])	
+
         '''
         for word, ir_fb_w_prob in ir_significant_model.items():
             if word in query_model[q_key]:
                 query_model[q_key][word] = (1 - lambda_ir_fb) * query_model[q_key][word] + lambda_ir_fb * ir_fb_w_prob
         '''	
+        significant_model_dict[q_key] = significant_model
         query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))	
         
         # plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
-        
+    with open("swlm_"+str(topN)+".pkl", "wb") as file: Pickle.dump(significant_model_dict, file, True)    
     return query_model 
