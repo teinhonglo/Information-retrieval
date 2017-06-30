@@ -4,12 +4,14 @@ import collections
 from collections import defaultdict
 
 class evaluate_model():
-	def __init__(self):
-		#self.assessmentTraingSet_path = "../Corpus/AssessmentTrainSet/AssessmentTrainSet.txt"
-		self.assessmentTraingSet_path = "../Corpus/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-		self.assessment = self.get_assessment()
+	def __init__(self, HMM = False):
+		if not HMM:
+			self.assessmentTraingSet_path = "../Corpus/AssessmentTrainSet/AssessmentTrainSet.txt"
+		else:
+			self.assessmentTraingSet_path = "../Corpus/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+		self.assessment = self.get_assessment(HMM)
 		
-	def get_assessment(self):
+	def get_assessment(self, HMM):
 		assessmentTraingSetDict = defaultdict(list)
 		assessmentTraingSet_path = self.assessmentTraingSet_path
 		with open(assessmentTraingSet_path, 'r') as file:
@@ -21,8 +23,10 @@ class evaluate_model():
 				if len(result) == 0:
 					continue
 				if len(result) > 1:
-					title = result[1]
-					#title = result[2]
+					if not HMM:
+						title = result[2]
+					else:
+						title = result[1]
 					continue
 
 				assessmentTraingSetDict[title].append(result[0])
