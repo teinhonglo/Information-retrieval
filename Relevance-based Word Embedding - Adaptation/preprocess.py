@@ -12,7 +12,8 @@ general_model = {}
 query = {}				# query
 vocabulary = np.zeros(51253)
 
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
+document_path = "../Corpus/Spoken_Doc"
+#document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
 
 
