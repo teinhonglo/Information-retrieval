@@ -1,5 +1,4 @@
-'''
-	parameter				type	
+'''	type	
 	query_docs_ranking 		dict		{q_key:[d_key...], ...}
 	query_list  			list		[q_key, ....]
 	query_model 			numpy		[[query_unigram], ....]
@@ -27,25 +26,23 @@ with open("query_ranking_list.pkl", "rb") as file:
 	query_docs_ranking = pickle.load(file)	
 '''	
 class RM_FB:
-	def __init__(self, query_model):
-		self.query_model = copy.deepcopy(query_model)
-		self.vocabulary_size = 51253
-		smoothing = 0.1
+	def __init__(self, query_model, isSpoken = False):
+		smoothing = 0.0
 		with open("test_query_list.pkl", "rb") as file:
 			self.query_list = pickle.load(file)
 		with open("doc_list.pkl", "rb") as file:
 			self.doc_list = pickle.load(file)
-		
-		with open("doc_model.pkl", "rb") as file:	
-			doc_model = pickle.load(file)
-
-		self.background_model =  ProcDoc.read_background_dict()	
-
-		''' smoothing '''
-		for d_idx, doc_vec in enumerate(doc_model):
-			doc_model[d_idx] = (1 - smoothing) * doc_vec + smoothing * self.background_model
-		
+		if isSpoken:	
+			with open("doc_model_wc_s.pkl", "rb") as file:doc_model = pickle.load(file)
+		else:
+			with open("doc_model_wc.pkl", "rb") as file: doc_model = pickle.load(file)
+					
+		background_model =  ProcDoc.read_background_dict()	
+		self.query_model = copy.deepcopy(query_model)
+		self.vocabulary_size = 51253
+		self.doc_model = copy.deepcopy(doc_model)
 		self.doc_model = doc_model
+		self.background_model = background_model
 		
 	def PRF(self, query_docs_ranking, topM):
 		query_model = copy.deepcopy(self.query_model)
@@ -63,17 +60,18 @@ class RM_FB:
 			for rank_idx, doc_key in enumerate(query_docs_ranking[q_key][:topM]):
 				doc_idx = doc_list.index(doc_key)
 				doc_vec = doc_model[doc_idx]
-				# probability of query term in document
-				q_non_zero, = np.where(q_vec != 0)
-				# product
-				# q_t_d[rank_idx] = (np.prod(doc_vec[q_non_zero]) + 0.1)
-				# logadd
-				for q_t in np.log(doc_vec[q_non_zero]):
-					q_t_d[rank_idx] += q_t
-				#print exp(q_t_d[rank_idx])
-				
-				w_d += doc_vec * q_t_d[rank_idx]
-			# relevance model
-			w_d /= q_t_d.sum(axis = 0)
-			query_model[q_idx] = w_d
+				w_d += doc_vec
+			# unigram model
+			w_d /= w_d.sum(axis = 0)
+			query_model[q_idx] = np.copy(w_d)
 		return query_model
+
+	def smoothing(self, ori_md, smth_md, sm_lambda, isBG):
+		aft_model = copy.deepcopy(ori_md)
+		for ori_idx, ori_vec in enumerate(aft_model):
+			if isBG:
+				aft_model[ori_idx] = (1 - sm_lambda) * ori_vec + sm_lambda * smth_md[ori_idx]
+			else:
+				aft_model[ori_idx] = (1 - sm_lambda) * ori_vec + sm_lambda * smth_md
+				
+		return aft_model

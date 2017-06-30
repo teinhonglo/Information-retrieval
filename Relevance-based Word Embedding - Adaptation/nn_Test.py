@@ -8,19 +8,28 @@ from keras.models import Sequential, load_model
 from keras.layers.core import Dense, Activation
 import cPickle as Pickle
 
-print 'Building a model whose optimizer=adam, activation function=softmax'
-model = load_model("RLE.h5")
-query_model = Pickle.load(open("test_query_model.pkl", "rb"))
-output = np.array(model.predict(query_model))
-Pickle.dump(output, open("query_relevance_model_RLE.pkl", "wb"), True)
+class model:
+	# Initial model
+	def __init__(self, load_model_name, load_query_model_name):
+		self.model = load_model(load_model_name)
+		with open(load_query_model_name, "rb") as file: self.query_model = Pickle.load(file)
+	# Train on batch
+	def train(self, train_objective, epoch = 10):
+		print 'Building a model whose optimizer=Nadam, activation function=softmax'
+		model = self.model
+		X = self.query_model
+		Y = train_objective
+		for i in xrange(epoch):
+			model.train_on_batch(X, Y)
 
-'''
-print 'Building a model whose optimizer=adam, activation function=softmax'
-model = load_model("RPE.h5")
-query_model = Pickle.load(open("test_query_model.pkl", "rb"))
-output = np.array(model.predict(query_model))
-Pickle.dump(output, open("query_relevance_model_RPE.pkl", "wb"), True)
-'''
+		self.model = model
+	# predict value
+	def predict(self, query_model):
+		model = self.model
+		X = query_model
+		output = np.array(model.predict(X))
+		return output
+
 
 
 
