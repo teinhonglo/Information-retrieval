@@ -1,13 +1,18 @@
 import ProcDoc
-from math import log
+from math import log, exp
 import plot_diagram
 from collections import defaultdict
 import copy
 import cPickle as Pickle
 
+def sigmoid(x):
+    gamma = -0.5 * (x - 0.7)
+    return 1 / (1 + exp(gamma))
+
 def specific_modeling(feedback_doc):
     # normalize, sum of the (word_prob = 1) in the document
     feedback_w_doc = ProcDoc.inverted_word_doc(dict(feedback_doc))
+	
     for word, doc_unigram in feedback_w_doc.items():
         feedback_w_doc[word] = ProcDoc.softmax(dict(doc_unigram))
 
@@ -20,15 +25,18 @@ def specific_modeling(feedback_doc):
         word_specific_level = 0
         for doc_name, prob in doc_unigram.items():
             cur_doc_word_prob = prob
+            '''
             for other_doc_name, other_prob in doc_unigram.items():
                 if doc_name == other_doc_name:
                     continue
                 cur_doc_word_prob *= (1 - other_prob)
-            word_specific_level += cur_doc_word_prob	
-        specific_model[word] = word_specific_level
-	# softmax
+            '''
+            # word_specific_level += cur_doc_word_prob	
+            word_specific_level += -1 * cur_doc_word_prob * log(cur_doc_word_prob)
+		# specific_model[word] = word_specific_level
+        specific_model[word] = sigmoid(1.0 / (0.5 + word_specific_level))
+    # softmax
     specific_model = ProcDoc.softmax(dict(specific_model))
-	
     return specific_model
 
 def significant_modeling(general_model, specific_model, feedback_doc, feedback_doc_wc):
@@ -126,9 +134,14 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
             if word in query_model[q_key]:
                 query_model[q_key][word] = (1 - lambda_ir_fb) * query_model[q_key][word] + lambda_ir_fb * ir_fb_w_prob
         '''	
-        significant_model_dict[q_key] = significant_model
-        query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))	
         
-        # plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
-    with open("swlm_"+str(topN)+".pkl", "wb") as file: Pickle.dump(significant_model_dict, file, True)    
-    return query_model 
+        query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))
+        
+    #plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
+	
+    if topN == None:
+        with open("rel_supervised_swlm_entropy_s.pkl", "wb") as file: Pickle.dump(query_model, file, True)    
+    else:	
+        with open("rel_swlm_entropy_S_"+str(topN)+".pkl", "wb") as file: Pickle.dump(query_model, file, True)    
+	
+    return query_model 	

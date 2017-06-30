@@ -149,8 +149,8 @@ def modeling(topic_wordprob_dict, background_model, alpha):
 	for topic, wordprob in topic_wordprob_dict.items():
 		word_model = {}
 		for word in wordprob.keys():
-			word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
-		modeling_dict[topic] = dict(word_model)
+			word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]	
+		modeling_dict[topic] = softmax(dict(word_model))
 	modeling_dict = collections.OrderedDict(sorted(modeling_dict.items()))		
 	return modeling_dict
 
