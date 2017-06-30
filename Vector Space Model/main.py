@@ -9,13 +9,16 @@ import readAssessment
 import ProcDoc
 import Expansion
 import timeit
+import evaluate
+import cPickle as Pickle
 
 data = {}				# content of document (doc, content)
 query = {}				# query
 doc_freq ={}
 
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/QUERY_WDID_NEW"
+document_path = "../Corpus/Spoken_Doc"
+query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+with open("HMMTraingSetDict.pkl", "rb") as file: HMMTraingSetDict = Pickle.load(file) 
 
 # document model
 data = ProcDoc.read_file(document_path)
@@ -43,15 +46,26 @@ for q_key, word_count_dict in query_wordcount.items():
 			
 		query_model[q_key][word] = (1 + log(count)) * idf	
 
+#with open("test_query_model_tfidf.pkl", "wb") as file: Pickle.dump(query_model, file, True)		
+
+for q, w_uni in query_model.items():
+	if q in HMMTraingSetDict:
+		continue
+	else:
+		query_model.pop(q, None)
+
+
+#print(len(query_model.keys()))		
+		
 # query process
 print "query ..."
 start = timeit.default_timer()
-assessment = readAssessment.get_assessment()
+assessment = evaluate.evaluate_model(True)
 feedback_model = []
 feedback_ranking_list = []
 doc_length = {}
-
-for step in range(1):
+with open("doc_model_tfidf_dict.pkl", "wb") as file: Pickle.dump(doc_model, file, True)
+for step in range(2):
 	query_docs_point_dict = {}
 	AP = 0
 	mAP = 0
@@ -78,12 +92,14 @@ for step in range(1):
 		docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
 		query_docs_point_dict[q_key] = docs_point_list
 	# mean average precision	
-	mAP = readAssessment.mean_average_precision(query_docs_point_dict, assessment)
+	mAP = assessment.mean_average_precision(query_docs_point_dict)
 	print "mAP:", mAP
 	print "feedback:", step
 	
 	if step < 1:
-		feedback_ranking_list = dict(query_docs_point_dict)
-	[query_model, feedback_model] = Expansion.extQueryModel(query_model, feedback_ranking_list, doc_model, feedback_model, step + 1)
+		feedback_ranking_list = HMMTraingSetDict
+		#feedback_ranking_list = dict(query_docs_point_dict)
+		[query_model, feedback_model] = Expansion.extQueryModel(query_model, feedback_ranking_list, doc_model, feedback_model, None)
+		with open("rel_vsm_dict.pkl", "wb") as file: Pickle.dump(query_model, file, True)
 stop = timeit.default_timer()
 print "Result : ", stop - start	
