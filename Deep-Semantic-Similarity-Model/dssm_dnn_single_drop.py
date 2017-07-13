@@ -9,15 +9,12 @@ np.random.seed(1331)
 
 from keras import backend
 from keras.layers import Activation, Input
-from keras.layers.convolutional import Convolution1D
 from keras.layers.core import Dense, Lambda, Reshape, Dropout
 from keras.layers.merge import concatenate, dot
+from keras.layers.convolutional import Convolution1D
 from keras.models import Model
 import cPickle as Pickle
-from keras import backend as K
 
-def abs_acc(y_true, y_pred):
-    return (.5 - K.mean(K.abs(y_pred - y_true), axis=-1)) / .5
 
 def create_model():
 
@@ -35,17 +32,27 @@ def create_model():
 	# Latent Semantic Model
 	# projection high dimension to low.
 	proj = Dense(K, name="proj_1", activation="tanh")
+        drop = Dropout(0.2)
 	proj_2 = Dense(K, name="proj_2", activation="tanh")
+        drop_2 = Dropout(0.2)
 	sem = Dense(L, name="sem", activation = "tanh")
 
 
-	query_proj = proj(query)
-	pos_doc_proj = proj(pos_doc)
-	neg_doc_projs = [proj(neg_doc) for neg_doc in neg_docs]
+	query_proj_nd = proj(query)
+	pos_doc_proj_nd = proj(pos_doc)
+	neg_doc_projs_nd = [proj(neg_doc) for neg_doc in neg_docs]
 	
-        query_proj2 = proj_2(query_proj)
-	pos_doc_proj2 = proj_2(pos_doc_proj)
-	neg_doc_proj2s = [proj_2(neg_doc_proj) for neg_doc_proj in neg_doc_projs]
+	query_proj = drop(query_proj_nd)
+	pos_doc_proj = drop(pos_doc_proj_nd)
+	neg_doc_projs = [drop(neg_doc_proj_nd) for neg_doc_proj_nd in neg_doc_projs_nd]
+
+        query_proj2_nd = proj_2(query_proj)
+	pos_doc_proj2_nd = proj_2(pos_doc_proj)
+	neg_doc_proj2s_nd = [proj_2(neg_doc_proj) for neg_doc_proj in neg_doc_projs]
+
+        query_proj2 = drop_2(query_proj2_nd)
+	pos_doc_proj2 = drop_2(pos_doc_proj2_nd)
+	neg_doc_proj2s = [drop_2(neg_doc_proj2_nd) for neg_doc_proj2_nd in neg_doc_proj2s_nd]
 	
         query_sem = sem(query_proj2)
 	pos_doc_sem = sem(pos_doc_proj2)
@@ -56,7 +63,7 @@ def create_model():
 	R_Q_D_p = dot([query_sem, pos_doc_sem], axes = 1, normalize = True, name="pos_cos") # See equation (5).
 	R_Q_D_ns = [dot([query_sem, neg_doc_sem], axes = 1, normalize = True, name="neg_cos_" + str(i)) for i, neg_doc_sem in enumerate(neg_doc_sems)] # See equation (5).
 
-	concat_Rs = concatenate([R_Q_D_p] + R_Q_D_ns, name="concat_without_gamma")
+	concat_Rs = concatenate([R_Q_D_p] + R_Q_D_ns, name="concat_with_gamma")
 	concat_Rs = Reshape((J + 1, 1))(concat_Rs)
 
 	# In this step, we multiply each R(Q, D) value by gamma. In the paper, gamma is
@@ -74,12 +81,11 @@ def create_model():
 	# We now have everything we need to define our model.
 	model = Model(inputs = [query, pos_doc] + neg_docs, outputs = prob)
 	model.compile(optimizer = "adadelta", loss = "categorical_crossentropy", metrics=['accuracy'])
-        model.summary()
+
 	# visulization
-        '''
+	model.summary()
 	from keras.utils import plot_model
 	plot_model(model, to_file='model.png')
-        '''
 	
 	return model
 
