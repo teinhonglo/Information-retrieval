@@ -12,10 +12,9 @@ general_model = {}
 query = {}				# query
 vocabulary = np.zeros(51253)
 
-storage_path = "model/UM/"
-#document_path = "../Information-retrieval/Corpus/Spoken_Doc"
-document_path = "../Information-retrieval/Corpus/SPLIT_DOC_WDID_NEW"	
-query_path = "../Information-retrieval/Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+storage_path = "model/TDT3/"
+document_path = "../Corpus/TDT3/SPLIT_DOC_WDID_NEW"	
+query_path = "../Corpus/TDT3/XinTrainQryTDT3/QUERY_WDID_NEW"
 
 
 # read document
@@ -33,8 +32,8 @@ query_wordcount = {}
 for q, q_content in query.items():
 	query_wordcount[q] = ProcDoc.word_count(q_content, {})
 
-query_unigram = ProcDoc.unigram(query_wordcount)
-#query_unigram = query_wordcount
+#query_unigram = ProcDoc.unigram(query_wordcount)
+query_unigram = query_wordcount
 
 # create outside query model
 query_model = []
@@ -64,7 +63,7 @@ for doc_name in doc_list:
 	vocabulary = np.zeros(51253)
 	for word, count in doc_wordcount[doc_name].items():
 		vocabulary[int(word)] = count
-	vocabulary /= vocabulary.sum(axis = 0)
+	#vocabulary /= vocabulary.sum(axis = 0)
 	doc_model.append(np.copy(vocabulary))
 doc_model = np.array(doc_model).astype(np.float32)	
 
@@ -72,7 +71,7 @@ with open(storage_path + "doc_list.pkl", "wb") as file: Pickle.dump(doc_list, fi
 with open(storage_path + "doc_model.pkl", "wb") as file: Pickle.dump(doc_model, file, True)
 
 # test query model
-query_path = "../Information-retrieval/Corpus/QUERY_WDID_NEW"
+query_path = "../Corpus/TDT3/XinTestQryTDT3/QUERY_WDID_NEW"
 test_query = ProcDoc.read_file(query_path)
 test_query = ProcDoc.query_preprocess(test_query)
 test_query_wordcount = {}
@@ -80,8 +79,8 @@ test_query_wordcount = {}
 for q, q_content in test_query.items():
 	test_query_wordcount[q] = ProcDoc.word_count(q_content, {})
 
-test_query_unigram = ProcDoc.unigram(test_query_wordcount)
-#test_query_unigram = test_query_wordcount
+#test_query_unigram = ProcDoc.unigram(test_query_wordcount)
+test_query_unigram = test_query_wordcount
 test_query_list = test_query_unigram.keys()
 
 
