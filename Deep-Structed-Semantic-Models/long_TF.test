@@ -1,0 +1,602 @@
+Building a model whose optimizer=adadelta, activation function=softmax
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-00-0.29.hdf5
+(16, 128)
+(2265, 128)
+0.506170541313
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-01-0.15.hdf5
+(16, 128)
+(2265, 128)
+0.59641125326
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-02-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.648996596555
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-03-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.653133775044
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-00-0.31.hdf5
+(16, 128)
+(2265, 128)
+0.402352541333
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-03-0.79.hdf5
+(16, 128)
+(2265, 128)
+0.608450302759
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-04-0.73.hdf5
+(16, 128)
+(2265, 128)
+0.589099936954
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-05-0.80.hdf5
+(16, 128)
+(2265, 128)
+0.543415153564
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-05-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.652568215296
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-06-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.65233997895
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-07-0.96.hdf5
+(16, 128)
+(2265, 128)
+0.54502323155
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-08-0.72.hdf5
+(16, 128)
+(2265, 128)
+0.538730494355
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-09-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.650492311122
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-10-0.75.hdf5
+(16, 128)
+(2265, 128)
+0.549240884118
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-10-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.649779904462
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-13-0.70.hdf5
+(16, 128)
+(2265, 128)
+0.533575760502
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-15-0.74.hdf5
+(16, 128)
+(2265, 128)
+0.504274146859
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-14-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.652882151396
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-17-0.85.hdf5
+(16, 128)
+(2265, 128)
+0.503794657679
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-19-0.75.hdf5
+(16, 128)
+(2265, 128)
+0.483963883326
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-20-0.71.hdf5
+(16, 128)
+(2265, 128)
+0.500867525226
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-19-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.648929008544
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-21-0.83.hdf5
+(16, 128)
+(2265, 128)
+0.493819588999
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-22-0.70.hdf5
+(16, 128)
+(2265, 128)
+0.482597035163
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-20-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647179586754
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-24-0.81.hdf5
+(16, 128)
+(2265, 128)
+0.492045444215
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-23-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644213462233
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-26-0.83.hdf5
+(16, 128)
+(2265, 128)
+0.486591312615
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-28-0.80.hdf5
+(16, 128)
+(2265, 128)
+0.484075690874
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-29-0.79.hdf5
+(16, 128)
+(2265, 128)
+0.49599833718
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-30-0.73.hdf5
+(16, 128)
+(2265, 128)
+0.492490151404
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-32-0.80.hdf5
+(16, 128)
+(2265, 128)
+0.486415683351
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-33-0.81.hdf5
+(16, 128)
+(2265, 128)
+0.482258531278
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-34-0.71.hdf5
+(16, 128)
+(2265, 128)
+0.482477439106
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-30-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.646394321622
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-36-0.78.hdf5
+(16, 128)
+(2265, 128)
+0.480206313439
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-31-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.646612759001
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-37-0.72.hdf5
+(16, 128)
+(2265, 128)
+0.4807521016
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-42-0.73.hdf5
+(16, 128)
+(2265, 128)
+0.475421753937
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-43-0.71.hdf5
+(16, 128)
+(2265, 128)
+0.485777032487
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-37-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647305350135
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-39-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647427688282
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-47-0.82.hdf5
+(16, 128)
+(2265, 128)
+0.481976389844
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-48-0.82.hdf5
+(16, 128)
+(2265, 128)
+0.482345354903
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-49-0.70.hdf5
+(16, 128)
+(2265, 128)
+0.473253998726
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-45-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647680805981
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-46-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647726153524
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-47-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647689066553
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-48-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.64770333461
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-49-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647687780444
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-01-0.14.hdf5
+(16, 128)
+(2265, 128)
+0.628276935481
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-03-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.640325136311
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-05-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.649942407104
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-06-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.649964629341
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-07-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.649888598073
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-10-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.661311857512
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-13-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.661054513092
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-15-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660827948234
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-17-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660550208583
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-20-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660442985453
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-28-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644722196605
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-33-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644670920474
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-34-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644541419834
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-36-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644263392294
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-37-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644079430144
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-41-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.634367390458
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-44-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.641056340891
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-47-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.64027257915
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-12-0.79.hdf5
+(16, 128)
+(2265, 128)
+0.533399636744
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-11-0.74.hdf5
+(16, 128)
+(2265, 128)
+0.514157869871
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-24-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644603379275
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-13-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.648486741866
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-33-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.646944087064
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-26-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.645343929224
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-22-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.64377266003
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-08-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.65095074072
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-12-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.648919024303
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-16-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.651560761703
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-39-0.63.hdf5
+(16, 128)
+(2265, 128)
+0.482515316709
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-29-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.646220115799
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-25-0.82.hdf5
+(16, 128)
+(2265, 128)
+0.485008029641
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-17-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.650916827586
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-36-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.64724230504
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-40-0.72.hdf5
+(16, 128)
+(2265, 128)
+0.47619456564
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-18-0.75.hdf5
+(16, 128)
+(2265, 128)
+0.497395687124
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-04-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.652344293752
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-31-0.74.hdf5
+(16, 128)
+(2265, 128)
+0.479631716542
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-14-0.84.hdf5
+(16, 128)
+(2265, 128)
+0.516743324647
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-44-0.76.hdf5
+(16, 128)
+(2265, 128)
+0.484041954948
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-40-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647533825422
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-43-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647625643714
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-44-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647686843961
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-08-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.656681911108
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-09-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.661545710648
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-11-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.661065827484
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-12-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.661082298051
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-14-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660899456349
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-16-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660711246924
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-18-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660477550373
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-19-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660470206297
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-22-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660362130807
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-24-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660445412374
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-27-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644762382192
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-29-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644772285703
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-31-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644638438497
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-38-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.643818495202
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-40-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.635384759498
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-43-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.641614925107
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-45-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.634883488633
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-34-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.646995456814
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-32-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.646930777316
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-15-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.652160727927
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-45-0.73.hdf5
+(16, 128)
+(2265, 128)
+0.480938654867
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-32-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644737192734
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-06-0.68.hdf5
+(16, 128)
+(2265, 128)
+0.545228326274
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-42-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647587218686
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-23-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.66052026835
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-28-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.645721492571
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-27-0.71.hdf5
+(16, 128)
+(2265, 128)
+0.487955970792
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-35-0.80.hdf5
+(16, 128)
+(2265, 128)
+0.480336742642
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-38-0.74.hdf5
+(16, 128)
+(2265, 128)
+0.483535612729
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-27-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.645521079526
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-04-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.649608989347
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-00-0.27.hdf5
+(16, 128)
+(2265, 128)
+0.46515816253
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-01-0.58.hdf5
+(16, 128)
+(2265, 128)
+0.56318230862
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-39-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.638497683153
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-25-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644818953288
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-23-0.77.hdf5
+(16, 128)
+(2265, 128)
+0.49433442146
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-35-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647123564119
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-18-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.649969396623
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-02-0.66.hdf5
+(16, 128)
+(2265, 128)
+0.583214472206
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-48-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.640341751215
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-35-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644414990992
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-16-0.73.hdf5
+(16, 128)
+(2265, 128)
+0.505467962069
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-09-0.92.hdf5
+(16, 128)
+(2265, 128)
+0.54959761408
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-02-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.636988916796
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-26-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644792698045
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-30-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.644693896496
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-38-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647382441918
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-21-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.660435806856
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-25-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.64507016183
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-41-0.79.hdf5
+(16, 128)
+(2265, 128)
+0.474903137047
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-11-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.64941462515
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-41-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.647573286394
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-07-0.11.hdf5
+(16, 128)
+(2265, 128)
+0.65146771477
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-46-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.640210977166
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-42-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.636769877498
+Epochs/with_gamma_single_TF/54_gamma_shuffle_TF_weights-21-0.12.hdf5
+(16, 128)
+(2265, 128)
+0.64446864472
+Epochs/with_gamma_single_TF/54drop_gamma_shuffle_TF_weights-46-0.80.hdf5
+(16, 128)
+(2265, 128)
+0.480212046897
+Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-49-0.13.hdf5
+(16, 128)
+(2265, 128)
+0.640364841537
+['Epochs/with_gamma_single_TF/54_log_gamma_shuffle_weights-09-0.12.hdf5', 0.6615457106483219]
