@@ -5,7 +5,7 @@ import fileinput
 import collections
 
 
-CNA_path = "Corpus"
+CNA_path = "../Corpus/SPLIT_DOC_WDID_NEW"
 Cluster_path = "clusters"
 # read document
 def read_doc():
