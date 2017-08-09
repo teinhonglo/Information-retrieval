@@ -5,9 +5,8 @@ np.random.seed(1337)
 from keras.models import Sequential, Model
 import theano
 from keras.engine.topology import Layer
-from keras.layers import Dense, Dropout, Input, Lambda, merge, Embedding, LSTM
+from keras.layers import Dense, Dropout, Input, Lambda, merge, Embedding, LSTM, Convolution1D
 from keras.layers.core import Reshape
-from keras.layers.wrappers import TimeDistributed
 from keras import backend as K
 from keras.engine.topology import Layer
 
@@ -46,13 +45,13 @@ vocab_size = 51253
 embed_dim = 64
 input_dim = 50
 
-# Number of input(query and document)
+# Number of the input(query and document)
 qry_vec = Input(shape=(input_dim,), name = "qry_input") 
 doc_vec = Input(shape=(input_dim,), name = "doc_input") 
 
 # Embeddings Layer
 emb = Embedding(vocab_size, embed_dim, input_length = input_dim, name="emb_layer")
-# seq_layer = TimeDistributed(Dense(output_shape(None), kernel_regularizer=softmax_reg), input_shape=(input_dim, embed_dim), name="seq_layer")
+with_gamma = Convolution1D(1, 1, padding = "same", input_shape = (input_dim, embed_dim), activation = "linear", use_bias = False)
 seq_layer = Lambda(lambda x: K.sum(x, axis=1), output_shape=lambda s: (s[0], s[2]), name="seq_layer")
 # emb_rsp = Reshape((input_dim, embed_dim), name = "emb_reshape")
 # seq_layer = Dense(1)
@@ -60,15 +59,15 @@ seq_layer = Lambda(lambda x: K.sum(x, axis=1), output_shape=lambda s: (s[0], s[2
 # Base Network
 h1 = Dense(128, input_shape=(input_dim,), name = "h1")
 h1_dp = Dropout(0.2)
-h2 = Dense(256, activation='sigmoid', name = "h2")
+h2 = Dense(256, activation='relu', name = "h2")
 h2_dp = Dropout(0.2)
-h3 = Dense(128, activation='sigmoid', name = "h3")
+h3 = Dense(128, activation='relu', name = "h3")
 h3_dp = Dropout(0.2)
-h4_rk = Dense(1, name = "h4_score")
+h4_rk = Dense(1, activation='sigmoid', name = "h4_score")
 
 # Embedding and Pojection
-qry_rep = seq_layer(emb(qry_vec))
-doc_rep = seq_layer(emb(doc_vec))
+qry_rep = seq_layer(with_gamma(emb(qry_vec)))
+doc_rep = seq_layer(with_gamma(emb(doc_vec)))
 
 qry_h1 = h1_dp(h1(qry_rep))
 doc_h1 = h1_dp(h1(doc_rep))
@@ -95,12 +94,14 @@ model.compile(optimizer='Adam',
 
 model.summary()
 
-# preprocess data
+# Preprocess data
 data_a = np.random.rand(100, input_dim) * 3
 data_b = np.random.rand(100, input_dim) * (-3)
 
-labels = np.sum(data_a - data_b, axis = 1)
-labels = labels.astype(np.float32)
+da_sub_db = np.sum(data_a - data_b, axis = 1)
+ab_min = np.min(da_sub_db, axis = 0)
+ab_max = np.max(da_sub_db, axis = 0)
+labels = (da_sub_db - ab_min) / (ab_max - ab_min)
 
 from keras.utils import plot_model
 plot_model(model, to_file='model.png')
@@ -112,5 +113,4 @@ history_adam = model.fit([data_a, data_b], labels,
                         shuffle=True,
                         validation_split=validation_split)
                         
-#model.save('rank_function.h5')                                
-
+#model.save('rank_function.h5')
