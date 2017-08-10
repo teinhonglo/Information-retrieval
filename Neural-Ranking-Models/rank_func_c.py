@@ -88,7 +88,7 @@ predicts = Lambda(relative_distance,
 # Define a trainable model linking the the predicts
 model = Model(inputs=[qry_vec, doc_vec], outputs=predicts)
 
-model.compile(optimizer='Adam',
+model.compile(optimizer='Adadelta',
               loss=hinge_loss,
               metrics=['accuracy'])
 
