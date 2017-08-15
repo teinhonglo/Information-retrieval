@@ -25,7 +25,15 @@ def read_file(filepath):
 	
 def main():
 	filepath = "SPLIT_AS0_WDID_NEW"
+	txtpath = "SPLIT_DOC_WDID_NEW"
 	data = read_file(filepath)
+	txt_data = read_file(txtpath)
+	doc_list = txt_data.keys()
+	# remove duplicate document
+	for filename in data.keys():
+		if not filename in doc_list:
+			data.pop(filename, None)
+			
 	for filename, content in data.items():
 		with open(filepath + "_C/"+filename, "wb") as f:
 			f.write(content)
