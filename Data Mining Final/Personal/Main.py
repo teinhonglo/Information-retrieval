@@ -25,7 +25,7 @@ for num in range(4, 65):
 	num_of_cluster = num
 	# kmeans
 	# return clusters and centeroids
-	[clusters, centeriods] = kmeans.kmeans(data_list, num_of_cluster)	
+	[clusters, centroids] = kmeans.kmeans(data_list, num_of_cluster)	
 
 	with io.open('cluster_re/kmeans_' + str(num_of_cluster) + '.txt', 'w', encoding = 'utf-8') as output:
 		# Compute SSE
@@ -36,7 +36,7 @@ for num in range(4, 65):
 			output.write(unicode(cluster_name, 'utf-8', errors="replace"))
 			
 			# Centeroid
-			#print centeriods[i]
+			#print centroids[i]
 			cluster_data = []
 			data_str = ""
 			
@@ -62,7 +62,7 @@ for num in range(4, 65):
 			output.write(unicode("\n", 'utf-8', errors="replace"))
 			
 			# Sum of Squared Error
-			sse += ((cluster_data - centeriods[i]) ** 2).sum(axis = 1).sum(axis = 0)
+			sse += ((cluster_data - centroids[i]) ** 2).sum(axis = 1).sum(axis = 0)
 			print 
 		output.write(unicode("SSE : ", 'utf-8', errors="replace"))
 		output.write(unicode(str(sse) + "\n", 'utf-8', errors="replace"))
