@@ -17,18 +17,18 @@ for idx, vec in enumerate(query_model):
 for num_of_cluster in [2, 4, 8]:			
 	# kmeans
 	# return clusters and centeroids
-	[clusters, centroid] = kmeans.kmeans(data_list, num_of_cluster)	
+	[clusters, centroids] = kmeans.kmeans(data_list, num_of_cluster)	
 
 	with open('clusters/kmeans_' + str(num_of_cluster) + '.txt', 'w') as output:
 		# Compute SSE
 		sse = 0
 		for cur_cluster in xrange(0, len(clusters)):
 			# Cluster 
-			cluster_name = str(cur_cluster) + "," + centroid[cur_cluster]
+			cluster_name = str(cur_cluster) + "," + centroids[cur_cluster]
 			output.write(cluster_name)
 			
 			# Centeroid
-			#print centroid[cur_cluster]
+			#print centroids[cur_cluster]
 			cluster_data = []
 			data_str = ""
 			
@@ -40,6 +40,6 @@ for num_of_cluster in [2, 4, 8]:
 			output.write("\n")
 			
 #			# Sum of Squared Error
-#			sse += ((cluster_data - centroid[cur_cluster]) ** 2).sum(axis = 1).sum(axis = 0)
+#			sse += ((cluster_data - centroids[cur_cluster]) ** 2).sum(axis = 1).sum(axis = 0)
 #		output.write(unicode("SSE : ", 'utf-8', errors="replace"))
 #		output.write(unicode(str(sse) + "\n", 'utf-8', errors="replace"))
