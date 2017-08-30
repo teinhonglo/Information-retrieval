@@ -12,6 +12,7 @@ num_of_clusters = 2
 corpus = "TDT2"
 method = "RM"
 spoken = ""
+short = ""
 model_name = "RLE_" + method + spoken
 model_path = "../Corpus/model/" + corpus + "/UM/"
 result_path = "NN_Result/" + corpus + "/" + method + "/" + num_of_clusters + "/"
@@ -54,4 +55,4 @@ if __name__ == "__main__":
 	with open(model_path + "test_query_model.pkl", "rb") as f : qry_model = Pickle.load(f)
 	test_model = create_model(num_of_clusters, corpus, model_name)
 	qry_model = test_model.predict(qry_model)
-	with open(result_path + "test_query_model.pkl", "wb") as f: Pickle.dump(qry_model, f, True)
+	with open(result_path + "test_query_model" + short + spoken + ".pkl", "wb") as f: Pickle.dump(qry_model, f, True)
