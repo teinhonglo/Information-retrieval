@@ -29,13 +29,13 @@ for num_of_cluster in [2, 4, 8]:
 			
 			# Centeroid
 			#print centroids[cur_cluster]
-			cluster_data = []
+			#cluster_data = []
 			data_str = ""
 			
 			# Item
 			for data in clusters[cur_cluster]:
 				data_str += "," + data.getID()
-				cluster_data.append(data.getCoor())
+				#cluster_data.append(data.getCoor())
 			output.write(data_str)
 			output.write("\n")
 			
