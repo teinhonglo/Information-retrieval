@@ -31,7 +31,7 @@ def clust2train(model_path, obj_fpath, obj_fname, fpath, k):
 			data = line.split(",")
 			cur_qry = []
 			cur_obj = []
-			for idx in data[2:]:
+			for idx in data[1:]:
 				cur_qry.append(query_model[idx])
 				cur_obj.append(obj_model[idx])
 			X_train.append(np.copy(np.vstack(cur_qry))	

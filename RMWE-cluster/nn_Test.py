@@ -45,10 +45,8 @@ def create_model:
 	def get_centroids(self, corpus, num_of_clusters):
 		# read cluster file
 		centroids = []
-		with open("clusters/kmeans_" + str(num_of_clusters) + ".txt", "r") as f:
-			for line in f.readlines():
-				centroids.append(line.split(",")[1])
-			centroids = np.vstack(centroids)	
+		with open("clusters/kmeans_centroids_" + str(num_of_clusters) + ".pkl", "rb") as f:
+			centroids = Pickle.load(f)
 		return centroids
 
 if __name__ == "__main__":
