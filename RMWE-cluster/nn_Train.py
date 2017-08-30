@@ -34,8 +34,7 @@ def create_model:
 		return model
 
 	def train(self, X_train, Y_train):
-		X_train = X_train
-		Y_train = Y_train
+		X_train, Y_train = X_train, Y_train
 		batch_size = self.batch_size
 		epochs = self.epochs
 		''' Fit models and use validation_split=0.1 '''
@@ -45,6 +44,6 @@ def create_model:
 								verbose=1,
 								shuffle=True,
 								validation_split=0.1)
-	def save(self, Corpus, obj_func)							
+	def save(self, Corpus, obj_func, k)							
 		''' Create a HDF5 file '''							
-		model.save("NN_Model/"+Corpus+"/RLE_" + obj_func + ".h5")
+		model.save("NN_Model/"+Corpus+"/RLE_" + obj_func + "_" + str(k) +".h5")

@@ -23,7 +23,7 @@ for num_of_cluster in [2, 4, 8]:
 	with open("clusters/"+corpus+"/kmeans_" + str(num_of_cluster) + '.txt', 'w') as output:
 		# Compute SSE
 		sse = 0
-		for cur_cluster in xrange(0, len(clusters)):
+		for cur_cluster in xrange(len(clusters)):
 			# Cluster 
 			cluster_name = str(cur_cluster) + "," + centroids[cur_cluster]
 			output.write(cluster_name)

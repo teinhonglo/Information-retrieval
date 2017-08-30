@@ -50,4 +50,4 @@ for k_clusters in num_of_clusters:
 			model = nn_Train.create_model()
 			model.train(X, Y)
 			# Storage training model
-			model.save("TDT2", obj_funcs[obj_idx])
+			model.save("TDT2", obj_funcs[obj_idx], idx)
