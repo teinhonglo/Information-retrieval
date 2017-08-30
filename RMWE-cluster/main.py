@@ -10,19 +10,28 @@ rel_qry_lambda = 0.1
 qry_lambda = 0.1
 doc_lambda = 0.5
 
+num_of_clusters = 2
+corpus = "TDT2"
+method = "RM"
+spoken = ""
+short = ""
+model_name = "test_query_model" + short + spoken + ".pkl"
+model_path = "../Corpus/model/" + corpus + "/UM/"
+result_path = "NN_Result/" + corpus + "/" + method + "/" + num_of_clusters + "/"
+
 optimizer = ["Adagrad", "Nadam", "Adam"]
 losses = ["k", "c"]
 
-with open("test_query_model.pkl", "rb") as file: query_model = Pickle.load(file)
-with open("test_query_list.pkl", "rb") as file:	query_list = Pickle.load(file)
+with open(model_path + "test_query_model.pkl", "rb") as file: query_model = Pickle.load(file)
+with open(model_path + "test_query_list.pkl", "rb") as file:	query_list = Pickle.load(file)
 print query_model.shape
 
-with open("doc_model.pkl", "rb") as file: doc_model = Pickle.load(file)
-with open("doc_list.pkl", "rb") as file: doc_list = Pickle.load(file)
+with open(model_path + "doc_model.pkl", "rb") as file: doc_model = Pickle.load(file)
+with open(model_path + "doc_list.pkl", "rb") as file: doc_list = Pickle.load(file)
 print doc_model.shape
 
 #with open("RM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
-with open("NN_result/SSWLM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
+with open(result_path + model_name, "rb") as file : rel_query_model = Pickle.load(file)
 print rel_query_model.shape
 
 background_model = ProcDoc.read_background_dict()
@@ -57,5 +66,5 @@ for rel_qry_lambda in np.linspace(0, 1., num=11):
 		query_docs_ranking[query_list[q_idx]] = docs_ranking
 	mAP = evl.mean_average_precision(query_docs_ranking)	
 	print mAP
-with open('eswlm_ranking_result.pkl', "wb") as file :	Pickle.dump(query_docs_ranking, file, True)
+#with open('eswlm_ranking_result.pkl', "wb") as file :	Pickle.dump(query_docs_ranking, file, True)
 
