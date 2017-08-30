@@ -7,9 +7,9 @@ import cPickle as Pickle
 import os
 
 data = {}                # content of document (doc, content)
-background_model = {}            # word count of 2265 document (word, number of words)
+background_model = {}    # word count of 2265 document (word, number of words)
 general_model = {}
-query = {}                # query
+query = {}               # query
 vocabulary = np.zeros(51253)
 
 storage_path = "model/TDT3/"
