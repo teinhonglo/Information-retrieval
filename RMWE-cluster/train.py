@@ -11,7 +11,7 @@ model_path = "../Corpus/model/TDT2/UM/"
 # objective function
 # method and filename
 obj_fpath = "obj_func/" + corpus + "/"
-obj_funcs = ["RM", "SRM", "SWLM", "SSWLM", "RM_S", "SRM_S", "SWLM_S", "SSWLM_S"]
+obj_funcs = ["RM", "SRM", "SWM", "SSWM", "RM_S", "SRM_S", "SWM_S", "SSWM_S"]
 obj_fnames = ["relevance_model_RM.pkl",
              "relevance_model_SRM_9.pkl",
              "rel_supervised_swlm_entropy.pkl",
@@ -53,4 +53,4 @@ for k_clusters in num_of_clusters:
             model = nn_Train.create_model()
             model.train(X, Y)
             # Storage training model
-            model.save("TDT2", obj_funcs[obj_idx], idx)
+            model.save("TDT2", obj_funcs[obj_idx], idx, k_clusters)

@@ -38,14 +38,19 @@ class create_model:
         batch_size = self.batch_size
         model = self.model
         epochs = self.epochs
+        validation_split = 0.1
+        if X_train.shape[0] < 10:
+             print X_train.shape
+             validation_split = 0
         ''' Fit models and use validation_split=0.1 '''
         history_adam = model.fit(X_train, Y_train,
                                 batch_size=batch_size,
                                 epochs=epochs,
                                 verbose=1,
                                 shuffle=True,
-                                validation_split=0.1)
-    def save(self, Corpus, obj_func, k):
-        ''' Create a HDF5 file '''                            
+                                validation_split=validation_split)
+    def save(self, Corpus, obj_func, k, in_k):
+        ''' Create a HDF5 file '''
+        method  = obj_func.split("_")[0]
         model = self.model
-        model.save("NN_Model/"+Corpus+"/RLE_" + obj_func + "_" + str(k) +".h5")
+        model.save("NN_Model/"+Corpus+"/"+method+"/"+str(in_k)+"/RLE_" + obj_func + "_" + str(k) +".h5")
