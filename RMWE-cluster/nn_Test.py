@@ -8,11 +8,11 @@ from keras.models import Sequential, load_model
 from keras.layers.core import Dense, Activation
 import cPickle as Pickle
 
-num_of_clusters = 2
+num_of_clusters = 8
 corpus = "TDT2"
-method = "RM"
-spoken = ""
-short = ""
+method = "SSWM"
+spoken = "_S"
+short = "_short"
 model_name = "RLE_" + method + spoken
 model_path = "../Corpus/model/" + corpus + "/UM/"
 result_path = "NN_Result/" + corpus + "/" + method + "/" + str(num_of_clusters) + "/"
@@ -22,7 +22,13 @@ class create_model:
         # Load NN_model
         models = []
         for k in xrange(num_of_clusters):
+<<<<<<< HEAD
+            NN_Model_path = "NN_Model/" + corpus + "/" + method + "/" + str(num_of_clusters) + "/" + model_name + "_" + str(k) + ".h5"
+            print NN_Model_path
+            model = load_model(NN_Model_path)
+=======
             model = load_model("NN_Model/" + corpus + "/" + method + "/" + str(num_of_clusters) + "/" + model_name + "_" + str(k) + ".h5")
+>>>>>>> 530b7b9b5b23f104b7284756019a763a4bd748eb
             models.append(model)
         self.models = models    
         # Get centroids
@@ -36,6 +42,7 @@ class create_model:
         for qry_vec in qry_model:
             # Get labels
             label = np.sqrt(((qry_vec - centroids) ** 2).sum(axis=1)).argmin(axis=0)
+            print label
             # Predict
             pred_vec = np.array([qry_vec.reshape(qry_vec.shape[0])])
             re_qry_vec = models[label].predict(pred_vec)
@@ -51,7 +58,12 @@ class create_model:
         return centroids
 
 if __name__ == "__main__":
+<<<<<<< HEAD
+    with open(model_path + "test_query_model" + short + ".pkl", "rb") as f : qry_model = Pickle.load(f)
+    test_model = create_model(num_of_clusters, method, corpus, model_name)
+=======
     with open(model_path + "test_query_model.pkl", "rb") as f : qry_model = Pickle.load(f)
     test_model = create_model(num_of_clusters, method,corpus, model_name)
+>>>>>>> 530b7b9b5b23f104b7284756019a763a4bd748eb
     qry_model = test_model.predict(qry_model)
     with open(result_path + "test_query_model" + short + spoken + ".pkl", "wb") as f: Pickle.dump(qry_model, f, True)
