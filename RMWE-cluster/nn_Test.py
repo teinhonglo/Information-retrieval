@@ -22,13 +22,9 @@ class create_model:
         # Load NN_model
         models = []
         for k in xrange(num_of_clusters):
-<<<<<<< HEAD
             NN_Model_path = "NN_Model/" + corpus + "/" + method + "/" + str(num_of_clusters) + "/" + model_name + "_" + str(k) + ".h5"
             print NN_Model_path
             model = load_model(NN_Model_path)
-=======
-            model = load_model("NN_Model/" + corpus + "/" + method + "/" + str(num_of_clusters) + "/" + model_name + "_" + str(k) + ".h5")
->>>>>>> 530b7b9b5b23f104b7284756019a763a4bd748eb
             models.append(model)
         self.models = models    
         # Get centroids
@@ -58,12 +54,7 @@ class create_model:
         return centroids
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     with open(model_path + "test_query_model" + short + ".pkl", "rb") as f : qry_model = Pickle.load(f)
     test_model = create_model(num_of_clusters, method, corpus, model_name)
-=======
-    with open(model_path + "test_query_model.pkl", "rb") as f : qry_model = Pickle.load(f)
-    test_model = create_model(num_of_clusters, method,corpus, model_name)
->>>>>>> 530b7b9b5b23f104b7284756019a763a4bd748eb
     qry_model = test_model.predict(qry_model)
     with open(result_path + "test_query_model" + short + spoken + ".pkl", "wb") as f: Pickle.dump(qry_model, f, True)
