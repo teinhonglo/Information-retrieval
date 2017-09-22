@@ -4,7 +4,7 @@ import nn_Train
 
 # Kmeans filename
 corpus = "TDT2"
-cluster_fpath = "clusters/" + corpus + "/"
+cluster_fpath = "clusters_kl/" + corpus + "/"
 num_of_clusters = [2, 4, 8]
 # model_path
 model_path = "../Corpus/model/TDT2/UM/"
@@ -53,4 +53,4 @@ for k_clusters in num_of_clusters:
             model = nn_Train.create_model()
             model.train(X, Y)
             # Storage training model
-            model.save("TDT2", obj_funcs[obj_idx], idx, k_clusters)
+            model.save(corpus, obj_funcs[obj_idx], idx, k_clusters)

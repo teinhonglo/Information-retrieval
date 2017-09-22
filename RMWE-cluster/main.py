@@ -10,15 +10,15 @@ rel_qry_lambda = 0.1
 qry_lambda = 0.1
 doc_lambda = 0.7
 
-num_of_clusters = 2 
+num_of_clusters = 8
 corpus = "TDT2"
-method = "SSWM"
+method = "SWM"
 spoken = ""
 short = ""
 model_name = "test_query_model" + short + spoken + ".pkl"
 model_path = "../Corpus/model/" + corpus + "/UM/"
 result_path = "NN_Result/" + corpus + "/" + method + "/" + str(num_of_clusters) + "/"
-nrm_model = "RMWE_qry/test_qry_model_sswlm.pkl"
+nrm_model = "RMWE_qry/test_qry_model_" + method +short + spoken +".pkl"
 
 with open(nrm_model, "rb") as file: query_model = Pickle.load(file)
 with open(model_path + "test_query_list.pkl", "rb") as file:    query_list = Pickle.load(file)
@@ -31,7 +31,7 @@ print doc_model.shape
 background_model = ProcDoc.read_background_dict()
 
 #with open("RM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
-with open(result_path + "test_query_model" + short + spoken + ".pkl", "rb") as file : rel_query_model = Pickle.load(file)
+with open(result_path + "test_query_model" + short + spoken + "_sim_kl.pkl", "rb") as file : rel_query_model = Pickle.load(file)
 print rel_query_model.shape
 
 evl = evaluate.evaluate_model(False)
