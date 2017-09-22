@@ -2,7 +2,7 @@ import os
 import numpy as np
 import sys
 
-np.random.seed(1331)
+np.random.seed(1337)
 
 class dataInfo:
     def __init__(self, ID, coor):
@@ -38,28 +38,24 @@ def kmeans(dataSet, k):
             cluster_np = []
             for d in cluster:
                 cluster_np.append(d.getCoor().flatten().tolist())
-			# mean	
+            # mean
             centroids[index] = np.mean(cluster_np, axis=0).tolist()
             index += 1
 
     return [clusters, centroids]
 
-# calculates euclidean distance
+# find which centroid is the closest
 def getLabels(dataSets, centroids, clusters):
     for instance in dataSets:  
-        # find which centroid is the closest
-		# euclidean distance
+        # euclidean distance
         closest_index = np.sqrt(((instance.getCoor()-centroids)**2).sum(axis=1)).argmin(axis=0)
-		# kl divergence, zero domain
-		# epsilon = sys.float_info.epsilon
-		# new_centroids = centroids + epsilon
-		# new_centroids /= new_centroids.sum(axis = 1)
-		# closest_index = ((-instance.getCoor() * np.log(centroids).sum(axis=1)).argmin(axis=0)
+        # kl divergence
+        # closest_index = (-instance.getCoor() * np.log(centroids)).sum(axis=1).argmin(axis=0)
         try:
             clusters[closest_index].append(instance)
         except KeyError:
             clusters[closest_index] = [instance]
-	
+    
     # if any cluster is empty, then assign one point from dataset randomly
     for cluster in clusters:
         if not cluster:
