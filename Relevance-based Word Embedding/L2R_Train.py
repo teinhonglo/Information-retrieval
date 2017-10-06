@@ -6,8 +6,10 @@ np.random.seed(1331)
 
 import theano
 import cPickle as pickle
+
+''' Import keras to build a DL model '''
 from keras.layers import Dense, Dropout, Input, Lambda, merge, Embedding, LSTM, Convolution1D
-from keras.layers.core import Reshape
+from keras.layers.core import Reshape, Dense, Activation, Dropout
 from keras.models import Sequential, Model
 from keras import backend as K
 
@@ -31,24 +33,26 @@ def relative_distance(vects):
     return x - y
 
 def kl_shape(shapes):
-    return (1, 1)
+    shape1, shape2 = shapes
+    return (shape1[0], 1)
 
+def rel_shape(shapes):
+    shape1, shape2 = shapes
+    return (shape1[0], 1)
 
-#execfile('preprocess.py')
 with open(model_path + "query_model.pkl", "rb") as file: query_model = pickle.load(file)
 X_train = query_model
 with open("obj_func/TDT2/rel_supervised_swlm_entropy.pkl", "rb") as file: query_relevance = pickle.load(file)
-Y_train = np.sum(query_relevance, axis=1)
+Y_train = np.random.rand(800, 1)#np.sum(query_relevance, axis = 1)
+print Y_train.shape
+#print Y_train.shape
 
 ''' set the size of mini-batch and number of epochs'''
-batch_size = 16
+batch_size = 16 
 epochs = 55
 vocabulary_size = 51253
 embedding_dimensionality = 350
 
-''' Import keras to build a DL model '''
-from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Dropout
 
 print 'Building a model whose optimizer=adam, activation function=softmax'
 #input_layer = Dense(embedding_dimensionality, input_dim = vocabulary_size, name="input_layer")
@@ -67,17 +71,18 @@ qry_rep = rep_layer(qry_emb)
 doc_rep_plus = rep_layer(doc_emb_plus)
 doc_rep_minus = rep_layer(doc_emb_minus)
 
-plus_score = Lambda(kl_distance, output_shape=(1,), name="qry_plus")([qry_rep, doc_rep_plus])
-minus_score = Lambda(kl_distance, output_shape=(1,), name="qry_minus")([qry_rep, doc_rep_minus])
+plus_score = Lambda(kl_distance, output_shape=kl_shape, name="qry_plus")([qry_rep, doc_rep_plus])
+minus_score = Lambda(kl_distance, output_shape=kl_shape, name="qry_minus")([qry_rep, doc_rep_minus])
 
-predicts = Lambda(relative_distance, output_shape=(1,))([plus_score, minus_score])
+predicts = Lambda(relative_distance, output_shape=rel_shape)([plus_score, minus_score])
+
 model = Model(inputs=[qry, doc_plus, doc_minus], outputs=predicts)
 model.summary()
-''' Setting optimizer as Adam '''
 
+''' Setting optimizer as Adam '''
 from keras.optimizers import Adam, SGD
-model.compile(	loss= hinge_loss,
-		optimizer='Adam')
+model.compile(loss= hinge_loss,
+              optimizer='Adam')
 
 from keras.utils import plot_model
 plot_model(model, to_file='model.png')
@@ -88,7 +93,7 @@ history_adam = model.fit([X_train, X_train, X_train], Y_train,
 			epochs=epochs,
 			verbose=1,
 			shuffle=True,
-			validation_split=0.1
+			validation_split=0
 			#callbacks = [modelCheckpoint]
 			# earlyStopping callbacks
 			#callbacks = [earlyStopping]
