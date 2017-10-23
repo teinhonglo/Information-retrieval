@@ -1,6 +1,7 @@
 import os
 import fileinput
 import collections
+import cPickle as Pickle
 from collections import defaultdict
 
 class evaluate_model():
@@ -53,9 +54,13 @@ class evaluate_model():
 	def mean_average_precision(self, query_docs_point_dict):
 		mAP = 0
 		AP = 0
+		rankAP = {}
 		for q_key, docs_point_list in query_docs_point_dict.items():
-			AP += self.precision(docs_point_list, q_key)
+			curAP = self.precision(docs_point_list, q_key)
+			rankAP[q_key] = curAP
+			AP += curAP
 		mAP = AP / len(query_docs_point_dict.keys())
+		with open("bg_rank.pkl", "wb") as f: Pickle.dump(rankAP, f, True)
 		return mAP
 
 if __name__ == "__main__":
