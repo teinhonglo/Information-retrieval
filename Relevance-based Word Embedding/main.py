@@ -8,28 +8,33 @@ import evaluate
 
 rel_qry_lambda = 0.1
 qry_lambda = 0.1
-doc_lambda = 0.5
+doc_lambda = 0.8
 
 optimizer = ["Adagrad", "Nadam", "Adam"]
 losses = ["k", "c"]
 
 
-with open("test_query_model.pkl", "rb") as file: query_model = Pickle.load(file)
-with open("test_query_list.pkl", "rb") as file:	query_list = Pickle.load(file)
+with open("query_model.pkl", "rb") as file: query_model = Pickle.load(file)
+with open("query_list.pkl", "rb") as file:	query_list = Pickle.load(file)
 print query_model.shape
 
 with open("doc_model.pkl", "rb") as file: doc_model = Pickle.load(file)
 with open("doc_list.pkl", "rb") as file: doc_list = Pickle.load(file)
 print doc_model.shape
 
-#with open("RM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
-with open("NN_result/SSWLM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
+with open("statistic/UM.pkl", "rb") as file : rel_query_model = Pickle.load(file)
+#with open("NN_result/SSWLM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
 print rel_query_model.shape
 
 background_model = ProcDoc.read_background_dict()
 print background_model.shape
-
-evl = evaluate.evaluate_model(False)
+'''
+bg_qry = [background_model for i in xrange(query_model.shape[0])] 
+bg_qry = np.vstack(bg_qry)
+with open("bg_qry.pkl", "wb") as f: Pickle.dump(bg_qry, f, True)
+print bg_qry.shape
+'''
+evl = evaluate.evaluate_model(True)
 
 ''' document smoothing '''
 for doc_idx in xrange(doc_model.shape[0]):
@@ -42,9 +47,9 @@ query_bg_list = []
 doc_model = np.log(doc_model)
 
 
-for rel_qry_lambda in np.linspace(0, 1., num=11):
+for rel_qry_lambda in [np.linspace(0, 1., num=11)[7]]:
 	''' query smoothing '''	
-	with open("test_query_model.pkl", "rb") as file: query_model = Pickle.load(file)
+	with open("bg_qry.pkl", "rb") as file: query_model = Pickle.load(file)
 	for qry_idx in range(query_model.shape[0]):
 		qry_vec = query_model[qry_idx]
 		query_model[qry_idx] = (1 - rel_qry_lambda) * qry_vec + rel_qry_lambda * rel_query_model[qry_idx]
