@@ -75,11 +75,11 @@ def create_model():
 	model = Model(inputs = [query, pos_doc] + neg_docs, outputs = prob)
 	model.compile(optimizer = "adadelta", loss = "categorical_crossentropy", metrics=['accuracy'])
         model.summary()
-	# visulization
-        '''
+    # visulization
+    '''
 	from keras.utils import plot_model
 	plot_model(model, to_file='model.png')
-        '''
+    '''
 	
 	return model
 
