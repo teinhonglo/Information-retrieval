@@ -46,12 +46,13 @@ with open(model_path + "doc_list.pkl", "rb") as f: doc_list = Pickle.load(f)
 with open(model_path + "query_list.pkl", "rb") as f: qry_list = Pickle.load(f)
 with open(model_path + "test_query_list.pkl", "rb") as f: tstQry_list = Pickle.load(f)
 
-wordModel = word2vec_model.word2vec_model()
+w2v_path = ""
+wordModel = word2vec_model.word2vec_model(w2v_path)
 wordVec = wordModel.getWord2Vec()
 vocab_length = wordModel.vocabulary_length
 print vocab_length
 
-# read document
+# document
 doc = ProcDoc.read_file(document_path)
 doc = ProcDoc.doc_preprocess(doc)
 [docTmpList, docEmbList] = content2Emb(doc, wordVec, 100)
@@ -78,25 +79,28 @@ tstQry_emb = np.array(tstQry_emb)
 print tstQry_emb.shape
 np.save(model_path + "tstQry_emb_fix_100.npy", tstQry_emb)
 
+# zero padding
 qry_emb = np.load(model_path + "qry_emb_fix_100.npy")
 doc_emb = np.load(model_path + "doc_emb_fix_100.npy")
 tstQry_emb = np.load(model_path + "tstQry_emb_fix_100.npy")
 
-#qry_emd = pad_sequences(qry_emb, maxlen=2907, dtype='float32')
-#doc_emd = pad_sequences(doc_emb, maxlen=2907, dtype='float32')
-#tstQry_emd = pad_sequences(tstQry_emb, maxlen=2907, dtype='float32')
+qry_emd = pad_sequences(qry_emb, dtype='float32')
+doc_emd = pad_sequences(doc_emb, dtype='float32')
+tstQry_emd = pad_sequences(tstQry_emb, dtype='float32')
 
-#print qry_emb[0].shape
-#print tstQry_emb[0].shape
-#print doc_emb[0].shape
-#np.save(model_path + "qry_emb_pad_100.npy", qry_emb)
-#np.save(model_path + "doc_emb_pad_100.npy", doc_emb)
-#np.save(model_path + "tstQry_emb_pad_100.npy", tstQry_emb)
-'''
+print qry_emb[0].shape
+print tstQry_emb[0].shape
+print doc_emb[0].shape
+np.save(model_path + "qry_emb_pad_100.npy", qry_emb)
+np.save(model_path + "doc_emb_pad_100.npy", doc_emb)
+np.save(model_path + "tstQry_emb_pad_100.npy", tstQry_emb)
+
+# Create relevant and non-relevant train set
 from random import shuffle
 from random import randint
 with open(model_path + "HMMTraingSetDict.pkl", "rb") as RelFile: HMMTraingSetDict = Pickle.load(RelFile)
 train_list = []
+irr_doc = []
 num_of_qry = 800
 num_of_doc = 2265
 
@@ -106,7 +110,7 @@ for qry_idx in xrange(num_of_qry):
     for doc_name in HMMTraingSetDict[qry_name]:
         doc_idx = doc_list.index(doc_name)
         train_list.append([qry_idx, doc_idx, 1]) 
-    irr_doc = []
+    
     while True:
         doc_idx = randint(0, 2264)
         if (doc_idx in HMMTraingSetDict[qry_name]) or (doc_idx in irr_doc):
@@ -119,31 +123,3 @@ for qry_idx in xrange(num_of_qry):
             break
 shuffle(train_list)
 with open("../Corpus/rel_irrel/TDT2/pointwise_list_small.pkl", "wb") as pFile: Pickle.dump(train_list, pFile, True)
-
-with open("../Corpus/rel_irrel/TDT2/pointwise_list_small.pkl", "rb") as pFile: pointwise_list = Pickle.load(pFile)
-batch_size = 16
-count = 0
-q = []
-d = []
-r = []
-for data in pointwise_list:
-    [q_idx, d_idx, rel] = data
-    q.append(qry_emb[q_idx])
-    d.append(doc_emb[d_idx])
-    r.append(rel) 
-    count += 1
-    if count % batch_size == 0:
-        q = np.array(q)
-        d = np.array(d)
-        r = np.array(r)
-        q = pad_sequences(q, maxlen=2907, dtype='float32')
-        d = pad_sequences(d, maxlen=2907, dtype='float32') 
-        batch = count / batch_size
-        print batch
-        np.save("../Corpus/rel_irrel/TDT2/Batch_Train/pNP_b"+str(batch), np.array([q, d]))
-        np.save("../Corpus/rel_irrel/TDT2/Batch_Train/pNP_ba"+str(batch), r)
-        #with open("../Corpus/rel_irrel/TDT2/Batch_Train/p_b" + str(batch) +".pkl", "wb") as bFile: Pickle.dump([q, d, r], bFile, True)
-        q = []
-        d = []
-        r = []
-'''
