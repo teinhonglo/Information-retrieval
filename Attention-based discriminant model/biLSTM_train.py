@@ -28,33 +28,12 @@ def generate_arrays(qry, doc, rel, batch_size):
             st = cur_batch * batch_size
             ed = st + batch_size
             if ed >= total_size: ed = None
-            q = qry[st:ed] 
-            d = doc[st:ed]
-            r = rel[st:ed]
             # numpy array
-            q = np.array(q)
-            d = np.array(d)
-            r = np.array(r)
-            q = pad_sequences(q, dtype='float32')
-            d = pad_sequences(d, dtype='float32')
-            ''' 
-            for data in pointwise_list[st:ed]:
-                [q_idx, d_idx, rel] = data
-                q.append(qry_emb[q_idx])
-                d.append(doc_emb[d_idx])
-                r.append(rel)
-            # list to numpy
-            q = np.array(q)
-            d = np.array(d)
-            r = np.array(r)
-            q = pad_sequences(q, maxlen=2907, dtype='float32')
-            d = pad_sequences(q, maxlen=2907, dtype='float32')
-            #with open(batch_path+str(cur_batch+1)+".pkl", "rb") as bFile : [q, d, r] = Pickle.load(bFile)
-            #data = np.load(batch_path+str(cur_batch+1)+".npy")
-            #r = np.load(batch_path+"a"+str(cur_batch+1)+".npy")
-            #q = data[0]
-            #d = data[1]
-            '''
+            q = np.array(qry[st:ed])
+            d = np.array(doc[st:ed])
+            r = np.array(rel[st:ed])
+            #q = pad_sequences(q, dtype='float32', padding='post')
+            #d = pad_sequences(d, dtype='float32', padding='post')
             # zero padding
             x = [q, d]
             y = r
@@ -62,17 +41,17 @@ def generate_arrays(qry, doc, rel, batch_size):
 
 def train(qry_emb, doc_emb, pointwise_list):
     num_of_train_data = len(pointwise_list)
-    batch_size = 16 
+    batch_size = 32 
     epochs = 55
-    Epochs_filepath="NN_Model/TDT2/L2R/Epochs_lstm_100/weights-{epoch:02d}-{loss:.2f}_nonconv_adadelta.hdf5"
+    Epochs_filepath="NN_Model/TDT2/L2R/Epochs_lstm_300/weights-{epoch:02d}-{loss:.2f}_adadelta_learn_post.hdf5"
     checkpoint = ModelCheckpoint(Epochs_filepath, monitor='loss', verbose=0, save_best_only=False, mode='min')
     callbacks_list = [checkpoint]
     [qry, doc, rel] = preprocess(qry_emb, doc_emb, pointwise_list)
-    model = TestModel.create_single_model(2907, 100)
+    model = TestModel.create_emb_model(2907, 300)
     model.fit_generator(generate_arrays(qry, doc, rel, batch_size), steps_per_epoch=(num_of_train_data / batch_size + 1), callbacks=callbacks_list, epochs = epochs)
 
     ''' Create a HDF5 file '''                            
-    model.save('NN_Model/TDT2/L2R/LSTM_Emb_100_nonconv_adadelta.h5')
+    model.save('NN_Model/TDT2/L2R/LSTM_Emb_300_adadelta_learn_post.h5')
 
 def main():
     model_path = "../Corpus/model/TDT2/UM/"
@@ -83,8 +62,8 @@ def main():
     rel_dist = []
 
     with open(L2R_path+"pointwise_list_small.pkl", "rb") as f: qry_doc_rel = Pickle.load(f)
-    qry_emb = np.load(model_path+"qry_emb_fix_100.npy")    
-    doc_emb = np.load(model_path+"doc_emb_fix_100.npy")
+    qry_emb = np.load(model_path+"qry_id_fix_pad.npy")    
+    doc_emb = np.load(model_path+"doc_id_fix_pad.npy")
     train(qry_emb, doc_emb, qry_doc_rel)
 if __name__ == "__main__":
     main()
