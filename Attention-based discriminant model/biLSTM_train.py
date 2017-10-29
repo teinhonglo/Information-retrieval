@@ -43,27 +43,49 @@ def train(qry_emb, doc_emb, pointwise_list):
     num_of_train_data = len(pointwise_list)
     batch_size = 32 
     epochs = 55
-    Epochs_filepath="NN_Model/TDT2/L2R/Epochs_lstm_300/weights-{epoch:02d}-{loss:.2f}_adadelta_learn_post.hdf5"
+    Epochs_filepath="NN_Model/TDT2/L2R/Epochs_lstm_100/weights-{epoch:02d}-{loss:.2f}_adadelta_learn_post.hdf5"
     checkpoint = ModelCheckpoint(Epochs_filepath, monitor='loss', verbose=0, save_best_only=False, mode='min')
     callbacks_list = [checkpoint]
     [qry, doc, rel] = preprocess(qry_emb, doc_emb, pointwise_list)
-    model = TestModel.create_emb_model(2907, 300)
+    model = TestModel.create_emb_model(2907, 100)
     model.fit_generator(generate_arrays(qry, doc, rel, batch_size), steps_per_epoch=(num_of_train_data / batch_size + 1), callbacks=callbacks_list, epochs = epochs)
 
     ''' Create a HDF5 file '''                            
-    model.save('NN_Model/TDT2/L2R/LSTM_Emb_300_adadelta_learn_post.h5')
+    model.save('NN_Model/TDT2/L2R/LSTM_Emb_100_adadelta_learn_post.h5')
+
+def train_obj(qry_emb, qry_rel): 
+    batch_size = 32 
+    epochs = 55
+    Epochs_filepath="NN_Model/TDT2/EMB/Epochs_lstm_300/weights-{epoch:02d}-{loss:.2f}_ce_learn_post.hdf5"
+    qry_emb = np.asarray(qry_emb)
+    checkpoint = ModelCheckpoint(Epochs_filepath, monitor='loss', verbose=0, save_best_only=False, mode='min')
+    callbacks_list = [checkpoint]
+    model = TestModel.create_rep_model(2907, 300)
+    history_adam = model.fit(qry_emb, qry_rel,
+			batch_size=batch_size,
+			epochs=epochs,
+			verbose=1,
+			shuffle=True,
+			validation_split=0.1,
+			callbacks = callbacks_list)
+    ''' Create a HDF5 file '''
+    model.save('NN_Model/TDT2/EMB/LSTM_Emb_300_ce_learn_post.h5')
 
 def main():
     model_path = "../Corpus/model/TDT2/UM/"
-    L2R_path = "../Corpus/rel_irrel/TDT2/"
+    obj_path = "obj_func/TDT2/"
+    #L2R_path = "../Corpus/rel_irrel/TDT2/"
     qry = []
     pos_doc = []
     neg_doc = []
     rel_dist = []
-
-    with open(L2R_path+"pointwise_list_small.pkl", "rb") as f: qry_doc_rel = Pickle.load(f)
+    
+    #with open(L2R_path+"pointwise_list_small.pkl", "rb") as f: qry_doc_rel = Pickle.load(f)
     qry_emb = np.load(model_path+"qry_id_fix_pad.npy")    
-    doc_emb = np.load(model_path+"doc_id_fix_pad.npy")
-    train(qry_emb, doc_emb, qry_doc_rel)
+    with open(obj_path + "rel_supervised_swlm_entropy.pkl", "rb") as rFile: qry_rel = Pickle.load(rFile)
+    #doc_emb = np.load(model_path+"doc_id_fix_pad.npy")
+    #train(qry_emb, doc_emb, qry_doc_rel)
+    train_obj(qry_emb, qry_rel)
+
 if __name__ == "__main__":
     main()

@@ -34,6 +34,20 @@ def content2Emb(content_model, wordVec, word_length):
         EmbeddingList.append(np.copy(curEmbedding))
     return [nameList, EmbeddingList]
 
+def content2List(content_model, objList):
+    contentList = []
+    for idx, name in enumerate(objList):
+        content = content_model[name].split() 
+        cur_content = []
+        maxlen = 2907 - len(content)
+        for w_id in content:
+            cur_content.append(int(w_id) + 1)
+        for i in xrange(maxlen):
+            cur_content.append(0)
+        contentList.append(np.array(cur_content))
+    #print contentList
+    return np.asarray(contentList)
+
 def rePermute(nameList, EmbeddingList, objList):
     newEmbeddingList = []
     for idx, name in enumerate(objList):
@@ -46,8 +60,7 @@ with open(model_path + "doc_list.pkl", "rb") as f: doc_list = Pickle.load(f)
 with open(model_path + "query_list.pkl", "rb") as f: qry_list = Pickle.load(f)
 with open(model_path + "test_query_list.pkl", "rb") as f: tstQry_list = Pickle.load(f)
 
-w2v_path = ""
-wordModel = word2vec_model.word2vec_model(w2v_path)
+wordModel = word2vec_model.word2vec_model()
 wordVec = wordModel.getWord2Vec()
 vocab_length = wordModel.vocabulary_length
 print vocab_length
@@ -55,46 +68,46 @@ print vocab_length
 # document
 doc = ProcDoc.read_file(document_path)
 doc = ProcDoc.doc_preprocess(doc)
-[docTmpList, docEmbList] = content2Emb(doc, wordVec, 100)
-doc_emb = rePermute(docTmpList, docEmbList, doc_list)
-doc_emb = np.array(doc_emb)
+#[docTmpList, docEmbList] = content2Emb(doc, wordVec, 100)
+#doc_emb = rePermute(docTmpList, docEmbList, doc_list)
+doc_emb = content2List(doc, doc_list)
+doc_emb = np.asarray(doc_emb)
 print doc_emb.shape
-np.save(model_path + "doc_emb_fix_100.npy", doc_emb)
+np.save(model_path + "doc_id_fix_pad.npy", doc_emb)
 
 # train query
 query = ProcDoc.read_file(query_path)
 query = ProcDoc.query_preprocess(query)
-[qryTmpList, qryEmbList] = content2Emb(query, wordVec, 100)
-qry_emb = rePermute(qryTmpList, qryEmbList, qry_list)
-qry_emb = np.array(qry_emb)
+#[qryTmpList, qryEmbList] = content2Emb(query, wordVec, 100)
+#qry_emb = rePermute(qryTmpList, qryEmbList, qry_list)
+qry_emb = content2List(query, qry_list)
+qry_emb = np.asarray(qry_emb)
 print qry_emb.shape
-np.save(model_path + "qry_emb_fix_100.npy", qry_emb)
+np.save(model_path + "qry_id_fix_pad.npy", qry_emb)
 
 # test query
 test_query = ProcDoc.read_file(test_query_path)
 test_query = ProcDoc.query_preprocess(test_query)
-[tstQryTmpList, tstQryEmbList] = content2Emb(test_query, wordVec, 100)
-tstQry_emb = rePermute(tstQryTmpList, tstQryEmbList, tstQry_list)
-tstQry_emb = np.array(tstQry_emb)
+#[tstQryTmpList, tstQryEmbList] = content2Emb(test_query, wordVec, 100)
+#tstQry_emb = rePermute(tstQryTmpList, tstQryEmbList, tstQry_list)
+tstQry_emb = content2List(test_query, tstQry_list)
+tstQry_emb = np.asarray(tstQry_emb)
 print tstQry_emb.shape
-np.save(model_path + "tstQry_emb_fix_100.npy", tstQry_emb)
-
+np.save(model_path + "tstQry_id_fix_pad.npy", tstQry_emb)
+'''
 # zero padding
-qry_emb = np.load(model_path + "qry_emb_fix_100.npy")
-doc_emb = np.load(model_path + "doc_emb_fix_100.npy")
-tstQry_emb = np.load(model_path + "tstQry_emb_fix_100.npy")
+qry_emd = pad_sequences(qry_emb, maxlen=2907, dtype='float32', padding="post")
+doc_emd = pad_sequences(doc_emb, maxlen=2907, dtype='float32', padding="post")
+tstQry_emd = pad_sequences(tstQry_emb, maxlen=2907, dtype='float32', padding="post")
 
-qry_emd = pad_sequences(qry_emb, dtype='float32')
-doc_emd = pad_sequences(doc_emb, dtype='float32')
-tstQry_emd = pad_sequences(tstQry_emb, dtype='float32')
-
-print qry_emb[0].shape
-print tstQry_emb[0].shape
-print doc_emb[0].shape
-np.save(model_path + "qry_emb_pad_100.npy", qry_emb)
-np.save(model_path + "doc_emb_pad_100.npy", doc_emb)
-np.save(model_path + "tstQry_emb_pad_100.npy", tstQry_emb)
-
+print len(qry_emb[0])
+print len(tstQry_emb[0])
+print len(doc_emb[0])
+np.save(model_path + "qry_id_fix_pad.npy", qry_emb)
+np.save(model_path + "doc_id_fix_pad.npy", doc_emb)
+np.save(model_path + "tstQry_id_fix_pad.npy", tstQry_emb)
+'''
+'''
 # Create relevant and non-relevant train set
 from random import shuffle
 from random import randint
@@ -123,3 +136,4 @@ for qry_idx in xrange(num_of_qry):
             break
 shuffle(train_list)
 with open("../Corpus/rel_irrel/TDT2/pointwise_list_small.pkl", "wb") as pFile: Pickle.dump(train_list, pFile, True)
+'''
