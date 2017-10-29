@@ -47,7 +47,7 @@ def create_rep_model(maxlen, word_rep =100):
     predict = rep_layer(encoded_qry)
 
     model = Model(inputs = qry, outputs = predict)
-    model.compile(optimizer = "Adam", loss = "kullback_leibler_divergence", metrics=['accuracy'])
+    model.compile(optimizer = "Adam", loss = "categorical_crossentropy", metrics=['accuracy'])
     model.summary()
     
     return model
