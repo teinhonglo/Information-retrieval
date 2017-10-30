@@ -15,7 +15,7 @@ def create_rep_model(maxlen, word_rep =100):
     reduction_r = 16
     embedding_size = 300
     # Embedding network
-    word_emb = Embedding(input_dim=vocabulary_size, output_dim=word_rep, input_length=maxlen, mask_zero=True)
+    word_emb = Embedding(input_dim=vocabulary_size + 1, output_dim=word_rep, input_length=maxlen, mask_zero=True)
     biLSTM_H = Bidirectional(LSTM(num_u, return_sequences=True, name="LSTM"), merge_mode='concat', name = "Bidirectional_LSTM")
     # multi-layer perceptron, using attention
     mlp_hid_1 = Dense(reduction_d_a, activation = "tanh", name="mlp_tanh")
@@ -28,7 +28,7 @@ def create_rep_model(maxlen, word_rep =100):
     qry = Input(shape=(maxlen,), name="qry_input")
     #qry_rep = Masking(mask_value=.0)(qry)
     #doc_rep = Masking(mask_value=.0)(doc)
-    qry_rep = word_emb(qry)
+    qry_rep = Masking(mask_value=.0)(word_emb(qry))
     # query feature map
     qry_H = biLSTM_H(qry_rep)
     q_h1 = mlp_hid_1(qry_H)
@@ -47,7 +47,7 @@ def create_rep_model(maxlen, word_rep =100):
     predict = rep_layer(encoded_qry)
 
     model = Model(inputs = qry, outputs = predict)
-    model.compile(optimizer = "Adam", loss = "categorical_crossentropy", metrics=['accuracy'])
+    model.compile(optimizer = "Adam", loss = "categorical_crossentropy", metrics=['accuracy', 'categorical_accuracy'])
     model.summary()
     
     return model
