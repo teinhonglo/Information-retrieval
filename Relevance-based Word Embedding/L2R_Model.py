@@ -20,7 +20,7 @@ def kl_dist(vects):
     qry_vec, doc_vec = vects
     qry_vec = K.clip(qry_vec, K.epsilon(), 1)
     doc_vec = K.clip(doc_vec, K.epsilon(), 1)
-    dist = K.batch_dot(qry_vec, K.log(doc_vec), 1)
+    dist = K.batch_dot(-qry_vec, K.log(doc_vec), 1)
     return dist
 
 def relative_distance(vects):
@@ -65,6 +65,7 @@ def create_model():
     neg_score = dot([qry_rep, neg_doc_rep], axes = 1, normalize = True, name="neg_cos")
     '''
     predicts = Lambda(relative_distance, output_shape=rel_shape)([pos_score, neg_score])
+    predicts = Activation('relu')(predicts)
 
     model = Model(inputs=[qry, pos_doc, neg_doc], outputs=predicts)
 
