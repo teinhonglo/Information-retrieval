@@ -36,16 +36,19 @@ def content2Emb(content_model, wordVec, word_length):
 
 def content2List(content_model, objList):
     contentList = []
+    maxL = 0
     for idx, name in enumerate(objList):
         content = content_model[name].split() 
         cur_content = []
-        maxlen = 2907 - len(content)
+        maxlen = 1794 - len(content)
+        if len(content) > maxL: maxL = len(content)
         for w_id in content:
             cur_content.append(int(w_id) + 1)
         for i in xrange(maxlen):
             cur_content.append(0)
         contentList.append(np.array(cur_content))
     #print contentList
+    print maxL
     return np.asarray(contentList)
 
 def rePermute(nameList, EmbeddingList, objList):
@@ -70,10 +73,10 @@ doc = ProcDoc.read_file(document_path)
 doc = ProcDoc.doc_preprocess(doc)
 #[docTmpList, docEmbList] = content2Emb(doc, wordVec, 100)
 #doc_emb = rePermute(docTmpList, docEmbList, doc_list)
-doc_emb = content2List(doc, doc_list)
-doc_emb = np.asarray(doc_emb)
-print doc_emb.shape
-np.save(model_path + "doc_id_fix_pad.npy", doc_emb)
+#doc_emb = content2List(doc, doc_list)
+#doc_emb = np.asarray(doc_emb)
+#print doc_emb.shape
+#np.save(model_path + "doc_id_fix_pad.npy", doc_emb)
 
 # train query
 query = ProcDoc.read_file(query_path)
@@ -83,7 +86,7 @@ query = ProcDoc.query_preprocess(query)
 qry_emb = content2List(query, qry_list)
 qry_emb = np.asarray(qry_emb)
 print qry_emb.shape
-np.save(model_path + "qry_id_fix_pad.npy", qry_emb)
+np.save(model_path + "qry_id_fix_local_pad.npy", qry_emb)
 
 # test query
 test_query = ProcDoc.read_file(test_query_path)
@@ -93,7 +96,7 @@ test_query = ProcDoc.query_preprocess(test_query)
 tstQry_emb = content2List(test_query, tstQry_list)
 tstQry_emb = np.asarray(tstQry_emb)
 print tstQry_emb.shape
-np.save(model_path + "tstQry_id_fix_pad.npy", tstQry_emb)
+np.save(model_path + "tstQry_id_fix_local_pad.npy", tstQry_emb)
 '''
 # zero padding
 qry_emd = pad_sequences(qry_emb, maxlen=2907, dtype='float32', padding="post")
