@@ -6,7 +6,11 @@ from keras.models import Model, load_model
 from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional, Input, Reshape, Activation, Masking
 from keras.layers.convolutional import Convolution1D
 from keras.layers.merge import concatenate, dot
-
+'''
+def penalization(attention):
+    H = dot([attention, attention], axes=1, normalize=False) - K.eye(16)
+    return 0.01 * K.sum(K.abs(attention))
+'''
 def create_rep_model(maxlen, word_rep =100):
     #maxlen = None
     num_u = word_rep
@@ -59,7 +63,7 @@ def create_emb_model(maxlen, word_rep =100):
     reduction_d_a = 64
     reduction_r = 16
     # Embedding network
-    word_emb = Embedding(input_dim=vocabulary_size, output_dim=word_rep, input_length=maxlen, mask_zero=True)
+    word_emb = Embedding(input_dim=vocabulary_size + 1, output_dim=word_rep, input_length=maxlen, mask_zero=True)
     biLSTM_H = Bidirectional(LSTM(num_u, return_sequences=True, name="LSTM"), merge_mode='concat', name = "Bidirectional_LSTM")
     # multi-layer perceptron, using attention
     mlp_hid_1 = Dense(reduction_d_a, activation = "tanh", name="mlp_tanh")
