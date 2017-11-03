@@ -43,11 +43,11 @@ def create_model():
 	pos_doc_proj = proj(pos_doc)
 	neg_doc_projs = [proj(neg_doc) for neg_doc in neg_docs]
 	
-        query_proj2 = proj_2(query_proj)
+	query_proj2 = proj_2(query_proj)
 	pos_doc_proj2 = proj_2(pos_doc_proj)
 	neg_doc_proj2s = [proj_2(neg_doc_proj) for neg_doc_proj in neg_doc_projs]
 	
-        query_sem = sem(query_proj2)
+	query_sem = sem(query_proj2)
 	pos_doc_sem = sem(pos_doc_proj2)
 	neg_doc_sems = [sem(neg_doc_proj2) for neg_doc_proj2 in neg_doc_proj2s]
 

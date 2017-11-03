@@ -33,9 +33,7 @@ def create_model():
 	query_proj = Dense(K, name="q_proj_1", activation="tanh")(query) # See section 3.4.
 	query_proj_2 = Dense(K, name="q_proj_2", activation="tanh")(query_proj) # See section 3.4.
 
-	# In this step, we generate the semantic vector represenation of the query. This
-	# is a standard neural network dense layer, i.e., y = tanh(W_s v + b_s). Again,
-	# the paper does not include bias units.
+	# In this step, we generate the semantic vector represenation of the query. 
 	query_sem = Dense(L, name="q_sem", activation = "tanh")(query_proj_2) # See section 3.5.
 
 	# The document equivalent of the above query model.
@@ -60,10 +58,7 @@ def create_model():
 	concat_Rs = concatenate([R_Q_D_p] + R_Q_D_ns)
 	concat_Rs = Reshape((J + 1, 1))(concat_Rs)
 
-	# In this step, we multiply each R(Q, D) value by gamma. In the paper, gamma is
-	# described as a smoothing factor for the softmax function, and it's set empirically
-	# on a held-out data set. We're going to learn gamma's value by pretending it's
-	# a single 1 x 1 kernel.
+	# We're also going to learn gamma's value by pretending it's a single 1 x 1 kernel.
 	weight = np.full((1, 1, 1), 1)
 	with_gamma = Convolution1D(1, 1, padding = "same", input_shape = (J + 1, 1), activation = "linear", use_bias = False, weights = [weight])(concat_Rs)
 	with_gamma = Reshape((J + 1, ))(with_gamma)
