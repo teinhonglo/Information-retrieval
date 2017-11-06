@@ -3,15 +3,16 @@
 import numpy as np
 import cPickle as Pickle
 np.random.seed(1331)
-#import tensorflow as tf
 import theano
+#import tensorflow as tf
 #sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
 #                  inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
-import biLSTM_flat as TestModel
+import biLSTM_flatten as TestModel
 import random
 from random import shuffle
 from keras.preprocessing.sequence import pad_sequences
-from keras.callbacks import ModelCheckpoint
+from keras.models import load_model
+
 
 def preprocess(qry_emb, doc_emb, pointwise_list):
     q = []
@@ -43,19 +44,19 @@ def generate_arrays(qry, doc, rel, batch_size):
             y = r
             yield (x, y)
 
-def train(qry_emb, doc_emb, pointwise_list):
+def predict(qry_emb, doc_emb, pointwise_list):
      num_of_train_data = len(pointwise_list)
      batch_size = 32 
      epochs = 55
-     Epochs_filepath="NN_Model/TDT2/L2R/Epochs_lstm_100/weights-{epoch:02d}-{loss:.2f}_Emb_adadelta_learn_100_post)_flat.hdf5"
-     checkpoint = ModelCheckpoint(Epochs_filepath, monitor='loss', verbose=0, save_best_only=False, mode='min')
-     callbacks_list = [checkpoint]
-     #with tf.device('/gpu:0'):
+     l2r_path = "NN_Model/TDT2/L2R/Epochs_lstm_100/"
      [qry, doc, rel] = preprocess(qry_emb, doc_emb, pointwise_list)
-     model = TestModel.create_emb_model(2907, 100)
-     model.fit_generator(generate_arrays(qry, doc, rel, batch_size), steps_per_epoch=(num_of_train_data / batch_size + 1), callbacks=callbacks_list, epochs = epochs)
+     model = load_model(l2r_path + "weights-09-0.37_Emb_adadelta_learn_100_post.hdf5")
+     results = model.predict_generator(generate_arrays(qry, doc, rel, batch_size), steps=(num_of_train_data / batch_size + 1), verbose=1)
+     print(results.shape)
+     print(results)
+     np.save("tot.batch.npy", results)
      ''' Create a HDF5 file '''                            
-     model.save('NN_Model/TDT2/L2R/LSTM_Emb_adadelta_learn_100_post_flat.h5')
+     model.save('NN_Model/TDT2/L2R/LSTM_Flat_Emb_adadelta_learn_100_post.h5')
 
 def train_obj(qry_emb, qry_rel): 
     pass
@@ -93,7 +94,27 @@ def main():
     qry_emb = np.load(model_path+"qry_id_fix_pad.npy")    
     #with open(obj_path + "rel_supervised_swlm_entropy.pkl", "rb") as rFile: qry_rel = Pickle.load(rFile)
     doc_emb = np.load(model_path+"doc_id_fix_pad.npy")
-    train(qry_emb, doc_emb, qry_doc_rel)
+    #predict(qry_emb, doc_emb, qry_doc_rel)
+    results = np.load("tot.batch.npy")
+    pos_val = 0
+    neg_val = 0
+    pos_n = 0
+    neg_n = 0
+    for idx, data in enumerate(qry_doc_rel):
+        [qry_id, doc_id, rel] = data
+        pred_rel = results[idx]
+        if rel == 1 and pred_rel < 0.5:
+            print rel, pred_rel
+        if rel == 0 and pred_rel >= 0.5:
+            print rel, pred_rel
+        if pred_rel >= 0.5:
+            pos_val += pred_rel
+            pos_n += 1
+        else:
+            neg_val += pred_rel
+            neg_n += 1
+    print pos_val / pos_n
+    print neg_val / neg_n
     #train_obj(qry_emb, qry_rel)
 
 if __name__ == "__main__":

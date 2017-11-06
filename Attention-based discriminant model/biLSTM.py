@@ -1,16 +1,18 @@
 #!/usr/bin/python 
 import numpy as np
 np.random.seed(5566)
+from keras import backend as K
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model, load_model
 from keras.layers import Dense, Dropout, Embedding, LSTM, Bidirectional, Input, Reshape, Activation, Masking
 from keras.layers.convolutional import Convolution1D
 from keras.layers.merge import concatenate, dot
-'''
-def penalization(attention):
+
+def penalization_l2(attention):
     H = dot([attention, attention], axes=1, normalize=False) - K.eye(16)
-    return 0.01 * K.sum(K.abs(attention))
-'''
+    # activity_regularizer = penalization_l2
+    return 0.01 * K.sum(K.square(attention))
+
 def create_rep_model(maxlen, word_rep =100):
     #maxlen = None
     num_u = word_rep
@@ -67,7 +69,7 @@ def create_emb_model(maxlen, word_rep =100):
     biLSTM_H = Bidirectional(LSTM(num_u, return_sequences=True, name="LSTM"), merge_mode='concat', name = "Bidirectional_LSTM")
     # multi-layer perceptron, using attention
     mlp_hid_1 = Dense(reduction_d_a, activation = "tanh", name="mlp_tanh")
-    mlp_hid_2 = Dense(reduction_r, activation="softmax", name="mlp_softmax")
+    mlp_hid_2 = Dense(reduction_r, activation="softmax", activity_regularizer = penalization_l2 ,name="mlp_softmax")
     # learning to rank architecture
     Conv1D_Feature = Convolution1D(1, 2 * num_u, padding = "same", input_shape = (2 * num_u, reduction_r), activation = "linear", use_bias = False, name="position_aware")
 
@@ -75,8 +77,8 @@ def create_emb_model(maxlen, word_rep =100):
     doc = Input(shape=(maxlen,), name="doc_input")
     #qry_rep = Masking(mask_value=.0)(qry)
     #doc_rep = Masking(mask_value=.0)(doc)
-    qry_rep = word_emb(qry)
-    doc_rep = word_emb(doc)
+    qry_rep = Masking(mask_value=.0)(word_emb(qry))
+    doc_rep = Masking(mask_value=.0)(word_emb(doc))
     # query feature map
     qry_H = biLSTM_H(qry_rep)
     q_h1 = mlp_hid_1(qry_H)
@@ -235,16 +237,16 @@ def nn_Test():
 
     model_path = "../Corpus/model/TDT2/UM/"
     l2r_path = "NN_Model/TDT2/L2R/Epochs_lstm_100/"
-    isTrainOnTest = False
+    isTrainOnTest = True
     isTDT3 = False
 
-    with open(model_path+"test_query_list.pkl", "rb") as qFile: qry_list = Pickle.load(qFile)
+    with open(model_path+"query_list.pkl", "rb") as qFile: qry_list = Pickle.load(qFile)
     with open(model_path+"doc_list.pkl", "rb") as dFile: doc_list = Pickle.load(dFile)
-    qry_emb = np.load(model_path + "tstQry_emb_fix_100.npy")
-    doc_emb = np.load(model_path + "doc_emb_fix_100.npy")
+    qry_emb = np.load(model_path + "qry_id_fix_100_pad.npy")
+    doc_emb = np.load(model_path + "doc_id_fix_100_pad.npy")
     # create ranking model
     #rank_model = create_single_model(2907, 100)
-    rank_model = load_model(l2r_path + "weights-01-0.39_nonconv_adadelta.hdf5")
+    rank_model = load_model(l2r_path + "")
     # evaluate search result
     doc_length = doc_emb.shape[0] - 1
     print doc_length
@@ -289,19 +291,17 @@ def nn_Test():
     print mAP
 
 if __name__ == "__main__":
-    create_rep_model(2907, 100)
-    '''
     # how to use it
     batch_size = 17
     maxlen = 100
     samples = 10
     word_rep = 300
-    model = create_single_model(maxlen, word_rep)
-    qry_train = np.random.rand(samples, maxlen, word_rep) 
-    doc_train = np.random.rand(samples, maxlen, word_rep)
+    model = create_emb_model(maxlen, word_rep)
+    qry_train = np.random.randint(2, size=(samples, maxlen)) 
+    doc_train = np.random.randint(2, size=(samples, maxlen))
     Y_train = np.random.randint(2, size=(samples,))
     print Y_train
     print Y_train.shape
     model.fit([qry_train, doc_train], Y_train, epochs=4, batch_size=batch_size)
-    '''
+
 
