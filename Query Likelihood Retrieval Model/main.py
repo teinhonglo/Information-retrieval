@@ -7,8 +7,8 @@ import numpy as np
 import readAssessment
 import ProcDoc
 
-documant_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/QUERY_WDID_NEW"
+documant_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+query_path = "../Corpus/TDT2/QUERY_WDID_NEW"
 data = {}				# content of document (doc, content)
 background_word = {}	# word count of 2265 documant (word, number of words)
 query = {}				# query

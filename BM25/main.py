@@ -16,8 +16,8 @@ doc_freq ={}
 k1 = 1.4
 b = 0.75
 
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/QUERY_WDID_NEW"
+document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+query_path = "../Corpus/TDT2/QUERY_WDID_NEW"
 
 # document model
 data = ProcDoc.read_file(document_path)

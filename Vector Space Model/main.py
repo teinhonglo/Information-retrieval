@@ -16,8 +16,8 @@ data = {}				# content of document (doc, content)
 query = {}				# query
 doc_freq ={}
 
-document_path = "../Corpus/Spoken_Doc"
-query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+document_path = "../Corpus/TDT2/Spoken_Doc"
+query_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
 with open("HMMTraingSetDict.pkl", "rb") as file: HMMTraingSetDict = Pickle.load(file) 
 
 # document model

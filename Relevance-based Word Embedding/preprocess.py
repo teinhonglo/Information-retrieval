@@ -13,8 +13,8 @@ query = {}				# query
 vocabulary = np.zeros(51253)
 
 #document_path = "../Corpus/Spoken_Doc"
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"	
-query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"	
+query_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
 
 
 # read document
@@ -85,7 +85,7 @@ with open("doc_list.pkl", "wb") as file: Pickle.dump(doc_list, file, True)
 with open("doc_model.pkl", "wb") as file: Pickle.dump(doc_model, file, True)
 
 # test query model
-query_path = "../Corpus/QUERY_WDID_NEW"
+query_path = "../Corpus/TDT2/QUERY_WDID_NEW"
 test_query = ProcDoc.read_file(query_path)
 test_query = ProcDoc.query_preprocess(test_query)
 test_query_wordcount = {}
