@@ -1,5 +1,6 @@
 import sys
 sys.path.append("../tools")
+
 import operator
 import numpy as np
 import ProcDoc
@@ -9,9 +10,7 @@ import os
 
 data = {}                # content of document (doc, content)
 background_model = {}    # word count of 2265 document (word, number of words)
-general_model = {}
 query = {}                # query
-vocabulary = np.zeros(51253)
 
 corpus = "TDT2"
 document_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"    
@@ -35,44 +34,46 @@ test_query = ProcDoc.query_preprocess(test_query, resPos)
 HMMTraingSetDict = ProcDoc.read_relevance_dict()
 query_relevance = {}
 
-# create outside query model
+# create passage matrix
 query_model = []
-q_list = query_unigram.keys()
-for q, w_uni in query_unigram.items():
+qry_list = query.keys()
+doc_list = doc.keys()
+rel_qd_list = []
+patMatAll = []
+# passage model (q_length X d_length)
+for q, q_cont in query.items():
     if q in HMMTraingSetDict:
-        vocabulary = np.zeros(51253)
-        for w, uni in w_uni.items():
-            vocabulary[int(w)] = uni
-        query_model.append(np.copy(vocabulary))
+		q_terms = q_cont.split()
+		height = len(q_terms)
+		for d, d_cont in doc.items():
+			d_terms = d_cont.split()
+			width = len(d_terms)
+			psgMat = np.zeros(height, width)
+			for q_idx in xrange(len(q_terms)):
+				q_term = q_terms[q_idx]
+				for d_idx in xrange(len(d_terms)):
+					d_term = d_terms[d_idx]
+					if q_term == d_term:
+						psgMat[q_idx][d_idx] = 1
+					else:	
+						psgMat[q_idx][d_idx] = 0
+			if d in HMMTraingSetDict[q]:
+				rel_qd_list.append(1)
+			else:
+				rel_qd_list.append(-1)
+        patMatAll.append(psgMat)
     else:
-        q_list.remove(q)
-query_model = np.array(query_model).astype(np.float32)
+        qry_list.remove(q)
 
-# document model
-doc_list = doc_wordcount.keys()
-doc_model = []
-for doc_name in doc_list:
-    vocabulary = np.zeros(51253)
-    for word, count in doc_wordcount[doc_name].items():
-        vocabulary[int(word)] = count
-    #vocabulary /= vocabulary.sum(axis = 0)
-    doc_model.append(np.copy(vocabulary))
-doc_model = np.array(doc_model).astype(np.float32)    
-
-with open(storage_path + "doc_list.pkl", "wb") as file: Pickle.dump(doc_list, file, True)
-with open(storage_path + "doc_model.pkl", "wb") as file: Pickle.dump(doc_model, file, True)
-
-
-
-#test_query_unigram = ProcDoc.unigram(test_query_wordcount)
-test_query_unigram = test_query_wordcount
-test_query_list = test_query_unigram.keys()
-
-test_query_model = []
-for q in test_query_list:
-    vocabulary = np.zeros(51253)
-    for word, unigram in test_query_unigram[q].items():
-        vocabulary[int(word)] = unigram
-    test_query_model.append(np.copy(vocabulary))
-test_query_model = np.array(test_query_model).astype(np.float32)
-
+# list to numpy
+qry_list = np.array(qry_list)
+doc_list = np.array(doc_list)
+rel_qd_list	= np.array(rel_qd_list)
+# zero padding 
+from keras.layers import ZeroPadding2D
+patMatAll = ZeroPadding2D(np.array(patMatAll).astype(np.float32))
+# save
+np.save("passageModel.np", patMatAll)
+np.save("rel_list.np", rel_qd_list)
+np.save("qry_list.np", qry_list)
+np.save("doc_list.np", doc_list)
