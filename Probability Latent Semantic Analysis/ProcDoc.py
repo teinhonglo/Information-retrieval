@@ -6,7 +6,7 @@ import fileinput
 import collections
 
 
-CNA_path = "../Corpus/SPLIT_DOC_WDID_NEW"
+CNA_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
 Cluster_path = "Topic"
 
 # read cluster

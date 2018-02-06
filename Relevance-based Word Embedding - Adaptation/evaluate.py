@@ -5,7 +5,7 @@ from collections import defaultdict
 
 class evaluate_model():
 	def __init__(self):
-		self.assessmentTraingSet_path = "../Corpus/AssessmentTrainSet/AssessmentTrainSet.txt"
+		self.assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 		#self.assessmentTraingSet_path = "../Corpus/Train/QDRelevanceTDT2_forHMMOutSideTrain"
 		self.assessment = self.get_assessment()
 		

@@ -1,7 +1,7 @@
 import os
 import fileinput
 import collections
-assessmentTraingSet_path = "../Corpus/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+assessmentTraingSet_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
 assessmentTraingSetDict = {}
 
 def get_assessment():

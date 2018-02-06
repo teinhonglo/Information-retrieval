@@ -18,8 +18,8 @@ query = {}				# query
 query_lambda = 0.4
 doc_lambda = 0.8
 
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/QUERY_WDID_NEW_middle"
+document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
 #query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
 
 # document model

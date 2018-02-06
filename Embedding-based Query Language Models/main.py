@@ -19,8 +19,8 @@ query_lambda = 0.4
 doc_lambda = 0.8
 remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
 
-document_path = "../Corpus/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/QUERY_WDID_NEW_middle"
+document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
 
 # document model
 data = ProcDoc.read_file(document_path)
