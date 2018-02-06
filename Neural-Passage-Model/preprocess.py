@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../tools")
+sys.path.append("../Tools")
 
 import operator
 import numpy as np
@@ -61,7 +61,7 @@ for q, q_cont in query.items():
 				rel_qd_list.append(1)
 			else:
 				rel_qd_list.append(-1)
-        patMatAll.append(psgMat)
+		patMatAll.append(psgMat)
     else:
         qry_list.remove(q)
 
@@ -71,7 +71,7 @@ doc_list = np.array(doc_list)
 rel_qd_list	= np.array(rel_qd_list)
 # zero padding 
 from keras.layers import ZeroPadding2D
-patMatAll = ZeroPadding2D(np.array(patMatAll).astype(np.float32))
+patMatAll = ZeroPadding2D(padding=(1, 1), np.array(patMatAll).astype(np.float32))
 # save
 np.save("exp/passageModel.np", patMatAll)
 np.save("exp/rel_list.np", rel_qd_list)
