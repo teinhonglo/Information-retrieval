@@ -1,6 +1,6 @@
 import numpy as np
 from keras import backend as K
-from keras.layers import Activation, Input
+from keras.layers import Activation, Input, ZeroPadding2D
 from keras.layers.core import Dense, Lambda, Reshape
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import AveragePooling2D, GlobalMaxPooling2D
@@ -13,6 +13,7 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATURE = 10
 	heterMat = Input(shape = (NUM_OF_FEATURE, ), name="h_feats")
 	# Convolution2D, Meaning pooling and Max pooling.
 	# Conv2D, Mean pooling, Max pooling
+    #psgMat_ZP  = ZeroPadding2D()(psgMat)
 	M = Convolution2D(filters=NUM_OF_FILTERS, kernel_size=(1, PSG_SIZE), strides=tau, padding='valid', name="pConv2D")(psgMat)
 	K = AveragePooling2D(pool_size=(MAX_QRY_LENGTH, 1), strides=1, name="pAvePool")(M)
 	r = GlobalMaxPooling2D(name="pMaxPool")(K)
@@ -36,4 +37,5 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATURE = 10
 	return model
 
 if __name__ == "__main__":
-    create_model()
+    data = []
+    model = create_model(44, 300, 15, 50)
