@@ -73,7 +73,7 @@ rel_qd_list	= np.array(rel_qd_list)
 from keras.layers import ZeroPadding2D
 patMatAll = ZeroPadding2D(np.array(patMatAll).astype(np.float32))
 # save
-np.save("passageModel.np", patMatAll)
-np.save("rel_list.np", rel_qd_list)
-np.save("qry_list.np", qry_list)
-np.save("doc_list.np", doc_list)
+np.save("exp/passageModel.np", patMatAll)
+np.save("exp/rel_list.np", rel_qd_list)
+np.save("exp/qry_list.np", qry_list)
+np.save("exp/doc_list.np", doc_list)
