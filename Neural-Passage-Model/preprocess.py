@@ -70,8 +70,8 @@ qry_list = np.array(qry_list)
 doc_list = np.array(doc_list)
 rel_qd_list	= np.array(rel_qd_list)
 # zero padding 
-from keras.layers import ZeroPadding2D
-patMatAll = ZeroPadding2D(padding=(1, 1), np.array(patMatAll).astype(np.float32))
+#from keras.layers import ZeroPadding2D
+#patMatAll = ZeroPadding2D(padding=(1, 1), np.array(patMatAll).astype(np.float32))
 # save
 np.save("exp/passageModel.np", patMatAll)
 np.save("exp/rel_list.np", rel_qd_list)
