@@ -2,9 +2,10 @@ import numpy as np
 
 class DataGenerator(object):
   'Generates data for Keras'
-  def __init__(self, dim_x = 32, dim_y = 32, batch_size = 32, shuffle = True):
+  def __init__(self, dim_x = 32, dim_y = 32, dim_x1 = 32, batch_size = 32, shuffle = True):
       'Initialization'
       self.dim_x = dim_x
+	  self.dim_x1 = dim_x1
       self.dim_y = dim_y
       self.batch_size = batch_size
       self.shuffle = shuffle
@@ -40,17 +41,19 @@ class DataGenerator(object):
       'Generates data of batch_size samples' # X : (n_samples, v_size, v_size, n_channels)
       # Initialization
       X = np.empty((self.batch_size, self.dim_x, self.dim_y, self.dim_z, 1))
+	  X1 = np.empty((self.batch_size, self.dim_x1))
       y = np.empty((self.batch_size), dtype = int)
 
       # Generate data
       for i, ID in enumerate(list_IDs_temp):
           # Store volume
-          X[i, :, :, 0] = np.load(ID + '.npy')
+          X[i, :, :, 0] = np.load(ID + '_psg.npy')
+		  X1[i, :, :, 0] = np.load(ID + '_h.npy')
 
           # Store class
           y[i] = labels[ID]
 
-      return X, sparsify(y)
+      return [X, X1], sparsify(y)
 
 def sparsify(y):
   'Returns labels in binary NumPy array'

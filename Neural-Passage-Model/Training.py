@@ -13,6 +13,7 @@ tau = 1
 # Parameters
 params = {'dim_x': MAX_QRY_LENGTH,
           'dim_y': MAX_DOC_LENGTH,
+		  'dim_x1': NUM_OF_FEATURE,
           'batch_size': 64,
           'shuffle': True}
 
