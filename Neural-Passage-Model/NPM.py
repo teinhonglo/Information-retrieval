@@ -1,4 +1,5 @@
 import numpy as np
+np.random.seed(5566)
 from keras import backend as K
 from keras.layers import Activation, Input, ZeroPadding2D
 from keras.layers.core import Dense, Lambda, Reshape
@@ -27,8 +28,6 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATURE = 10
 	
 	# We now have everything we need to define our model.
 	model = Model(inputs = [psgMat, heterMat], outputs = pred)
-	model.compile(optimizer = "adadelta", loss = "categorical_crossentropy", metrics=["accuracy"])
-
 	model.summary()
 	'''
 	from keras.utils import plot_model
