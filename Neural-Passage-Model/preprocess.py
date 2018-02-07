@@ -1,12 +1,9 @@
 import sys
 sys.path.append("../Tools")
 
-import operator
 import numpy as np
+import gc
 import ProcDoc
-from collections import defaultdict
-from math import log
-import os
 
 data = {}                # content of document (doc, content)
 background_model = {}    # word count of 2265 document (word, number of words)
@@ -37,29 +34,25 @@ max_q = 0
 max_d = 0
 # create passage matrix
 query_model = []
-qry_list = query.keys()
-doc_list = doc.keys()
+qry_doc_list = []
 rel_qd_list = []
 patMatAll = []
+qry_length = 1794
+doc_length = 2907
+batch_size = 512
+count = 0
 # passage model (q_length X d_length)
 for q, q_cont in query.items():
 	if q in HMMTraingSetDict:
 		q_terms = q_cont.split()
-		height = len(q_terms)
-		if height > max_q:
-			max_q = height
 		for d, d_cont in doc.items():
+			qry_doc_list.append([q, d])
 			d_terms = d_cont.split()
-			width = len(d_terms)
-			print width
-			if width > max_d:
-				max_d = width
-			psgMat = np.zeros((height, width))
-			print psgMat.shape
-			for q_idx in xrange(len(q_terms)):
-				q_term = q_terms[q_idx]
-				for d_idx in xrange(len(d_terms)):
-					d_term = d_terms[d_idx]
+			psgMat = np.zeros((qry_length, doc_length, 1))
+			# create passage matrix
+			for q_idx, q_term in enumerate(q_terms):
+				for d_idx, d_term in enumerate(d_terms):
+					# hit = 1, otherwise = 0
 					if q_term == d_term:
 						psgMat[q_idx][d_idx] = 1
 					else:	
@@ -68,10 +61,17 @@ for q, q_cont in query.items():
 				rel_qd_list.append(1)
 			else:
 				rel_qd_list.append(-1)
-		patMatAll.append(psgMat)
-	else:
-		qry_list.remove(q)
-
+			count += 1
+			patMatAll.append(np.copy(psgMat))
+			
+			if (count % batch_size) == 0:
+				np.save("exp/trainPsg_" + str((count - batch_size) / batch_size) + ".npy", np.asarray(patMatAll))
+				patMatAll = []
+				np.save("exp/labels_" + str((count - batch_size) / batch_size) + ".npy", np.asarray(rel_qd_list))
+				rel_qd_list = []
+				np.save("exp/pair_" + str((count - batch_size) / batch_size) + ".npy", np.asarray(qry_doc_list))
+				qry_doc_list = []
+			print (str(count) + "/ 1812000")	
 print (max_q, max_d)
 # list to numpy
 qry_list = np.array(qry_list)
