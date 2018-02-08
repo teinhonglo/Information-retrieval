@@ -9,82 +9,83 @@ data = {}                # content of document (doc, content)
 background_model = {}    # word count of 2265 document (word, number of words)
 query = {}                # query
 
-corpus = "TDT2"
-document_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"    
-query_path = "../Corpus/" + corpus + "/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
-test_query_path = "../Corpus/"+ corpus + "/Train/XinTestQryTDT2/QUERY_WDID_NEW"
-resPos = True
+class InputDataProcess(object):
+	def __init__(self, query_path = None, document_path = None, corpus = "TDT2"):
+		resPos = True
+		self.max_qry_length = 1794
+		self.max_doc_length = 2907
+		if query_path == None: 
+			query_path = "../Corpus/" + corpus + "/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+		if document_path == None:
+			document_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"
+		# read document, reverse position
+		doc = ProcDoc.read_file(document_path)
+		self.doc = ProcDoc.doc_preprocess(doc, resPos)
 
-# read document, reverse position
-doc = ProcDoc.read_file(document_path)
-doc = ProcDoc.doc_preprocess(doc, resPos)
-
-# read query, reserve position
-query = ProcDoc.read_file(query_path)
-query = ProcDoc.query_preprocess(query, resPos)
-
-# read test lone query model, reserve postion
-test_query = ProcDoc.read_file(query_path)
-test_query = ProcDoc.query_preprocess(test_query, resPos)
-
-# HMMTrainingSet
-HMMTraingSetDict = ProcDoc.read_relevance_dict()
-query_relevance = {}
-max_q = 0
-max_d = 0
-# create passage matrix
-query_model = []
-qry_doc_list = []
-rel_qd_list = []
-patMatAll = []
-qry_length = 1794
-doc_length = 2907
-batch_size = 512
-count = 0
-# passage model (q_length X d_length)
-for q, q_cont in query.items():
-	if q in HMMTraingSetDict:
-		q_terms = q_cont.split()
-		for d, d_cont in doc.items():
-			qry_doc_list.append([q, d])
-			d_terms = d_cont.split()
-			psgMat = np.zeros((qry_length, doc_length, 1))
-			# create passage matrix
-			for q_idx, q_term in enumerate(q_terms):
-				for d_idx, d_term in enumerate(d_terms):
-					# hit = 1, otherwise = 0
-					if q_term == d_term:
-						psgMat[q_idx][d_idx] = 1
-					else:	
-						psgMat[q_idx][d_idx] = 0
-			if d in HMMTraingSetDict[q]:
-				rel_qd_list.append(1)
-			else:
-				rel_qd_list.append(-1)
-			count += 1
-			patMatAll.append(np.copy(psgMat))
+		# read query, reserve position
+		qry = ProcDoc.read_file(query_path)
+		self.qry = ProcDoc.query_preprocess(qry, resPos)	
+		
+		# HMMTrainingSet
+		self.hmm_training_set = ProcDoc.read_relevance_dict()
+		self.heter_feature = __genFeature()
+		
+	def genPassage(self, IDs_list, batch_size):
+		qry = self.qry
+		doc = self.doc
+		max_qry_length = self.max_qry_length
+		max_doc_length = self.max_doc_length
+		heter_feature = self.heter_feature
+		pas_mat_batch = []
+		heter_feature_batch = []
+		rel_batch = []
+		# generate passage
+		for data_ID in IDs_list:
+			[q_id, d_id] = data_ID.split("_")
+			q_terms = map(int, qry[q_id].split())
+			d_terms = np.asarray(map(int, doc[d_id].split()))
+			psg_mat = np.asarray([[(q_t == d_terms)] for q_t in q_terms]).reshape(len(q_terms), len(d_terms), 1)
+			psg_mat = self.__mergeMat(np.zeros((qry_length, doc_length, 1)), psg_mat)
+			psa_mat_batch.append(np.copy(psg_mat))
+			heter_feature_batch.append(heter_feature[q_id])
 			
-			if (count % batch_size) == 0:
-				np.save("exp/trainPsg_" + str((count - batch_size) / batch_size) + ".npy", np.asarray(patMatAll))
-				patMatAll = []
-				np.save("exp/labels_" + str((count - batch_size) / batch_size) + ".npy", np.asarray(rel_qd_list))
-				rel_qd_list = []
-				np.save("exp/pair_" + str((count - batch_size) / batch_size) + ".npy", np.asarray(qry_doc_list))
-				qry_doc_list = []
-			print (str(count) + "/ 1812000")	
-print (max_q, max_d)
-# list to numpy
-qry_list = np.array(qry_list)
-doc_list = np.array(doc_list)
-rel_qd_list	= np.array(rel_qd_list)
-# zero padding 
-#from keras.layers import ZeroPadding2D
-#patMatAll = ZeroPadding2D(padding=(1, 1), np.array(patMatAll).astype(np.float32))
-# save
-
-'''
-np.save("exp/passageModel.np", patMatAll)
-np.save("exp/rel_list.np", rel_qd_list)
-np.save("exp/qry_list.np", qry_list)
-np.save("exp/doc_list.np", doc_list)
-'''
+		return [np.asarray(psa_mat_batch), np.asarray(heter_feature_batch)]
+	
+	def __genFeature(self):
+		######################## TODO ######################
+		qry = self.qry
+		doc = self.doc
+		return np.random.rand(800, 10)
+		
+	def __mergeMat(self, b1, b2, pos = [0, 0]):
+		[pos_v, pos_h] = pos
+		v_range1 = slice(max(0, pos_v), max(min(pos_v + b2.shape[0], b1.shape[0]), 0))
+		h_range1 = slice(max(0, pos_h), max(min(pos_h + b2.shape[1], b1.shape[1]), 0))
+		v_range2 = slice(max(0, -pos_v), min(-pos_v + b1.shape[0], b2.shape[0]))
+		h_range2 = slice(max(0, -pos_h), min(-pos_h + b1.shape[1], b2.shape[1]))
+		b1[v_range1, h_range1] += b2[v_range2, h_range2]
+		return b1
+	
+	def genTrainValidSet(self):
+		qry = self.qry
+		doc = seld.doc
+		total_qry = len(qry.keys())
+		total_doc = len(doc.keys())
+		hmm_training_set = self.hmm_training_set
+		labels = {}
+		total = total_qry * total_doc
+		num_of_train = total / 8
+		num_of_valid = total - num_of_train
+		partition = {'train': [], 'validation': []}
+		# relevance between queries and documents
+		for q_id in qry:
+			for d_id in doc:
+				if d_id in hmm_training_set[q_id]:
+					labels[q_id + "_" + d_id] = 1
+				else:
+					labels[q_id + "_" + d_id] = 0
+		# partition
+		ID_list = np.random.shuffle(labels.keys())
+		partition['train'] = [id] for id in ID_list[:num_of_train]
+		partition['validation'] = [id] for id in ID_list[num_of_train:]
+		return [partition, labels]
