@@ -8,10 +8,10 @@ from keras.layers.pooling import AveragePooling2D, GlobalMaxPooling2D
 from keras.layers.merge import concatenate, dot
 from keras.models import Model
 
-def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATURE = 10, PSG_SIZE = 50, NUM_OF_FILTERS = 5, tau = 1):
+def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, PSG_SIZE = 50, NUM_OF_FILTERS = 5, tau = 1):
 	alpha_size = NUM_OF_FILTERS
 	psgMat = Input(shape = (MAX_QRY_LENGTH, MAX_DOC_LENGTH, 1,), name="passage")
-	heterMat = Input(shape = (NUM_OF_FEATURE, ), name="h_feats")
+	heterMat = Input(shape = (NUM_OF_FEATS, ), name="h_feats")
 	# Convolution2D, Meaning pooling and Max pooling.
 	# Conv2D, Mean pooling, Max pooling
     #psgMat_ZP  = ZeroPadding2D()(psgMat)
@@ -38,15 +38,15 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATURE = 10
 if __name__ == "__main__":
 	MAX_QRY_LENGTH = 1794
 	MAX_DOC_LENGTH = 2907
-	NUM_OF_FEATURE = 10
+	NUM_OF_FEATS = 10
 	PSG_SIZE = 50
 	NUM_OF_FILTERS = 5
 	batch_size = 4
 	tau = 1
 	X = np.random.rand(batch_size, MAX_QRY_LENGTH, MAX_DOC_LENGTH, 1)
-	X1 = np.random.rand(batch_size, NUM_OF_FEATURE)
+	X1 = np.random.rand(batch_size, NUM_OF_FEATS)
 	y = np.random.rand(batch_size)
-	model = create_model(MAX_QRY_LENGTH, MAX_DOC_LENGTH, NUM_OF_FEATURE, PSG_SIZE, NUM_OF_FILTERS, tau)
+	model = create_model(MAX_QRY_LENGTH, MAX_DOC_LENGTH, NUM_OF_FEATS, PSG_SIZE, NUM_OF_FILTERS, tau)
 	model.compile(	loss= 'kullback_leibler_divergence',	optimizer='Nadam',	metrics=['accuracy'])
 	model.fit([X, X1], y, 
 			batch_size=batch_size, 
