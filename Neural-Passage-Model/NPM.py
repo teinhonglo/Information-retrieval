@@ -36,5 +36,20 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATURE = 10
 	return model
 
 if __name__ == "__main__":
-    data = []
-    model = create_model(44, 300, 15, 50)
+	MAX_QRY_LENGTH = 1794
+	MAX_DOC_LENGTH = 2907
+	NUM_OF_FEATURE = 10
+	PSG_SIZE = 50
+	NUM_OF_FILTERS = 5
+	batch_size = 4
+	tau = 1
+	X = np.random.rand(batch_size, MAX_QRY_LENGTH, MAX_DOC_LENGTH, 1)
+	X1 = np.random.rand(batch_size, NUM_OF_FEATURE)
+	y = np.random.rand(batch_size)
+	model = create_model(MAX_QRY_LENGTH, MAX_DOC_LENGTH, NUM_OF_FEATURE, PSG_SIZE, NUM_OF_FILTERS, tau)
+	model.compile(	loss= 'kullback_leibler_divergence',	optimizer='Nadam',	metrics=['accuracy'])
+	model.fit([X, X1], y, 
+			batch_size=batch_size, 
+			epochs=10,	
+			verbose=1,	
+			shuffle=True)
