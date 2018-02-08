@@ -11,7 +11,7 @@ from keras.models import Model
 def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, PSG_SIZE = 50, NUM_OF_FILTERS = 5, tau = 1):
 	alpha_size = NUM_OF_FILTERS
 	psgMat = Input(shape = (MAX_QRY_LENGTH, MAX_DOC_LENGTH, 1,), name="passage")
-	heterMat = Input(shape = (NUM_OF_FEATS, ), name="h_feats")
+	homoMat = Input(shape = (NUM_OF_FEATS, ), name="h_feats")
 	# Convolution2D, Meaning pooling and Max pooling.
 	# Conv2D, Mean pooling, Max pooling
     #psgMat_ZP  = ZeroPadding2D()(psgMat)
@@ -21,13 +21,13 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, 
 	# Fusion Matrix and predict relevance
 	# get h(q, d)
 	# MLP(DENSE(len(r(q,d))))
-	phi_h = Dense(alpha_size, activation="softmax", name="TrainMat")(heterMat)
+	phi_h = Dense(alpha_size, activation="softmax", name="TrainMat")(homoMat)
 	dot_prod = dot([r, phi_h], axes = 1, name="rel_dot")
 	# tanh(dot(r.transpose * h))
 	pred = Activation("tanh", name="activation_tanh")(dot_prod)
 	
 	# We now have everything we need to define our model.
-	model = Model(inputs = [psgMat, heterMat], outputs = pred)
+	model = Model(inputs = [psgMat, homoMat], outputs = pred)
 	model.summary()
 	'''
 	from keras.utils import plot_model

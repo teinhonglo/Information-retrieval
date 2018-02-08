@@ -6,9 +6,9 @@ from keras.callbacks import ModelCheckpoint
 
 import NPM
 from SeqGenerator import DataGenerator
-from preprocess import InputDataProcess
+from Preprocess import InputDataProcess
 
-#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
                   inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
@@ -20,8 +20,8 @@ NUM_OF_FILTERS = 8
 batch_size = 4
 tau = 1
 optimizer = "Adam"
-loss = "kullback_leibler_divergence"
-exp_path = "exp/"
+loss = "logcosh"
+exp_path = "exp/basic_cnn" + optimizer + "_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
 # Parameters
