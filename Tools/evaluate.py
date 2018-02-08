@@ -8,7 +8,7 @@ class evaluate_model():
 		if not HMM:
 			self.assessmentTraingSet_path = "../Corpus/AssessmentTrainSet/AssessmentTrainSet.txt"
 		else:
-			self.assessmentTraingSet_path = "../Corpus/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+			self.assessmentTraingSet_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
 		self.assessment = self.get_assessment(HMM)
 		
 	def get_assessment(self, HMM):
