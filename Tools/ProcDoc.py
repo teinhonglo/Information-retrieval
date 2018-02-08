@@ -33,7 +33,7 @@ def read_file(filepath):
 # read background model
 def read_relevance_dict():
 	HMMTraingSetDict = defaultdict(list)
-	HMMTraingSet_Path = "../Corpus/TDT3/QDRelevanceTDT3_forHMMOutSideTrain731-2004New"
+	HMMTraingSet_Path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
 	with io.open(HMMTraingSet_Path, 'r', encoding = 'utf8') as file:
 		# read content of query document (doc, content)
 		query_name = ""
