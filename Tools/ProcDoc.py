@@ -67,7 +67,7 @@ def read_background_dict():
 
 	
 # document preprocess
-def doc_preprocess(dictionary, resPos = False):
+def doc_preprocess(dictionary, res_pos = False, str2int = False):
 	dictionary = collections.OrderedDict(sorted(dictionary.items()))
 	for key, value in dictionary.items():
 		content = ""
@@ -86,17 +86,22 @@ def doc_preprocess(dictionary, resPos = False):
 			content += word + " "
 		# replace old content
 		dictionary[key]	= content
-	if not resPos:	
+		# content to int list
+		if str2int: 
+			dictionary[key] = map(int, content.split())
+		
+	if not res_pos:
 		doc_freq = {}	
 		# term probability(word_count / word sum)	
 		for doc_key, doc_content in dictionary.items():
 			doc_words = word_count(doc_content, {})
 			dictionary[doc_key] = doc_words
 		#dictionary = TFIDF(dictionary)	
+		
 	return dictionary
 
 # query preprocess
-def query_preprocess(dictionary, resPos = False):
+def query_preprocess(dictionary, res_pos = False, str2int = False):
 	dictionary = collections.OrderedDict(sorted(dictionary.items()))
 	for key, value in dictionary.items():
 		content = ""
@@ -110,7 +115,10 @@ def query_preprocess(dictionary, resPos = False):
 			content += word + " "
 		# replace old content
 		dictionary[key]	= content
-	if not resPos:	
+		# content to int list
+		if str2int: 
+			dictionary[key] = map(int, content.split())
+	if not res_pos:	
 		qry_freq = {}	
 		# term probability(word_count / word sum)	
 		for qry_key, qry_content in dictionary.items():
