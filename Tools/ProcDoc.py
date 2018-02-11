@@ -182,3 +182,73 @@ def softmax(model):
 	model_word_sum  = 1.0 * word_sum(model)
 	model = {w: c / model_word_sum for w, c in dict(model).items()}
 	return model
+	
+def docFreq(doc, vocab_size = 51253):
+	corpus_dFreq_total = np.zeros((vocab_size, 2))
+	for name, word_list in doc:
+		cont_type = type(word_list)
+		# str to dict
+		if cont_type == type(str):
+			temp_word_list = word_count(word_list, {})
+		# list to dict
+		elif cont_type == type(list):
+			temp_word_list = {}
+			for part in word_list.split():
+				if part in temp_word_list:
+					temp_word_list[part] += 1
+				else:
+					temp_word_list[part] = 1
+		elif cont_type == type(dict):
+			temp_word_list = dict(word_list)
+		# assume type of word_list is dictionary
+		for word, word_count in temp_word_list.items():
+			corpus_dFreq_total[int(word), 0] += 1
+			corpus_dFreq_total[int(word), 1] += word_count
+		return corpus_d_freq_total
+		
+def rmStopWord(ori_content, corpus_d_freq_total, threshold = 0.1):
+	weight_list = []
+	corpus_length = corpus_dFreq_total[:, 1].sum(axis=0)
+	cont_type = type(dict)
+	for name, word_list in ori_content:
+		cont_type = type(word_list)
+		# str to dict
+		if cont_type == type(str):
+			temp_word_list = word_count(word_list, {})
+		# list to dict
+		elif cont_type == type(list):
+			temp_word_list = {}
+			for part in word_list.split():
+				if part in temp_word_list:
+					temp_word_list[part] += 1
+				else:
+					temp_word_list[part] = 1
+		elif cont_type == type(dict):
+			temp_word_list = dict(word_list)
+		# assume type of word_list is dictionary
+		cur_length = sum(temp_word_list.values())
+		for word, word_count in temp_word_list.items():
+			word_prob = word_count * 1.0 / cur_length
+			corpus_word_prob = corpus_dFreq_total[int(word)][0] * 1.0 / corpus_length
+			weight = word_prob * log(word_prob / corpus_word_prob)
+			weight_list.append([name, word, weight])
+	
+	sorted(weight_list, , key = lambda x : x[2])
+	len_weight_list = len(weight_list)
+	for i in xrange(len_weight_list * threshold):
+		[name, word, weight] = weight_list[i]
+		word_list = ori_content[name]
+		# remove low weighted word(string)
+		if cont_type == type(str):
+			temp_list = word_list.replace(word + " ", "")
+			word_list = temp_list.replace(" " + word, "")
+		# remove low weighted word(list)
+		elif cont_type == type(list):
+			word_list = filter(lambda a: a != word, word_list)
+		# remove low weighted word(dict)
+		elif cont_type == type(dict):
+			word_list.pop(word, None)
+		# assign new value to name	
+		ori_content[name] = word_list	
+			
+	return ori_content
