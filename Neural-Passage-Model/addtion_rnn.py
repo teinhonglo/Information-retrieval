@@ -39,32 +39,48 @@ class CharacterTable(object):
 	+ Decode the one hot integer representation to their character output
 	+ Decode a vector of probabilities to their character output
 	"""
-	def __init__(self, chars):
+	def __init__(self, chars, encode_length = 16):
 		"""Initialize character table.
 		# Arguments
 			chars: Characters that can appear in the input.
 		"""
+		en_format = '{0:0'+str(encode_length)+'b}'
+		self.en_length = encode_length
 		self.chars = chars
-		self.char_indices = dict((c, i) for i, c in enumerate(self.chars))
-		self.indices_char = dict((i, c) for i, c in enumerate(self.chars))
+		self.char_indices = dict((str(c), en_format.format(i)) for i, c in enumerate(self.chars))
+		self.indices_char = dict((en_format.format(i), str(c)) for i, c in enumerate(self.chars))
 
 	def encode(self, C, num_rows):
 		"""One hot encode given string C.
 		# Arguments
-			num_rows: Number of rows in the returned one hot encoding. This is
+			num_rows: Number of rows in the returned one hot encoding. This is 
 				used to keep the # of rows for each data the same.
 		"""
-		x = np.zeros((num_rows, len(self.chars)))
+		en_length = self.en_length
+		x = np.zeros((num_rows, en_length))
 		for i, c in enumerate(C):
-			x[i, self.char_indices[c]] = 1
+			# lookup table
+			bin_encode = self.char_indices[c]
+			# convert binary string to numpy
+			bin_encode = [b for b in bin_encode]
+			bin_encode = ','.join(bin_encode)
+			b_e = np.fromstring(bin_encode, sep=",")
+			x[i] = b_e
 		return x
 
-	def decode(self, x, calc_argmax=True):
+	def decode(self, x):
 		q = ""
-		if calc_argmax:
-			x = x.argmax(axis=-1)
+		# mapping posteria to class
+		x = (x > 0.5) * 1
 		for a in x:
-			q += str(self.indices_char[a]) + " "
+			# convert numpy to binary string.
+			b = np.copy(a).tolist()
+			b = ''.join(str(b1) for b1 in b)
+			# lookup table
+			if b in self.indices_char:
+				q += str(self.indices_char[b]) + " "
+			else:	
+				q += "O "
 		return q
 
 
@@ -74,16 +90,16 @@ class colors:
 	close = '\033[0m'
 
 # Parameters for the model and dataset.
-TRAINING_SIZE = 1600
+TRAINING_SIZE = 800
 INVERT = True
 
 # Maximum length of input.
 MAXLEN = 7
 
 # All the numbers, plus sign and space for padding.
-chars = list(range(10))
-chars.append(' ')
-ctable = CharacterTable(chars)
+encode_length = 16
+chars = list(range(51253 + 1))
+ctable = CharacterTable(chars, encode_length)
 
 questions = []
 expected = []
@@ -96,20 +112,23 @@ while len(questions) < TRAINING_SIZE:
 	
 	# Skip any addition questions we've already seen
 	key = a   
+	'''
 	if key in seen:
 		continue
+	'''	
 	seen.add(key)
 	# Pad the data with spaces such that it is always MAXLEN.
-	q = map(int, a.split())
+	q = a.split()
 	for x in xrange(MAXLEN - len(q)):
-		q.append(' ')
+		q.append('0')
 	questions.append(q)
 	expected.append(q)
 print('Total addition questions:', len(questions))
 
 print('Vectorization...')
-x = np.zeros((len(questions), MAXLEN, len(chars)), dtype=np.bool)
-y = np.zeros((len(expected), MAXLEN, len(chars)), dtype=np.bool)
+
+x = np.zeros((len(questions), MAXLEN, encode_length), dtype=np.bool)
+y = np.zeros((len(expected), MAXLEN, encode_length), dtype=np.bool)
 for i, sentence in enumerate(questions):
 	x[i] = ctable.encode(sentence, MAXLEN)
 for i, sentence in enumerate(expected):
@@ -138,7 +157,7 @@ print(y_val.shape)
 # Try replacing GRU, or SimpleRNN.
 RNN = layers.LSTM
 HIDDEN_SIZE = 128
-BATCH_SIZE = 128
+BATCH_SIZE = 50
 LAYERS = 1
 
 print('Build model...')
@@ -146,7 +165,7 @@ model = Sequential()
 # "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE.
 # Note: In a situation where your input sequences have a variable length,
 # use input_shape=(None, num_feature).
-model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
+model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, encode_length)))
 # As the decoder RNN's input, repeatedly provide with the last hidden state of
 # RNN for each time step. Repeat 'DIGITS + 1' times as that's the maximum
 # length of output, e.g., when DIGITS=3, max output is 999+999=1998.
@@ -161,9 +180,9 @@ for _ in range(LAYERS):
 
 # Apply a dense layer to the every temporal slice of an input. For each of step
 # of the output sequence, decide which character should be chosen.
-model.add(layers.TimeDistributed(layers.Dense(len(chars))))
-model.add(layers.Activation('softmax'))
-model.compile(loss='categorical_crossentropy',
+model.add(layers.TimeDistributed(layers.Dense(encode_length)))
+model.add(layers.Activation('sigmoid'))
+model.compile(loss='binary_crossentropy',
 			  optimizer='adam',
 			  metrics=['accuracy'])
 model.summary()
@@ -186,10 +205,10 @@ with tf.device('/gpu:0'):
 		for i in range(10):
 			ind = np.random.randint(0, len(x_val))
 			rowx, rowy = x_val[np.array([ind])], y_val[np.array([ind])]
-			preds = model.predict_classes(rowx, verbose=0)
+			preds = model.predict(rowx, verbose=0)
 			q = ctable.decode(rowx[0])
 			correct = ctable.decode(rowy[0])
-			guess = ctable.decode(preds[0], calc_argmax=False)
+			guess = ctable.decode(preds[0])
 			print('Q', q, end=' ')
 			print('T', correct, end=' ')
 			if correct == guess:
