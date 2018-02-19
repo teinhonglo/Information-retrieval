@@ -233,7 +233,7 @@ def rmStopWord(ori_content, corpus_d_freq_total, threshold = 0.1):
 			weight = word_prob * log(word_prob / corpus_word_prob)
 			weight_list.append([name, word, weight])
 	
-	sorted(weight_list, , key = lambda x : x[2])
+	sorted(weight_list, key = lambda x : x[2])
 	len_weight_list = len(weight_list)
 	for i in xrange(len_weight_list * threshold):
 		[name, word, weight] = weight_list[i]
