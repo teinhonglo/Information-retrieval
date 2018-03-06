@@ -1,29 +1,12 @@
 # -*- coding: utf-8 -*-
-'''An implementation of sequence to sequence learning for performing addition
-Input: "535+61"
-Output: "596"
-Padding is handled by using a repeated sentinel character (space)
-Input may optionally be inverted, shown to increase performance in many tasks in:
-"Learning to Execute"
-http://arxiv.org/abs/1410.4615
-and
-"Sequence to Sequence Learning with Neural Networks"
-http://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf
-Theoretically it introduces shorter term dependencies between source and target.
-Two digits inverted:
-+ One layer LSTM (128 HN), 5k training examples = 99% train/test accuracy in 55 epochs
-Three digits inverted:
-+ One layer LSTM (128 HN), 50k training examples = 99% train/test accuracy in 100 epochs
-Four digits inverted:
-+ One layer LSTM (128 HN), 400k training examples = 99% train/test accuracy in 20 epochs
-Five digits inverted:
-+ One layer LSTM (128 HN), 550k training examples = 99% train/test accuracy in 30 epochs
+'''An implementation of sequence to sequence learning for autoencoder
 '''
 from __future__ import print_function
 import numpy as np
+np.random.seed(5566)
 import os
 
-from keras.models import Sequential
+from keras.models import Model
 from keras.layers import Masking, Bidirectional
 from keras import layers
 from six.moves import range
@@ -53,8 +36,8 @@ class CharacterTable(object):
 	def encode(self, C, num_rows):
 		"""One hot encode given string C.
 		# Arguments
-			num_rows: Number of rows in the returned one hot encoding. This is 
-				used to keep the # of rows for each data the same.
+			num_rows: Number of rows in the returned binary encoding. 
+			This is used to keep the # of rows for each data the same.
 		"""
 		en_length = self.en_length
 		x = np.zeros((num_rows, en_length))
@@ -112,17 +95,18 @@ while len(questions) < TRAINING_SIZE:
 	
 	# Skip any addition questions we've already seen
 	key = a   
-	'''
+	
 	if key in seen:
 		continue
-	'''	
+	
 	seen.add(key)
 	# Pad the data with spaces such that it is always MAXLEN.
 	q = a.split()
 	for x in xrange(MAXLEN - len(q)):
-		q.append('0')
+		q.insert(0, '0')
 	questions.append(q)
 	expected.append(q)
+	print(str(len(questions)) + '/' + str(TRAINING_SIZE), end = '\r')
 print('Total addition questions:', len(questions))
 
 print('Vectorization...')
@@ -161,14 +145,16 @@ BATCH_SIZE = 50
 LAYERS = 1
 
 print('Build model...')
-model = Sequential()
 # "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE.
 # Note: In a situation where your input sequences have a variable length,
 # use input_shape=(None, num_feature).
-model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, encode_length), return_sequences=True))
+input_tensor = layers.Input(shape=(MAXLEN, encode_length))
+hid_layer = RNN(HIDDEN_SIZE, return_sequences=True, activation='linear')(input_tensor)
+#hid_layer = layers.Dense(HIDDEN_SIZE)(hid_layer)
+#hid_layer = layers.RepeatVector(MAXLEN)(hid_layer)
+
 # As the decoder RNN's input, repeatedly provide with the last hidden state of
-# RNN for each time step. Repeat 'DIGITS + 1' times as that's the maximum
-# length of output, e.g., when DIGITS=3, max output is 999+999=1998.
+# RNN for each time step.
 #model.add(layers.RepeatVector(MAXLEN))
 # The decoder RNN could be multiple layers stacked or a single layer.
 for _ in range(LAYERS):
@@ -176,14 +162,16 @@ for _ in range(LAYERS):
 	# all the outputs so far in the form of (num_samples, timesteps,
 	# output_dim). This is necessary as TimeDistributed in the below expects
 	# the first dimension to be the timesteps.
-	model.add(RNN(HIDDEN_SIZE, activation='sigmoid', return_sequences=True))
+	hid_layer = RNN(HIDDEN_SIZE, activation='sigmoid', return_sequences=True)(hid_layer)
 
 # Apply a dense layer to the every temporal slice of an input. For each of step
 # of the output sequence, decide which character should be chosen.
-model.add(layers.TimeDistributed(layers.Dense(encode_length)))
-model.add(layers.Activation('sigmoid'))
+linear_mapping = layers.TimeDistributed(layers.Dense(encode_length))(hid_layer)
+pred = layers.Activation('sigmoid')(linear_mapping)
+
+model = Model(inputs=input_tensor, outputs=pred)
 model.compile(loss='binary_crossentropy',
-			  optimizer='adam',
+			  optimizer='Adam',
 			  metrics=['accuracy'])
 model.summary()
 from keras.utils import plot_model

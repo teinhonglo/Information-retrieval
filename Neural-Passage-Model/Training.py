@@ -8,7 +8,7 @@ import NPM
 from SeqGenerator import DataGenerator
 from Preprocess import InputDataProcess
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
                   inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
