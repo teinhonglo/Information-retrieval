@@ -88,7 +88,7 @@ class InputDataProcess(object):
 		df = ProcDoc.docFreq(doc)
 		
 		for q_id, q_terms in qry.items():
-			npscq = np.asarray([self.scq(df, q_term) for q_term in q_terms])
+			npscq = np.asarray([self.__scq(df, q_term) for q_term in q_terms])
 			homo_feats[q_id] = np.asarray([np.sum(npscq), np.amax(npscq), np.amin(npscq), np.mean(npscq)])
 		
 		# np.sum(a)
@@ -100,7 +100,7 @@ class InputDataProcess(object):
 		# var = variation(a, axis=0) idmax = np.argmax(var)
 		
 		return homo_feats
-	def scq(self, df, term):
+	def __scq(self, df, term):
 		eps = np.finfo(float).eps
 		# print df[term, 1],1 + self.num_vocab/(eps + df[term, 0])
 		return (1 + np.log(eps + df[term, 1])) * np.log(1 + self.num_vocab/(eps + df[term, 0]))
