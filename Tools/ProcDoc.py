@@ -89,7 +89,11 @@ def doc_preprocess(dictionary, res_pos = False, str2int = False):
 		dictionary[key]	= content
 		# content to int list
 		if str2int: 
-			dictionary[key] = map(int, content.split())
+			int_rep = map(int, content.split())
+			# top200
+			if len(int_rep) > 200:
+				int_rep = int_rep[:200]
+			dictionary[key] = int_rep
 		
 	if not res_pos:
 		doc_freq = {}	
@@ -118,7 +122,11 @@ def query_preprocess(dictionary, res_pos = False, str2int = False):
 		dictionary[key]	= content
 		# content to int list
 		if str2int: 
-			dictionary[key] = map(int, content.split())
+			int_rep = map(int, content.split())
+			# top200
+			if len(int_rep) > 200:
+				int_rep = int_rep[:200]
+			dictionary[key] = int_rep
 	if not res_pos:	
 		qry_freq = {}	
 		# term probability(word_count / word sum)	

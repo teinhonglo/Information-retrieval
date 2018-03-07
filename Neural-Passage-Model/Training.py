@@ -12,15 +12,17 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
                   inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
-MAX_QRY_LENGTH = 1794
-MAX_DOC_LENGTH = 2907
+MAX_QRY_LENGTH = 200
+MAX_DOC_LENGTH = 200
 NUM_OF_FEATS = 4
 PSG_SIZE = [(50, 1), (150, 1)]
 NUM_OF_FILTERS = 1
-batch_size = 4
 tau = 1
+
 optimizer = "Adam"
 loss = "logcosh"
+batch_size = 512
+epochs = 50
 exp_path = "exp/basic_cnn" + optimizer + "_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
@@ -54,6 +56,7 @@ with tf.device('/device:GPU:0'):
 	model.compile(optimizer = optimizer, loss = loss, metrics=["accuracy"])
 	model.fit_generator(generator = training_generator,
 						steps_per_epoch = len(partition['train']) / batch_size,
+						epochs = epochs,
 						validation_data = validation_generator,
 						validation_steps = len(partition['validation']) / batch_size,
 						callbacks = callbacks_list)
