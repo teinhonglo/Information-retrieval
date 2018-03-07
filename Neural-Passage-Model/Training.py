@@ -17,10 +17,12 @@ MAX_DOC_LENGTH = 200
 NUM_OF_FEATS = 4
 PSG_SIZE = [(50, 1), (150, 1)]
 NUM_OF_FILTERS = 1
-batch_size = 512
 tau = 1
+
 optimizer = "Adam"
 loss = "logcosh"
+batch_size = 512
+epochs = 50
 exp_path = "exp/basic_cnn" + optimizer + "_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
@@ -54,6 +56,7 @@ with tf.device('/gpu:0'):
 	# Train model on dataset
 	model.fit_generator(generator = training_generator,
 						steps_per_epoch = len(partition['train']) / batch_size,
+						epochs = epochs,
 						validation_data = validation_generator,
 						validation_steps = len(partition['validation']) / batch_size,
 						callbacks = callbacks_list)
