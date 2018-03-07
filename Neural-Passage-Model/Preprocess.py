@@ -8,6 +8,7 @@ class InputDataProcess(object):
 	def __init__(self, num_of_homo_feats = 10, max_qry_length = 1794, max_doc_length = 2907, query_path = None, document_path = None, corpus = "TDT2"):
 		res_pos = True
 		str2int = True
+		self.num_vocab = 51253
 		self.max_qry_length = max_qry_length
 		self.max_doc_length = max_doc_length
 		self.num_of_homo_feats = num_of_homo_feats
@@ -81,9 +82,26 @@ class InputDataProcess(object):
 		print "generate h features"
 		qry = self.qry
 		doc = self.doc
-		homo_feats = np.zeros((len(qry.keys()), num_of_homo_feats))
+		homo_feats = {}
+		df = ProcDoc.docFreq(doc)
+		
+		for q_id, q_terms in qry.items():
+			npscq = np.asarray([self.scq(df, q_term) for q_term in q_terms])
+			homo_feats[q_id] = np.asarray([np.sum(npscq), np.amax(npscq), np.amin(npscq), np.mean(npscq)])
+		
+		# np.sum(a)
+		# np.amax(a)
+		# np.amin(a)
+		# np.mean(a)
+		# a.prod()**(1.0/len(a))
+		# len(a) / np.sum(1.0/a)
+		# var = variation(a, axis=0) idmax = np.argmax(var)
 		
 		return homo_feats
+	def scq(self, df, term):
+		eps = np.finfo(float).eps
+		# print df[term, 1],1 + self.num_vocab/(eps + df[term, 0])
+		return (1 + np.log(eps + df[term, 1])) * np.log(1 + self.num_vocab/(eps + df[term, 0]))
 		
 	def __mergeMat(self, b1, b2, pos = [0, 0]):
 		[pos_v, pos_h] = pos
@@ -93,5 +111,9 @@ class InputDataProcess(object):
 		h_range2 = slice(max(0, -pos_h), min(-pos_h + b1.shape[1], b2.shape[1]))
 		b1[v_range1, h_range1] += b2[v_range2, h_range2]
 		return b1
+if __name__ == "__main__":
+	a = InputDataProcess()
+	
+	
 
 
