@@ -3,10 +3,10 @@ import fileinput
 import collections
 from collections import defaultdict
 
-class evaluate_model():
+class EvaluateModel(object):
     def __init__(self, HMM = False):
         if not HMM:
-            self.assessmentTraingSet_path = "../Corpus/AssessmentTrainSet/AssessmentTrainSet.txt"
+            self.assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
         else:
             self.assessmentTraingSet_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
         self.assessment = self.get_assessment(HMM)
@@ -15,7 +15,7 @@ class evaluate_model():
         assessmentTraingSetDict = defaultdict(list)
         assessmentTraingSet_path = self.assessmentTraingSet_path
         with open(assessmentTraingSet_path, 'r') as file:
-            # read content of query documant (doc, content)
+            # read content of query document (doc, content)
             title = ""
             for line in file.readlines():
                 result = line.split()
@@ -39,7 +39,7 @@ class evaluate_model():
         count = 0
         precision = 0
         assessment = self.assessment[q_key]
-        for doc_name in result:
+        for doc_name, point in result:
             iterative += 1
             if count == len(assessment): break
                 

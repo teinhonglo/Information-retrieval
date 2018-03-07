@@ -45,13 +45,15 @@ class InputDataProcess(object):
 			d_terms = np.asarray(doc[d_id])
 			psg_mat = np.asarray([[(q_t == d_terms)] for q_t in q_terms]).reshape(len(q_terms), len(d_terms), 1)
 			psg_mat = self.__mergeMat(np.zeros((max_qry_length, max_doc_length, 1)), psg_mat)
+			# print psg_mat.shape
 			psg_mat_batch[idx] = np.copy(psg_mat)
 			homo_feats_batch[idx] = homo_feats[q_id]
 			rel_batch[idx] = labels[data_ID]
 		return [psg_mat_batch, homo_feats_batch, rel_batch]
 	
-	def genTrainValidSet(self):
+	def genTrainValidSet(self, percent = None):
 		print "generate training set and validation set"
+		if percent == None:percent = 8/10
 		qry = self.qry
 		doc = self.doc
 		total_qry = len(qry.keys())
@@ -59,7 +61,7 @@ class InputDataProcess(object):
 		hmm_training_set = self.hmm_training_set
 		labels = {}
 		total = total_qry * total_doc
-		num_of_train = total * 8 / 10 
+		num_of_train = total * percent 
 		num_of_valid = total - num_of_train
 		partition = {'train': [], 'validation': []}
 		# relevance between queries and documents
