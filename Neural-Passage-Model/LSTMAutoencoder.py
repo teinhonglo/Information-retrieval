@@ -16,8 +16,8 @@ from keras import layers
 from six.moves import range
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import tensorflow as tf
-sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
-				  inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
+#sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
+#				  inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
 
 class colors:
@@ -76,7 +76,7 @@ class CharacterTable(object):
 		return q
 		
 def create_model(MAXLEN, LAYERS, ENCODE_LENGTH, HIDDEN_SIZE):
-	RNN = layers.LSTM
+	RNN = layers.GRU
 	print('Build model...')
 	# "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE.
 	# Note: In a situation where your input sequences have a variable length,
@@ -92,14 +92,12 @@ def create_model(MAXLEN, LAYERS, ENCODE_LENGTH, HIDDEN_SIZE):
 	#model.add(layers.RepeatVector(MAXLEN))
 	# The decoder RNN could be multiple layers stacked or a single layer.
 	for _ in range(LAYERS):
-		# By setting return_sequences to True, return not only the last output but
-		# all the outputs so far in the form of (num_samples, timesteps,
-		# output_dim). This is necessary as TimeDistributed in the below expects
-		# the first dimension to be the timesteps.
-		hid_layer = RNN(HIDDEN_SIZE, activation='sigmoid', return_sequences=True)(hid_layer)
+		# By setting return_sequences to True
+		hid_layer = RNN(HIDDEN_SIZE, activation='tanh', return_sequences=True)(hid_layer)
 
 	# Apply a dense layer to the every temporal slice of an input. For each of step
 	# of the output sequence, decide which character should be chosen.
+	hid_layer = layers.Dense(HIDDEN_SIZE)(hid_layer)
 	#linear_mapping = layers.TimeDistributed(layers.Dense(ENCODE_LENGTH))(hid_layer)
 	linear_mapping = layers.Dense(ENCODE_LENGTH)(hid_layer)
 	pred = layers.Activation('sigmoid')(linear_mapping)
