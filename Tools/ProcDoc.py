@@ -6,6 +6,7 @@ import fileinput
 import collections
 import numpy as np
 import operator
+import types
 from math import exp
 from webbrowser import BackgroundBrowser
 from collections import defaultdict
@@ -88,7 +89,11 @@ def doc_preprocess(dictionary, res_pos = False, str2int = False):
 		dictionary[key]	= content
 		# content to int list
 		if str2int: 
-			dictionary[key] = map(int, content.split())
+			int_rep = map(int, content.split())
+			# top200
+			if len(int_rep) > 200:
+				int_rep = int_rep[:200]
+			dictionary[key] = int_rep
 		
 	if not res_pos:
 		doc_freq = {}	
@@ -117,7 +122,11 @@ def query_preprocess(dictionary, res_pos = False, str2int = False):
 		dictionary[key]	= content
 		# content to int list
 		if str2int: 
-			dictionary[key] = map(int, content.split())
+			int_rep = map(int, content.split())
+			# top200
+			if len(int_rep) > 200:
+				int_rep = int_rep[:200]
+			dictionary[key] = int_rep
 	if not res_pos:	
 		qry_freq = {}	
 		# term probability(word_count / word sum)	
@@ -184,27 +193,29 @@ def softmax(model):
 	return model
 	
 def docFreq(doc, vocab_size = 51253):
+	#0:docfreq 1:count
 	corpus_dFreq_total = np.zeros((vocab_size, 2))
-	for name, word_list in doc:
+	for name, word_list in doc.items():
+		temp_word_list = {}
 		cont_type = type(word_list)
 		# str to dict
-		if cont_type == type(str):
+		if isinstance(word_list, types.StringType):
 			temp_word_list = word_count(word_list, {})
 		# list to dict
-		elif cont_type == type(list):
+		elif isinstance(word_list, types.ListType):
 			temp_word_list = {}
-			for part in word_list.split():
+			for part in word_list:
 				if part in temp_word_list:
 					temp_word_list[part] += 1
 				else:
 					temp_word_list[part] = 1
-		elif cont_type == type(dict):
+		elif isinstance(word_list, types.DictType):
 			temp_word_list = dict(word_list)
 		# assume type of word_list is dictionary
 		for word, word_count in temp_word_list.items():
 			corpus_dFreq_total[int(word), 0] += 1
 			corpus_dFreq_total[int(word), 1] += word_count
-		return corpus_d_freq_total
+	return corpus_dFreq_total
 		
 def rmStopWord(ori_content, corpus_d_freq_total, threshold = 0.1):
 	weight_list = []

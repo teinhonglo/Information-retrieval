@@ -12,12 +12,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
                   inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
-MAX_QRY_LENGTH = 1794
-MAX_DOC_LENGTH = 2907
-NUM_OF_FEATS = 10
-PSG_SIZE = 50
-NUM_OF_FILTERS = 8
-batch_size = 4
+MAX_QRY_LENGTH = 200
+MAX_DOC_LENGTH = 200
+NUM_OF_FEATS = 4
+PSG_SIZE = [(50, 1), (150, 1)]
+NUM_OF_FILTERS = 1
+batch_size = 512
 tau = 1
 optimizer = "Adam"
 loss = "logcosh"
