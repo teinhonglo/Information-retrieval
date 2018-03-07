@@ -11,9 +11,9 @@ class EvaluateModel(object):
             self.assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
         else:
             self.assessmentTraingSet_path = rel_set_path
-        self.assessment = self.get_assessment(HMM)
+        self.assessment = self.__getAssessment(HMM)
         
-    def get_assessment(self, HMM):
+    def __getAssessment(self, HMM):
         assessmentTraingSetDict = defaultdict(list)
         assessmentTraingSet_path = self.assessmentTraingSet_path
         with open(assessmentTraingSet_path, 'r') as file:
@@ -36,7 +36,7 @@ class EvaluateModel(object):
 
     # result : list [(doc, point)]
     # assessment_list : list [(doc)]
-    def precision(self, result, q_key):
+    def __avePrecision(self, result, q_key):
         iterative = 0
         count = 0
         precision = 0
@@ -56,7 +56,7 @@ class EvaluateModel(object):
         mAP = 0
         AP = 0
         for q_key, docs_point_list in query_docs_point_dict.items():
-            AP += self.precision(docs_point_list, q_key)
+            AP += self.__avePrecision(docs_point_list, q_key)
         mAP = AP / len(query_docs_point_dict.keys())
         return mAP
     

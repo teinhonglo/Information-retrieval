@@ -16,17 +16,17 @@ class DataGenerator(object):
 		# Infinite loop
 		while 1:
 			# Generate order of exploration of dataset
-			indexes = self.__get_exploration_order(list_IDs)
+			indexes = self.__getExplorationOrder(list_IDs)
 			# Generate batches
 			imax = int(len(indexes)/self.batch_size)
 			for i in range(imax):
 				# Find list of IDs
 				list_IDs_temp = [list_IDs[k] for k in indexes[i*self.batch_size:(i+1)*self.batch_size]]
 				# Generate data
-				X, X1, y = self.__data_generation(labels, list_IDs_temp)
+				X, X1, y = self.__dataGeneration(labels, list_IDs_temp)
 				yield ([X, X1], y)
 
-	def __get_exploration_order(self, list_IDs):
+	def __getExplorationOrder(self, list_IDs):
 		# Generates order of exploration
 		# Find exploration order
 		indexes = np.arange(len(list_IDs))
@@ -35,7 +35,7 @@ class DataGenerator(object):
 			
 		return indexes
 
-	def __data_generation(self, labels, list_IDs_temp):
+	def __dataGeneration(self, labels, list_IDs_temp):
 		# Generates data of batch_size samples
 		# X : (n_samples, v_size, v_size, n_channels)
 		# Initialization
