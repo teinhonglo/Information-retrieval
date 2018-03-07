@@ -18,6 +18,7 @@ NUM_OF_FEATS = 4
 PSG_SIZE = [(50, 1), (150, 1)]
 NUM_OF_FILTERS = 1
 batch_size = 512
+
 tau = 1
 optimizer = "Adam"
 loss = "logcosh"
@@ -44,14 +45,14 @@ labels = # Labels
 training_generator = DataGenerator(**params).generate(labels, partition['train'])
 validation_generator = DataGenerator(**params).generate(labels, partition['validation'])
 
-# Design model
-model = NPM.create_model(MAX_QRY_LENGTH, MAX_DOC_LENGTH, NUM_OF_FEATS, PSG_SIZE, NUM_OF_FILTERS, tau)
-model.compile(optimizer = optimizer, loss = loss, metrics=["accuracy"])
 # Model check point
 checkpoint = ModelCheckpoint(exp_path, monitor='val_loss', verbose=0, save_best_only=False, mode='min')
 callbacks_list = [checkpoint]
-with tf.device('/gpu:0'):
+with tf.device('/device:GPU:0'):
 	# Train model on dataset
+	# Design model
+	model = NPM.create_model(MAX_QRY_LENGTH, MAX_DOC_LENGTH, NUM_OF_FEATS, PSG_SIZE, NUM_OF_FILTERS, tau)
+	model.compile(optimizer = optimizer, loss = loss, metrics=["accuracy"])
 	model.fit_generator(generator = training_generator,
 						steps_per_epoch = len(partition['train']) / batch_size,
 						validation_data = validation_generator,
