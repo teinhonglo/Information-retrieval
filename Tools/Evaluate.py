@@ -4,11 +4,13 @@ import collections
 from collections import defaultdict
 
 class EvaluateModel(object):
-    def __init__(self, HMM = False):
-        if not HMM:
+    def __init__(self, rel_set_path = None, HMM = False):
+        # TDT2 path ../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt
+        # HMMTrainingSet path ../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain
+        if rel_sel_path == None:
             self.assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
         else:
-            self.assessmentTraingSet_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+            self.assessmentTraingSet_path = rel_set_path
         self.assessment = self.get_assessment(HMM)
         
     def get_assessment(self, HMM):
