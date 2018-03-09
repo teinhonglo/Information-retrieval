@@ -32,9 +32,10 @@ def read_file(filepath):
 	return data	
 
 # read background model
-def read_relevance_dict():
+def read_relevance_dict(HMMTraingSet_Path = None):
 	HMMTraingSetDict = defaultdict(list)
-	HMMTraingSet_Path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+	if HMMTraingSet_Path == None: 
+		HMMTraingSet_Path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
 	with io.open(HMMTraingSet_Path, 'r', encoding = 'utf8') as file:
 		# read content of query document (doc, content)
 		query_name = ""

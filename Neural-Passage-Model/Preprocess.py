@@ -73,7 +73,7 @@ class InputDataProcess(object):
 				if d_id in hmm_training_set[q_id]:
 					labels[q_id + "_" + d_id] = 1
 				else:
-					labels[q_id + "_" + d_id] = -1
+					labels[q_id + "_" + d_id] = 0
 		# partition
 		ID_list = labels.keys()
 		# shuffle

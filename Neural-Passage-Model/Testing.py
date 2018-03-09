@@ -24,7 +24,7 @@ optimizer = "Adam"
 loss = "kullback_leibler_divergence"
 exp_path = "exp/"
 test_path = "../Corpus/TDT2/QUERY_WDID_NEW"
-model_name = "basic_cnnAdam_logcosh_weights-04-0.04.hdf5"
+model_name = "basic_cnnAdam_binary_crossentropy_weights-04-0.66.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH, test_path)
 evaluate_model = EvaluateModel()
@@ -36,7 +36,7 @@ params = {'input_data_process': input_data_process,
           'batch_size': batch_size,
           'shuffle': False}
 
-[partition, labels] = input_data_process.genTrainValidSet(percent)
+[partition, labels, partition_answer] = input_data_process.genTrainValidSet(percent)
 
 # Generators
 training_generator = DataGenerator(**params).generate(labels, partition['train'])
@@ -47,8 +47,7 @@ model.compile(optimizer = optimizer, loss = loss, metrics=["accuracy"])
 qry_doc = defaultdict(list)
 with tf.device('/gpu:0'):
 	# Train model on dataset
-	pred = model.predict_generator(generator = training_generator,	steps = len(partition['train']) / batch_size)
-	print pred.shape
+	pred = model.predict_generator(generator = training_generator,	steps = len(partition['train']) / batch_size, verbose=1)
 	for idx, id in enumerate(partition['train']):
 		q_id, d_id = id.split('_')
 		qry_doc[q_id].append([d_id, pred[idx]])
