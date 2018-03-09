@@ -21,7 +21,7 @@ NUM_OF_FILTERS = 1
 tau = 1
 
 optimizer = "Adam"
-loss = "logcosh"
+loss = "binary_crossentropy"
 batch_size = 128
 epochs = 50
 exp_path = "exp/basic_cnn" + optimizer + "_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
@@ -43,7 +43,7 @@ labels = # Labels
 '''
 [partition, labels, partition_answer] = input_data_process.genTrainValidSet()
 class_weight = class_weight.compute_class_weight('balanced', np.unique(partition_answer['train']), partition_answer['train'])
-class_weight = {-1:class_weight[0], 1:class_weight[1]}
+class_weight = {0:class_weight[0], 1:class_weight[1]}
 
 print "Training: ", len(partition['train'])
 print "Validation: ", len(partition['validation'])
