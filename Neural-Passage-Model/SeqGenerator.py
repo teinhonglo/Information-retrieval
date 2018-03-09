@@ -1,4 +1,5 @@
 import numpy as np
+np.random.seed(5566)
 
 class DataGenerator(object):
 	#'Generates data for Keras'

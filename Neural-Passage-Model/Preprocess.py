@@ -2,6 +2,7 @@ import sys
 sys.path.append("../Tools")
 
 import numpy as np
+np.random.seed(5566)
 import ProcDoc
 
 class InputDataProcess(object):
@@ -65,6 +66,7 @@ class InputDataProcess(object):
 		num_of_train = total * percent / 100
 		num_of_valid = total - num_of_train
 		partition = {'train': [], 'validation': []}
+		partition_answer = {'train': [], 'validation': []}
 		# relevance between queries and documents
 		for q_id in qry:
 			for d_id in doc:
@@ -77,8 +79,9 @@ class InputDataProcess(object):
 		# shuffle
 		np.random.shuffle(ID_list)
 		partition['train'] = [id for id in ID_list[:num_of_train]]
+		partition_answer['train'] = [labels[id] for id in ID_list[:num_of_train]]
 		partition['validation'] = [id for id in ID_list[num_of_train:]]
-		return [partition, labels]
+		return [partition, labels, partition_answer]
 	
 	def __genFeature(self, num_of_homo_feats):
 		###################### TODO ######################
