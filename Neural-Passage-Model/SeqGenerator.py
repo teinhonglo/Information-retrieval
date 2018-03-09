@@ -19,7 +19,7 @@ class DataGenerator(object):
 			indexes = self.__getExplorationOrder(list_IDs)
 			# Generate batches
 			imax = int(len(indexes)/self.batch_size)
-			for i in range(imax):
+			for i in xrange(imax):
 				# Find list of IDs
 				list_IDs_temp = [list_IDs[k] for k in indexes[i*self.batch_size:(i+1)*self.batch_size]]
 				# Generate data

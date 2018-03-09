@@ -3,6 +3,7 @@ np.random.seed(5566)
 import os
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
+from sklearn.utils import class_weight
 
 import NPM
 from SeqGenerator import DataGenerator
@@ -15,13 +16,13 @@ sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=T
 MAX_QRY_LENGTH = 200
 MAX_DOC_LENGTH = 200
 NUM_OF_FEATS = 4
-PSG_SIZE = [(50, 1), (150, 1)]
+PSG_SIZE = [(50, 1), (150, 1), (MAX_QRY_LENGTH, MAX_DOC_LENGTH)]
 NUM_OF_FILTERS = 1
 tau = 1
 
 optimizer = "Adam"
 loss = "logcosh"
-batch_size = 512
+batch_size = 128
 epochs = 50
 exp_path = "exp/basic_cnn" + optimizer + "_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
@@ -41,6 +42,10 @@ labels = # Labels
 {'id-1': 0, 'id-2': 1, 'id-3': 2, 'id-4': 1}
 '''
 [partition, labels] = input_data_process.genTrainValidSet()
+class_weight = class_weight.compute_class_weight('balanced', np.unique(partition['train']), partition['train'])
+
+print "Training: ", len(partition['train'])
+print "Validation: ", len(partition['validation'])
 
 # Generators
 training_generator = DataGenerator(**params).generate(labels, partition['train'])
@@ -59,5 +64,6 @@ with tf.device('/device:GPU:0'):
 						epochs = epochs,
 						validation_data = validation_generator,
 						validation_steps = len(partition['validation']) / batch_size,
+						class_weight = class_weight,
 						callbacks = callbacks_list)
 					

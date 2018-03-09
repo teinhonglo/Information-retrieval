@@ -53,7 +53,8 @@ class InputDataProcess(object):
 	
 	def genTrainValidSet(self, percent = None):
 		print "generate training set and validation set"
-		if percent == None:percent = 8/10
+		if percent == None: percent = 80
+		
 		qry = self.qry
 		doc = self.doc
 		total_qry = len(qry.keys())
@@ -61,7 +62,7 @@ class InputDataProcess(object):
 		hmm_training_set = self.hmm_training_set
 		labels = {}
 		total = total_qry * total_doc
-		num_of_train = total * percent 
+		num_of_train = total * percent / 100
 		num_of_valid = total - num_of_train
 		partition = {'train': [], 'validation': []}
 		# relevance between queries and documents

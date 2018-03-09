@@ -217,7 +217,7 @@ def docFreq(doc, vocab_size = 51253):
 			corpus_dFreq_total[int(word), 1] += word_count
 	return corpus_dFreq_total
 		
-def rmStopWord(ori_content, corpus_d_freq_total, threshold = 0.1):
+def rmStopWord(ori_content, corpus_dFreq_total, threshold = 0.1):
 	weight_list = []
 	corpus_length = corpus_dFreq_total[:, 1].sum(axis=0)
 	cont_type = type(dict)
