@@ -41,11 +41,13 @@ partition = # IDs
 labels = # Labels
 {'id-1': 0, 'id-2': 1, 'id-3': 2, 'id-4': 1}
 '''
-[partition, labels] = input_data_process.genTrainValidSet()
-class_weight = class_weight.compute_class_weight('balanced', np.unique(partition['train']), partition['train'])
+[partition, labels, partition_answer] = input_data_process.genTrainValidSet()
+class_weight = class_weight.compute_class_weight('balanced', np.unique(partition_answer['train']), partition_answer['train'])
+class_weight = {-1:class_weight[0], 1:class_weight[1]}
 
 print "Training: ", len(partition['train'])
 print "Validation: ", len(partition['validation'])
+print "Class Weight:", class_weight
 
 # Generators
 training_generator = DataGenerator(**params).generate(labels, partition['train'])
