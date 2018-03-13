@@ -84,6 +84,7 @@ class InputDataProcess(object):
         [partition['train'], part_answer['train']] = self.__balancedSubsample(partition['train'], part_answer['train'], labels)
         partition['validation'] = [id for id in ID_list[num_of_train:]]
         part_answer['validation'] = [labels[id] for i, id in enumerate(ID_list[num_of_train:])]
+        [partition['validation'], part_answer['validation']] = self.__balancedSubsample(partition['validation'], part_answer['validation'], labels)
         return [partition, labels, part_answer]
     
     def __genFeature(self, num_of_homo_feats):
@@ -135,7 +136,7 @@ class InputDataProcess(object):
                             i += 1
                         else:	
                             continue
-			if isNegLarger:
+            if isNegLarger:
                 i = 0
                 while i < (uni_class[1] - uni_class[0]):
                     for i_x, id in enumerate(x):
