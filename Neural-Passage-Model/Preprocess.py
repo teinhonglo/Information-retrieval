@@ -62,29 +62,33 @@ class InputDataProcess(object):
         total_doc = len(doc.keys())
         hmm_training_set = self.hmm_training_set
         labels = {}
-        total = total_qry * total_doc
-        num_of_train = total * percent / 100
-        num_of_valid = total - num_of_train
         partition = {'train': [], 'validation': []}
         part_answer = {'train': [], 'validation': []}
         # relevance between queries and documents
         for q_id in qry:
+            flag = False
             for d_id in doc:
                 if d_id in hmm_training_set[q_id]:
                     labels[q_id + "_" + d_id] = 1
+                    flag = True
                 else:
-                    labels[q_id + "_" + d_id] = 0
+                    if flag:	
+                        labels[q_id + "_" + d_id] = 0
+                        flag = False
                    
         # partition
         ID_list = labels.keys()
+        total = len(ID_list)
+        num_of_train = total * percent / 100
+        num_of_valid = total - num_of_train
         # shuffle
         np.random.shuffle(ID_list)
         partition['train'] = [id for id in ID_list[:num_of_train]]
         part_answer['train'] = [labels[id] for i, id in enumerate(ID_list[:num_of_train])]
-        [partition['train'], part_answer['train']] = self.__balancedSubsample(partition['train'], part_answer['train'], labels)
+        #[partition['train'], part_answer['train']] = self.__balancedSubsample(partition['train'], part_answer['train'], labels)
         partition['validation'] = [id for id in ID_list[num_of_train:]]
         part_answer['validation'] = [labels[id] for i, id in enumerate(ID_list[num_of_train:])]
-        [partition['validation'], part_answer['validation']] = self.__balancedSubsample(partition['validation'], part_answer['validation'], labels)
+        #[partition['validation'], part_answer['validation']] = self.__balancedSubsample(partition['validation'], part_answer['validation'], labels)
         return [partition, labels, part_answer]
     
     def __genFeature(self, num_of_homo_feats):
