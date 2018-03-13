@@ -35,7 +35,7 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, 
     dot_prod = dot([concat_r, phi_h], axes = 1, name="rel_dot")
     # tanh(dot(r.transpose * h))
     #pred = Activation("tanh", name="activation_tanh")(dot_prod)
-    pred = Dense(1, activation="sigmoid", name="activation_sigmoid")(dot_prod)
+    pred = Dense(2, activation="softmax", name="activation_softmax")(dot_prod)
     
     # We now have everything we need to define our model.
     model = Model(inputs = [psgMat, homoMat], outputs = pred)
