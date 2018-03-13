@@ -1,8 +1,8 @@
 import sys
 sys.path.append("../Tools")
-
 import numpy as np
 np.random.seed(5566)
+from sklearn import preprocessing
 import ProcDoc
 
 class InputDataProcess(object):
@@ -96,14 +96,24 @@ class InputDataProcess(object):
         
         for q_id, q_terms in qry.items():
             npscq = np.asarray([self.__scq(df, q_term) for q_term in q_terms])
-            homo_feats[q_id] = np.asarray([np.sum(npscq), np.amax(npscq), np.amin(npscq), np.mean(npscq)])
-        
+            harm_mean = self.__harm_mean(npscq)
+            geo_mean = self.__geo_mean(npscq)
+            homo_feats[q_id] = np.asarray([np.std(npscq), np.sum(npscq), np.amax(npscq), np.amin(npscq), np.mean(npscq), harm_mean, geo_mean])
         return homo_feats
+		
     def __scq(self, df, term):
         eps = np.finfo(float).eps
+        num_docs = len(self.doc.keys())
         # print df[term, 1],1 + self.num_vocab/(eps + df[term, 0])
-        return (1 + np.log(eps + df[term, 1])) * np.log(1 + self.num_vocab/(eps + df[term, 0]))
-        
+        return (1 + np.log(1 + df[term, 1])) * np.log(1 + num_docs/(eps + df[term, 0]))
+    
+    def __harm_mean(self, a):
+        return len(a) / np.sum(1.0 / a)
+    	
+    def __geo_mean(self, a):
+        a = np.log(a)
+        return np.exp(a.sum() / len(a))
+    
     def __mergeMat(self, b1, b2, pos = [0, 0]):
         [pos_v, pos_h] = pos
         v_range1 = slice(max(0, pos_v), max(min(pos_v + b2.shape[0], b1.shape[0]), 0))
