@@ -6,7 +6,7 @@ from keras import backend as K
 from keras.callbacks import ModelCheckpoint
 from sklearn.utils import class_weight
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
-from keras.optimizers import SGD
+import keras.optimizers as optimizers
 
 import NPM
 from SeqGenerator import DataGenerator
@@ -34,11 +34,11 @@ PSG_SIZE = [(50, 1), (150, 1), (MAX_QRY_LENGTH, MAX_DOC_LENGTH)]
 NUM_OF_FILTERS = 1
 tau = 1
 
-optimizer = "Adam"
+optimizer = optimizers.Adam(lr=0.17)
 loss = "categorical_crossentropy"
 batch_size = 512
 epochs = 500
-exp_path = "exp/categorical_cnn" + optimizer + "_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
+exp_path = "exp/categorical_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
 # Parameters
