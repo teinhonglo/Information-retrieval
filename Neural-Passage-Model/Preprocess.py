@@ -81,7 +81,7 @@ class InputDataProcess(object):
         np.random.shuffle(ID_list)
         partition['train'] = [id for id in ID_list[:num_of_train]]
         part_answer['train'] = [labels[id] for i, id in enumerate(ID_list[:num_of_train])]
-        [partition['train'], part_answer['train']] = self.__balancedSubsample(partition['train'], part_answer['train'])
+        [partition['train'], part_answer['train']] = self.__balancedSubsample(partition['train'], part_answer['train'], labels)
         partition['validation'] = [id for id in ID_list[num_of_train:]]
         part_answer['validation'] = [labels[id] for i, id in enumerate(ID_list[num_of_train:])]
         return [partition, labels, part_answer]
@@ -112,7 +112,7 @@ class InputDataProcess(object):
         b1[v_range1, h_range1] += b2[v_range2, h_range2]
         return b1
     
-    def __balancedSubsample(self, x, y):
+    def __balancedSubsample(self, x, y, labels):
         print "balanced sample : Oversampling"
         uni_class = {}
         xs = list(x)
@@ -135,6 +135,16 @@ class InputDataProcess(object):
                             i += 1
                         else:	
                             continue
+			if isNegLarger:
+                i = 0
+                while i < (uni_class[1] - uni_class[0]):
+                    for i_x, id in enumerate(x):
+                        if y[i_x] == 0:
+                            xs.append(id)
+                            ys.append(0)
+                            i += 1
+                        else:	
+                            continue				
         return xs, ys
 if __name__ == "__main__":
     a = InputDataProcess()
