@@ -29,7 +29,7 @@ def precision(y_true, y_pred):
 
 MAX_QRY_LENGTH = 200
 MAX_DOC_LENGTH = 200
-NUM_OF_FEATS = 4
+NUM_OF_FEATS = 7
 PSG_SIZE = [(50, 1), (150, 1), (MAX_QRY_LENGTH, MAX_DOC_LENGTH)]
 NUM_OF_FILTERS = 1
 tau = 1
@@ -37,8 +37,8 @@ tau = 1
 optimizer = optimizers.Adam(lr=0.17)
 loss = "categorical_crossentropy"
 batch_size = 512
-epochs = 500
-exp_path = "exp/categorical_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
+epochs = 100
+exp_path = "exp/SubSampling_categorical_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
 # Parameters
