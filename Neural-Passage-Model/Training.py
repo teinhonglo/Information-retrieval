@@ -30,7 +30,7 @@ def precision(y_true, y_pred):
 MAX_QRY_LENGTH = 200
 MAX_DOC_LENGTH = 200
 NUM_OF_FEATS = 7
-PSG_SIZE = [(50, 1), (150, 1), (MAX_QRY_LENGTH, MAX_DOC_LENGTH)]
+PSG_SIZE = [(50, 1), (150, 1)]
 NUM_OF_FILTERS = 1
 tau = 1
 
@@ -38,7 +38,7 @@ optimizer = optimizers.Adam(lr=0.17)
 loss = "binary_crossentropy"
 batch_size = 512
 epochs = 100
-exp_path = "exp/SubSampling_binary_logcnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
+exp_path = "exp/SubSampling_binary_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
 # Parameters
@@ -75,7 +75,7 @@ with tf.device('/device:GPU:0'):
     # Train model on dataset
     # Design model
     model = NPM.create_model(MAX_QRY_LENGTH, MAX_DOC_LENGTH, NUM_OF_FEATS, PSG_SIZE, NUM_OF_FILTERS, tau)
-    model.compile(optimizer = optimizer, loss = loss, metrics=['accuracy'])
+    model.compile(optimizer = optimizer, loss = loss, metrics=['accuracy', precision])
     model.fit_generator(generator = training_generator,
                         steps_per_epoch = len(partition['train']) / batch_size,
                         epochs = epochs,
