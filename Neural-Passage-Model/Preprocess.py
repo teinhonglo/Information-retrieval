@@ -65,6 +65,7 @@ class InputDataProcess(object):
         partition = {'train': [], 'validation': []}
         part_answer = {'train': [], 'validation': []}
         # relevance between queries and documents
+		
         for q_id in qry:
             flag = False
             for d_id in doc:
@@ -72,7 +73,7 @@ class InputDataProcess(object):
                     labels[q_id + "_" + d_id] = 1
                     flag = True
                 else:
-                    if flag:	
+                    if flag or True:	
                         labels[q_id + "_" + d_id] = 0
                         flag = False
                    

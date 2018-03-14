@@ -35,10 +35,10 @@ NUM_OF_FILTERS = 1
 tau = 1
 
 optimizer = optimizers.Adam(lr=0.17)
-loss = "categorical_crossentropy"
+loss = "binary_crossentropy"
 batch_size = 512
 epochs = 100
-exp_path = "exp/SubSampling_categorical_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
+exp_path = "exp/SubSampling_binary_logcnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
 # Parameters

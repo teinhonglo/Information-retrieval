@@ -55,7 +55,7 @@ class DataGenerator(object):
 			# Store class
 			y[i] = labels[ID]
 		'''	
-		return X, X1, self.__sparsify(y)
+		return X, X1,y
 
 	def __sparsify(self, y):
 		#'Returns labels in binary NumPy array'
