@@ -30,7 +30,7 @@ def precision(y_true, y_pred):
 MAX_QRY_LENGTH = 200
 MAX_DOC_LENGTH = 200
 NUM_OF_FEATS = 7
-PSG_SIZE = [(50, 1), (150, 1)]
+PSG_SIZE = [(50, 1), (150, 1), (MAX_QRY_LENGTH, MAX_DOC_LENGTH)]
 NUM_OF_FILTERS = 1
 tau = 1
 
