@@ -26,6 +26,17 @@ exp_path = "exp/"
 test_path = "../Corpus/TDT2/QUERY_WDID_NEW"
 model_name = "SubSampling_categorical_cnn_Adam_categorical_crossentropy_weights-08-0.56.hdf5"
 
+def precision(y_true, y_pred):
+    """Precision metric.
+    Only computes a batch-wise average of precision.
+    Computes the precision, a metric for multi-label classification of
+    how many selected items are relevant.
+    """
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)#, test_path)
 evaluate_model = EvaluateModel("../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain", True)
 # Parameters
@@ -43,12 +54,13 @@ training_generator = DataGenerator(**params).generate(labels, partition['train']
 
 # Design model
 model = load_model(exp_path + model_name)
-model.compile(optimizer = optimizer, loss = loss, metrics=["accuracy"])
+model.compile(optimizer = optimizer, loss = loss, metrics=["accuracy", precision])
 qry_doc = defaultdict(list)
 with tf.device('/gpu:0'):
 	# Train model on dataset
-	pred = model.predict_generator(generator = training_generator,	steps = len(partition['train']) / batch_size, verbose=1)
+	pred = model.evaluate_generator(generator = training_generator,	steps = len(partition['train']) / batch_size, verbose=1)
 	print 
+	'''
 	for idx, id in enumerate(partition['train']):
 		q_id, d_id = id.split('_')
 		qry_doc[q_id].append([d_id, pred[idx]])
@@ -56,5 +68,6 @@ with tf.device('/gpu:0'):
 		qry_doc[id] = sorted(docs_point, key=operator.itemgetter(1), reverse = True)
 	mAP = evaluate_model.mAP(qry_doc)
 	print mAP
+	'''
 # import evaluation
 # other

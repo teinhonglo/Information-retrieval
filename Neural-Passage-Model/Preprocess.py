@@ -52,7 +52,7 @@ class InputDataProcess(object):
             rel_batch[idx] = labels[data_ID]
         return [psg_mat_batch, homo_feats_batch, rel_batch]
     
-    def genTrainValidSet(self, percent = None):
+    def genTrainValidSet(self, percent = None, isTest = False):
         print "generate training set and validation set"
         if percent == None: percent = 80
         
@@ -73,7 +73,7 @@ class InputDataProcess(object):
                     labels[q_id + "_" + d_id] = 1
                     flag = True
                 else:
-                    if flag or True:	
+                    if flag or isTest:	
                         labels[q_id + "_" + d_id] = 0
                         flag = False
                    
