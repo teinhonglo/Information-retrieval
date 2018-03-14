@@ -7,6 +7,12 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import AveragePooling2D, GlobalMaxPooling2D
 from keras.layers.merge import concatenate, dot
 from keras.models import Model
+from keras.utils.generic_utils import get_custom_objects
+
+def log_activation(x):
+    return K.log(x)
+
+get_custom_objects().update({'log_activation': Activation(log_activation)})
 
 def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, PSGS_SIZE = [(50, 1)], NUM_OF_FILTERS = 5, tau = 1):
     alpha_size = len(PSGS_SIZE)
@@ -35,7 +41,7 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, 
     dot_prod = dot([concat_r, phi_h], axes = 1, name="rel_dot")
     # tanh(dot(r.transpose * h))
     #pred = Activation("tanh", name="activation_tanh")(dot_prod)
-    pred = Dense(2, activation="softmax", name="activation_softmax")(dot_prod)
+    pred = Dense(1, activation="sigmoid", name="activation_sigmoid")(dot_prod)
     
     # We now have everything we need to define our model.
     model = Model(inputs = [psgMat, homoMat], outputs = pred)
