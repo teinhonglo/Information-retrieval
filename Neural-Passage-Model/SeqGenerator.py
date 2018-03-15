@@ -24,8 +24,8 @@ class DataGenerator(object):
 				# Find list of IDs
 				list_IDs_temp = [list_IDs[k] for k in indexes[i*self.batch_size:(i+1)*self.batch_size]]
 				# Generate data
-				X, X1, y = self.__dataGeneration(labels, list_IDs_temp)
-				yield ([X, X1], y)
+				X, X1, y, w = self.__dataGeneration(labels, list_IDs_temp)
+				yield ([X, X1], y, w)
 
 	def __getExplorationOrder(self, list_IDs):
 		# Generates order of exploration
@@ -46,7 +46,7 @@ class DataGenerator(object):
 		y = np.empty((self.batch_size), dtype = int)
 		'''
 		# Generate data
-		[X, X1, y] = self.input_data_process.genPassageAndLabels(list_IDs_temp, labels, self.batch_size)
+		[X, X1, y, w] = self.input_data_process.genPassageAndLabels(list_IDs_temp, labels, self.batch_size)
 		'''
 		for i, ID in enumerate(list_IDs_temp):
 			# Store volume
@@ -55,7 +55,7 @@ class DataGenerator(object):
 			# Store class
 			y[i] = labels[ID]
 		'''	
-		return X, X1,y
+		return X, X1, y, w
 
 	def __sparsify(self, y):
 		#'Returns labels in binary NumPy array'
