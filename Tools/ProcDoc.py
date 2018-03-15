@@ -32,21 +32,24 @@ def read_file(filepath):
 	return data	
 
 # read background model
-def read_relevance_dict(HMMTraingSet_Path = None):
-	HMMTraingSetDict = defaultdict(list)
-	if HMMTraingSet_Path == None: 
-		HMMTraingSet_Path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-	with io.open(HMMTraingSet_Path, 'r', encoding = 'utf8') as file:
+def read_relevance_dict(REL_PATH = None, isTEST = False):
+	rel_dict = defaultdict(list)
+	if REL_PATH == None: 
+		REL_PATH = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+	with io.open(REL_PATH, 'r', encoding = 'utf8') as file:
 		# read content of query document (doc, content)
-		query_name = ""
+		qry_name = ""
 		for line in file.readlines():
 			result = line.split()
 			if len(result) > 1:
-				query_name = result[1]
+				if isTEST:
+					qry_name = result[2]
+				else:
+					qry_name = result[1]
 				continue
-			HMMTraingSetDict[query_name].append(result[0])
+			rel_dict[qry_name].append(result[0])
 	# HMMTraingSetDict{word, probability}
-	return HMMTraingSetDict	
+	return rel_dict	
 
 # read background model
 def read_background_dict():
@@ -70,7 +73,7 @@ def read_background_dict():
 	
 # document preprocess
 def doc_preprocess(dictionary, res_pos = False, str2int = False):
-	dictionary = collections.OrderedDict(sorted(dictionary.items()))
+	doc_new = {}
 	for key, value in dictionary.items():
 		content = ""
 		temp_content = ""
@@ -87,29 +90,30 @@ def doc_preprocess(dictionary, res_pos = False, str2int = False):
 		for word in temp_content.split():
 			content += word + " "
 		# replace old content
-		dictionary[key]	= content
+		doc_new[key]	= content
 		# content to int list
 		if str2int: 
 			int_rep = map(int, content.split())
 			# top200
 			if len(int_rep) > 200:
 				int_rep = int_rep[:200]
-			dictionary[key] = int_rep
+			doc_new[key] = int_rep
 		
 	if not res_pos:
 		doc_freq = {}	
 		# term probability(word_count / word sum)	
-		for doc_key, doc_content in dictionary.items():
+		for doc_key, doc_content in doc_new.items():
 			doc_words = word_count(doc_content, {})
-			dictionary[doc_key] = doc_words
+			doc_new[doc_key] = doc_words
 		#dictionary = TFIDF(dictionary)	
 		
-	return dictionary
+	return doc_new
 
 # query preprocess
-def query_preprocess(dictionary, res_pos = False, str2int = False):
-	dictionary = collections.OrderedDict(sorted(dictionary.items()))
+def query_preprocess(dictionary, rel_set, res_pos = False, str2int = False):
+	qry_new = {}
 	for key, value in dictionary.items():
+		if len(rel_set[key]) == 0: continue
 		content = ""
 		temp_content = ""
 		# split content by special character
@@ -120,22 +124,22 @@ def query_preprocess(dictionary, res_pos = False, str2int = False):
 		for word in temp_content.split():
 			content += word + " "
 		# replace old content
-		dictionary[key]	= content
+		qry_new[key] = content
 		# content to int list
 		if str2int: 
 			int_rep = map(int, content.split())
 			# top200
 			if len(int_rep) > 200:
 				int_rep = int_rep[:200]
-			dictionary[key] = int_rep
+			qry_new[key] = int_rep
 	if not res_pos:	
 		qry_freq = {}	
 		# term probability(word_count / word sum)	
-		for qry_key, qry_content in dictionary.items():
+		for qry_key, qry_content in qry_new.items():
 			qry_words = word_count(qry_content, {})
-			dictionary[qry_key] = qry_words
+			qry_new[qry_key] = qry_words
 		#dictionary = TFIDF(dictionary)	
-	return dictionary
+	return qry_new
 	
 # create unigram
 def unigram(topic_wordcount_dict):
