@@ -38,14 +38,14 @@ optimizer = optimizers.Adam(lr=0.17)
 loss = "binary_crossentropy"
 batch_size = 512
 epochs = 100
-exp_path = "exp/SubSampling_binary_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
+exp_path = "exp/SubSampling_logweights_binary_cnn_Adam_" + loss + "_weights-{epoch:02d}-{val_loss:.2f}.hdf5"
 
 input_data_process = InputDataProcess(NUM_OF_FEATS, MAX_QRY_LENGTH, MAX_DOC_LENGTH)
 # Parameters
 params = {'input_data_process': input_data_process,
           'dim_x': MAX_QRY_LENGTH,
           'dim_y': MAX_DOC_LENGTH,
-	  'dim_x1': NUM_OF_FEATS,
+	      'dim_x1': NUM_OF_FEATS,
           'batch_size': batch_size,
           'shuffle': True}
 		  

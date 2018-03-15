@@ -17,16 +17,19 @@ class InputDataProcess(object):
             query_path = "../Corpus/" + corpus + "/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
         if document_path == None:
             document_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"
-        # read document, reserve position
+        
+        # relevance set
+        self.hmm_training_set = ProcDoc.read_relevance_dict()
+        
+		# read document, reserve position
         doc = ProcDoc.read_file(document_path)
         self.doc = ProcDoc.doc_preprocess(doc, res_pos, str2int)
-            
+		
         # read query, reserve position
         qry = ProcDoc.read_file(query_path)
-        self.qry = ProcDoc.query_preprocess(qry, res_pos, str2int)    
+        self.qry = ProcDoc.query_preprocess(qry, self.hmm_training_set, res_pos, str2int)        
         
-        # HMMTrainingSet
-        self.hmm_training_set = ProcDoc.read_relevance_dict()
+        # generate h featrues
         self.homo_feats = self.__genFeature(num_of_homo_feats)
         
     def genPassageAndLabels(self, list_IDs, labels, batch_size):
@@ -39,6 +42,8 @@ class InputDataProcess(object):
         psg_mat_batch = np.zeros((batch_size, max_qry_length, max_doc_length, 1))
         homo_feats_batch = np.zeros((batch_size, num_of_homo_feats))
         rel_batch = np.zeros((batch_size))
+        weight_batch = np.zeros((batch_size))
+		
         # generate passage
         for idx, data_ID in enumerate(list_IDs):
             [q_id, d_id] = data_ID.split("_")
@@ -49,13 +54,13 @@ class InputDataProcess(object):
             # print psg_mat.shape
             psg_mat_batch[idx] = np.copy(psg_mat)
             homo_feats_batch[idx] = homo_feats[q_id]
-            rel_batch[idx] = labels[data_ID]
-        return [psg_mat_batch, homo_feats_batch, rel_batch]
+            rel_batch[idx] = labels[data_ID][0]
+            weight_batch[idx] = labels[data_ID][1]
+        return [psg_mat_batch, homo_feats_batch, rel_batch, weight_batch]
     
     def genTrainValidSet(self, percent = None, isTest = False):
         print "generate training set and validation set"
         if percent == None: percent = 80
-        
         qry = self.qry
         doc = self.doc
         total_qry = len(qry.keys())
@@ -64,18 +69,23 @@ class InputDataProcess(object):
         labels = {}
         partition = {'train': [], 'validation': []}
         part_answer = {'train': [], 'validation': []}
-        # relevance between queries and documents
+        # sample weights
+        num_qry_rel = {q_id: len(hmm_training_set[q_id]) for q_id in qry}
+        n_classes = len(qry.keys())
+        n_samples = sum(num_qry_rel.values()) * 1.0
+        sample_weights = {q_id: np.log(1 + n_samples / (n_classes * q_n_rel)) for q_id, q_n_rel in num_qry_rel.items()}
 		
+        # relevance between queries and documents
         for q_id in qry:
-            flag = False
+            flag = 0
             for d_id in doc:
                 if d_id in hmm_training_set[q_id]:
-                    labels[q_id + "_" + d_id] = 1
-                    flag = True
+                    labels[q_id + "_" + d_id] = [1, sample_weights[q_id]]
+                    flag += 1
                 else:
-                    if flag or isTest:	
-                        labels[q_id + "_" + d_id] = 0
-                        flag = False
+                    if flag > 0 or isTest:	
+                        labels[q_id + "_" + d_id] = [0, sample_weights[q_id]]
+                        flag -= 1
                    
         # partition
         ID_list = labels.keys()
@@ -85,10 +95,10 @@ class InputDataProcess(object):
         # shuffle
         np.random.shuffle(ID_list)
         partition['train'] = [id for id in ID_list[:num_of_train]]
-        part_answer['train'] = [labels[id] for i, id in enumerate(ID_list[:num_of_train])]
+        part_answer['train'] = [labels[id][0] for i, id in enumerate(ID_list[:num_of_train])]
         #[partition['train'], part_answer['train']] = self.__balancedSubsample(partition['train'], part_answer['train'], labels)
         partition['validation'] = [id for id in ID_list[num_of_train:]]
-        part_answer['validation'] = [labels[id] for i, id in enumerate(ID_list[num_of_train:])]
+        part_answer['validation'] = [labels[id][0] for i, id in enumerate(ID_list[num_of_train:])]
         #[partition['validation'], part_answer['validation']] = self.__balancedSubsample(partition['validation'], part_answer['validation'], labels)
         return [partition, labels, part_answer]
     
@@ -101,8 +111,8 @@ class InputDataProcess(object):
         
         for q_id, q_terms in qry.items():
             npscq = np.asarray([self.__scq(df, q_term) for q_term in q_terms])
-            harm_mean = self.__harm_mean(npscq)
-            geo_mean = self.__geo_mean(npscq)
+            harm_mean = self.__harmMean(npscq)
+            geo_mean = self.__geoMean(npscq)
             homo_feats[q_id] = np.asarray([np.std(npscq), np.sum(npscq), np.amax(npscq), np.amin(npscq), np.mean(npscq), harm_mean, geo_mean])
         return homo_feats
 		
@@ -112,12 +122,12 @@ class InputDataProcess(object):
         # print df[term, 1],1 + self.num_vocab/(eps + df[term, 0])
         return (1 + np.log(1 + df[term, 1])) * np.log(1 + num_docs/(eps + df[term, 0]))
     
-    def __harm_mean(self, a):
+    def __harmMean(self, a):
         return len(a) / np.sum(1.0 / a)
     	
-    def __geo_mean(self, a):
+    def __geoMean(self, a):
         a = np.log(a)
-        return np.exp(a.sum() / len(a))
+        return np.exp(a.sum() * 1.0 / len(a))
     
     def __mergeMat(self, b1, b2, pos = [0, 0]):
         [pos_v, pos_h] = pos
