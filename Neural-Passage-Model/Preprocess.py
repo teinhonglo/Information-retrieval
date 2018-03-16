@@ -86,7 +86,6 @@ class InputDataProcess(object):
                     if flag > 0 or isTest:	
                         labels[q_id + "_" + d_id] = [0, sample_weights[q_id]]
                         flag -= 1
-                   
         # partition
         ID_list = labels.keys()
         total = len(ID_list)
