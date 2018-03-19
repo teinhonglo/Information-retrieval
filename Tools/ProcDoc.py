@@ -17,7 +17,7 @@ Cluster_path = "Topic"
 
 
 # read file(query or document)
-def read_file(filepath):
+def readFile(filepath):
 	data = {}				# content of document (doc, content)
 	# list all files of a directory(Document)
 	for dir_item in os.listdir(filepath):
@@ -32,7 +32,7 @@ def read_file(filepath):
 	return data	
 
 # read background model
-def read_relevance_dict(REL_PATH = None, isTEST = False):
+def readRELdict(REL_PATH = None, isTEST = False):
 	rel_dict = defaultdict(list)
 	if REL_PATH == None: 
 		REL_PATH = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
@@ -52,7 +52,7 @@ def read_relevance_dict(REL_PATH = None, isTEST = False):
 	return rel_dict	
 
 # read background model
-def read_background_dict():
+def readBGdict():
 	BGTraingSet = np.zeros(51253)
 	# XIN1998
 	for doc_item in os.listdir(bg_modle_path):
@@ -70,9 +70,14 @@ def read_background_dict():
 	# Background{word, probability}
 	return np.array([BGTraingSet])
 
-	
 # document preprocess
-def doc_preprocess(dictionary, res_pos = False, str2int = False):
+def docPreproc(dictionary, res_pos = False, topN = None):
+	# parameter:
+	# dictionary: doc {d_id: string content, ...}
+	# rel_pos: bool, reserved position
+	# topN: int, top N word
+	# output : if res_pos == TRUE : return doc {d_id: [int wID0, int wID3 , int wID0], ...}
+	#          if res_pos == FALSE : return qry {d_id: [int wID0:, int wID0_count, int wID3:, int wID3_count], ...}
 	doc_new = {}
 	for key, value in dictionary.items():
 		content = ""
@@ -89,31 +94,37 @@ def doc_preprocess(dictionary, res_pos = False, str2int = False):
 		# delete double white space
 		for word in temp_content.split():
 			content += word + " "
-		# replace old content
-		doc_new[key]	= content
 		# content to int list
-		if str2int: 
-			int_rep = map(int, content.split())
-			# top200
-			if len(int_rep) > 200:
-				int_rep = int_rep[:200]
-			doc_new[key] = int_rep
+		int_rep = map(int, content.split())
+		# topN
+		if topN != None and len(int_rep) > topN:
+			int_rep = int_rep[:topN]
+		# replace old content	
+		doc_new[key] = int_rep
 		
 	if not res_pos:
 		doc_freq = {}	
 		# term probability(word_count / word sum)	
 		for doc_key, doc_content in doc_new.items():
-			doc_words = word_count(doc_content, {})
+			doc_words = wordCount(doc_content, {})
 			doc_new[doc_key] = doc_words
 		#dictionary = TFIDF(dictionary)	
 		
 	return doc_new
 
 # query preprocess
-def query_preprocess(dictionary, rel_set, res_pos = False, str2int = False):
+def qryPreprocess(dictionary, rel_set = None, res_pos = False, topN = None):
+	# parameter:
+	# dictionary: query {q_id: string content, ...}
+	# rel_set: relevance {q_id: [d_id2, d_id3], ...}
+	# rel_pos: bool, reserved position
+	# topN: int, top N word
+	# output : if res_pos == TRUE : return qry {q_id: [int wID0, int wID3 , int wID0], ...}
+	#          if res_pos == FALSE : return qry {q_id: [int wID0:, int wID0_count, int wID3:, int wID3_count], ...}
+	
 	qry_new = {}
 	for key, value in dictionary.items():
-		if len(rel_set[key]) == 0: continue
+		if rel_set != None and len(rel_set[key]) == 0: continue
 		content = ""
 		temp_content = ""
 		# split content by special character
@@ -123,49 +134,25 @@ def query_preprocess(dictionary, rel_set, res_pos = False, str2int = False):
 		# delete double white space
 		for word in temp_content.split():
 			content += word + " "
-		# replace old content
-		qry_new[key] = content
 		# content to int list
-		if str2int: 
-			int_rep = map(int, content.split())
-			# top200
-			if len(int_rep) > 200:
-				int_rep = int_rep[:200]
-			qry_new[key] = int_rep
+		int_rep = map(int, content.split())
+		# topN
+		if topN != None and len(int_rep) > topN: 
+			int_rep = int_rep[:topN]
+		# replace old content	
+		qry_new[key] = int_rep
 	if not res_pos:	
 		qry_freq = {}	
 		# term probability(word_count / word sum)	
 		for qry_key, qry_content in qry_new.items():
-			qry_words = word_count(qry_content, {})
+			qry_words = wordCount(qry_content, {})
 			qry_new[qry_key] = qry_words
 		#dictionary = TFIDF(dictionary)	
 	return qry_new
-	
-# create unigram
-def unigram(topic_wordcount_dict):
-	topic_wordprob_dict = {}
-	for topic, wordcount in topic_wordcount_dict.items():
-		length = 1.0 * word_sum(wordcount)
-		word_prob = {}
-		for word, count in wordcount.items():
-			word_prob[word] = count / length
-		topic_wordprob_dict[topic] = word_prob
-	topic_wordprob_dict = collections.OrderedDict(sorted(topic_wordprob_dict.items()))	
-	return topic_wordprob_dict 
-
-# modeling	
-def modeling(topic_wordprob_dict, background_model, alpha):
-	modeling_dict = {}
-	for topic, wordprob in topic_wordprob_dict.items():
-		word_model = {}
-		for word in wordprob.keys():
-			word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
-		modeling_dict[topic] = dict(word_model)
-	return modeling_dict
 
 # word count
-def word_count(content, bg_word):
-	for part in content.split():
+def wordCount(content, bg_word):
+	for part in content:
 		if part in bg_word:
 			bg_word[part] += 1
 		else:
@@ -173,30 +160,6 @@ def word_count(content, bg_word):
 	# return word count dictionary		
 	return bg_word
 
-# input dict
-# output sum of word
-def word_sum(data):
-	return np.array(data.values()).sum(axis = 0)
-	
-# output ranking list	
-def outputRank(query_docs_point_dict):
-	cquery_docs_point_dict = sorted(query_docs_point_dict.items(), key=operator.itemgetter(0))
-	operation = "w"
-	with codecs.open("Query_Results.txt", operation, "utf-8") as outfile:
-		for query, docs_point_list in query_docs_point_dict.items():
-			outfile.write(query + "\n")	
-			out_str = ""
-			for docname, score in docs_point_list:
-				out_str += docname + " " + str(score) + "\n"
-			outfile.write(out_str)
-			outfile.write("\n")		
-
-# softmax			
-def softmax(model):
-	model_word_sum  = 1.0 * word_sum(model)
-	model = {w: c / model_word_sum for w, c in dict(model).items()}
-	return model
-	
 def docFreq(doc, vocab_size = 51253):
 	#0:docfreq 1:count
 	corpus_dFreq_total = np.zeros((vocab_size, 2))
@@ -221,7 +184,7 @@ def docFreq(doc, vocab_size = 51253):
 			corpus_dFreq_total[int(word), 0] += 1
 			corpus_dFreq_total[int(word), 1] += word_count
 	return corpus_dFreq_total
-		
+
 def rmStopWord(ori_content, corpus_dFreq_total, threshold = 0.1):
 	weight_list = []
 	corpus_length = corpus_dFreq_total[:, 1].sum(axis=0)
@@ -269,7 +232,31 @@ def rmStopWord(ori_content, corpus_dFreq_total, threshold = 0.1):
 			
 	return ori_content
 
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
+
+# create unigram
+def unigram(topic_wordcount_dict):
+	topic_wordprob_dict = {}
+	for topic, wordcount in topic_wordcount_dict.items():
+		length = 1.0 * sum(wordcount.values())
+		word_prob = {}
+		for word, count in wordcount.items():
+			word_prob[word] = count / length
+		topic_wordprob_dict[topic] = word_prob
+	topic_wordprob_dict = collections.OrderedDict(sorted(topic_wordprob_dict.items()))	
+	return topic_wordprob_dict 
+
+# modeling	
+def smoothing(topic_wordprob_dict, background_model, alpha):
+	modeling_dict = {}
+	for topic, wordprob in topic_wordprob_dict.items():
+		word_model = {}
+		for word in wordprob.keys():
+			word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
+		modeling_dict[topic] = dict(word_model)
+	return modeling_dict
+
+# softmax			
+def softmax(model):
+	model_word_sum  = 1.0 * sum(wordcount.values())
+	model = {w: c / model_word_sum for w, c in dict(model).items()}
+	return model	
