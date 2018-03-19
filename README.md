@@ -8,5 +8,7 @@
   - add for loop evaluate
 ## Deep Structured Semantic Models
   - backup and new coding style (using common tools and local preprocess)
- 
+
+## must be add title "#!/usr/bin/env python"
+
 ... to be continue
