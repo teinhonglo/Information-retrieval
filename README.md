@@ -1,4 +1,10 @@
 # TODO list!
+## VSM-NRM(IR-proto)
+  - NRM
+  - training script
+  - test script
+  - local preprocess
+  - query expansion
 ## Tools
   - split common and local process tools
 ## Neural Passage Model
