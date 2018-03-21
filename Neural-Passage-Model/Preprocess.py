@@ -8,7 +8,6 @@ import ProcDoc
 class InputDataProcess(object):
     def __init__(self, num_of_homo_feats = 10, max_qry_length = 1794, max_doc_length = 2907, query_path = None, document_path = None, corpus = "TDT2"):
         res_pos = True
-        str2int = True
         self.num_vocab = 51253
         self.max_qry_length = max_qry_length
         self.max_doc_length = max_doc_length
@@ -19,15 +18,15 @@ class InputDataProcess(object):
             document_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"
         
         # relevance set
-        self.hmm_training_set = ProcDoc.read_relevance_dict()
+        self.hmm_training_set = ProcDoc.readRELdict()
         
-		# read document, reserve position
-        doc = ProcDoc.read_file(document_path)
-        self.doc = ProcDoc.doc_preprocess(doc, res_pos, str2int)
+	# read document, reserve position
+        doc = ProcDoc.readFile(document_path)
+        self.doc = ProcDoc.docPreproc(doc, res_pos, 200)
 		
         # read query, reserve position
-        qry = ProcDoc.read_file(query_path)
-        self.qry = ProcDoc.query_preprocess(qry, self.hmm_training_set, res_pos, str2int)        
+        qry = ProcDoc.readFile(query_path)
+        self.qry = ProcDoc.qryPreproc(qry, self.hmm_training_set, res_pos, 200)        
         
         # generate h featrues
         self.homo_feats = self.__genFeature(num_of_homo_feats)
