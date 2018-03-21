@@ -3,10 +3,10 @@ import numpy as np
 
 def TFIDF(qry, doc):
     doc_freq = docFreq(doc)
-    num_docs = len(list(doc_new.keys()))
-    qry_new = {q_id : [q_wc * np.log(num_docs / (1 + doc_freq(q_wid)))] q_wid, q_wc for q_content.items() 
+    num_docs = len(list(doc_new.keys())) + 1
+    qry_new = {q_id : [(1 + np.log(q_wc)) * np.log(num_docs / (1 + doc_freq(q_wid)))] q_wid, q_wc for q_content.items() 
                         for q_id, q_content in qry.items()}
-    doc_new = {d_id : [d_wc * np.log(num_docs / (1 + doc_freq(q_wid)))] d_wid, d_wc for d_content.items() 
+    doc_new = {d_id : [(1 + np.log(d_wc)) * np.log(num_docs / (1 + doc_freq(q_wid)))] d_wid, d_wc for d_content.items() 
                         for d_id, d_content in doc.items()}
     return qry_new, doc_new
 
