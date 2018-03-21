@@ -122,7 +122,6 @@ def qryPreproc(dictionary, rel_set = None, res_pos = False, topN = None):
 	# topN: int, top N word
 	# output : if res_pos == TRUE : return qry {q_id: [int wID0, int wID3 , int wID0], ...}
 	#          if res_pos == FALSE : return qry {q_id: [int wID0:, int wID0_count, int wID3:, int wID3_count], ...}
-	
 	qry_new = {}
 	for key, value in dictionary.items():
 		if rel_set != None and len(rel_set[key]) == 0: continue
