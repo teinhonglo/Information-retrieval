@@ -94,6 +94,7 @@ def docPreproc(dictionary, res_pos = False, topN = None):
 		# delete double white space
 		for word in temp_content.split():
 			content += word + " "
+
 		# content to int list
 		int_rep = map(int, content.split())
 		# topN
@@ -113,7 +114,7 @@ def docPreproc(dictionary, res_pos = False, topN = None):
 	return doc_new
 
 # query preprocess
-def qryPreprocess(dictionary, rel_set = None, res_pos = False, topN = None):
+def qryPreproc(dictionary, rel_set = None, res_pos = False, topN = None):
 	# parameter:
 	# dictionary: query {q_id: string content, ...}
 	# rel_set: relevance {q_id: [d_id2, d_id3], ...}
