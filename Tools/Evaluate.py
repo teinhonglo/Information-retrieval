@@ -12,6 +12,7 @@ class EvaluateModel(object):
         else:
             self.assessmentTraingSet_path = rel_set_path
         self.assessment = self.__getAssessment(HMM)
+        self.APs = []
         
     def __getAssessment(self, HMM):
         assessmentTraingSetDict = defaultdict(list)
@@ -36,33 +37,45 @@ class EvaluateModel(object):
 
     # result : list [(doc, point)]
     # assessment_list : list [(doc)]
-    def __avePrecision(self, result, q_key):
-        iterative = 0
-        count = 0
-        precision = 0
+    def __avePrecision(self, result, q_key, atPos = None):
+        iterative = 0.
+        count = 0.
+        precision = 0.
         assessment = self.assessment[q_key]
+        if atPos == None:
+            atPos = len(assessment)
         for doc_name in result:
             iterative += 1
-            if count == len(assessment): break
+            if count == atPos: break
                 
             if doc_name in assessment:
                 count += 1
-                precision += count * 1.0 / iterative
+                precision += count / iterative
         
         precision /= len(assessment)
         return precision
         
     def mAP(self, query_docs_point_dict):
-        mAP = 0
-        AP = 0
+        mAP = 0.
+        cumulAP = 0.
         for q_key, docs_point_list in query_docs_point_dict.items():
-            AP += self.__avePrecision(docs_point_list, q_key)
-            print q_key, self.__avePrecision(docs_point_list, q_key)
-        mAP = AP / len(query_docs_point_dict.keys())
+            AP = self.__avePrecision(docs_point_list, q_key)
+            cumulAP += AP
+            self.APs.append([q_key, AP])
+        mAP = cumulAP / len(query_docs_point_dict.keys())
         return mAP
+    
+    def precisionAtK(self, query_docs_point_dict, atPos):
+        mPAK = 0.
+        cumulAP = 0.
+        for q_key, docs_point_list in query_docs_point_dict.items():
+            pAK = self.__avePrecision(docs_point_list, q_key, atPos)
+            cumulAP += pAK
+        mPAK = cumulAP / len(query_docs_point_dict.keys())
+        return mPAK
     
     def NDCG(self, query_docs_point_dict):
         pass
         
 if __name__ == "__main__":
-    eva = evaluate_model()
+    eva = EvaluateModel()
