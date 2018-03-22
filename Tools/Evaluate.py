@@ -57,6 +57,7 @@ class EvaluateModel(object):
         AP = 0
         for q_key, docs_point_list in query_docs_point_dict.items():
             AP += self.__avePrecision(docs_point_list, q_key)
+            print q_key, self.__avePrecision(docs_point_list, q_key)
         mAP = AP / len(query_docs_point_dict.keys())
         return mAP
     

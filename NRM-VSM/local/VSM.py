@@ -7,7 +7,7 @@ import ProcDoc
 import numpy as np
 
 class VSM(object):
-    def __init__(self, qry_path = None, doc_path = None, rel_path = None, isTraining = True):
+    def __init__(self, qry_path = None, rel_path = None, isTraining = True, doc_path = None):
         # default training step
         if qry_path == None: 
             qry_path = "../../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
@@ -18,8 +18,7 @@ class VSM(object):
         
         # relevance set
         self.rel_set = ProcDoc.readRELdict(rel_path, isTraining)
-        print len(list(self.rel_set.keys()))
-        evaluate_model = EvaluateModel(rel_path, isTraining)
+        self.evaluate_model = EvaluateModel(rel_path, isTraining)
         
         # read document
         doc = ProcDoc.readFile(doc_path)
@@ -39,6 +38,7 @@ class VSM(object):
     def cosineFast(self):
         qry, qry_IDs = self.__dict2np(self.qry)
         doc, doc_IDs = self.__dict2np(self.doc)
+        doc_normalize = doc / np.linalg.norm(doc)
         result = np.argsort(np.dot(qry, doc.T), axis = 1)
         qry_docs_ranking = {}
         for q_idx in xrange(len(qry_IDs)):
@@ -46,7 +46,7 @@ class VSM(object):
             for doc_idx in result[q_idx]:
                 docs_ranking.append(doc_IDs[doc_idx])
             qry_docs_ranking[qry_IDs[q_idx]] = docs_ranking
-        return qry_docs_ranking
+        return qry_docs_ranking 
     
     def cosineSlow(self):
         qry, qry_IDs = self.__dict2np(self.qry)
@@ -70,11 +70,11 @@ class VSM(object):
         return tar_vec, IDs_list
 
 def main():
-    qry_path = None
+    qry_path = "../../Corpus/TDT2/QUERY_WDID_NEW"
+    rel_path = "../../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+    isTraining = False
     doc_path = None
-    rel_path = None
-    isTraining = True
-    model = VSM(qry_path, doc_path, rel_path, isTraining)
+    model = VSM(qry_path, rel_path, isTraining, doc_path)
     qry_docs_ranking = model.cosineFast()
     mAP = model.evaluate(qry_docs_ranking)
     print mAP
