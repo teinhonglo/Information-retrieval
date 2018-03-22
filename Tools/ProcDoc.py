@@ -32,24 +32,24 @@ def readFile(filepath):
 	return data	
 
 # read background model
-def readRELdict(REL_PATH = None, isTEST = False):
-	rel_dict = defaultdict(list)
-	if REL_PATH == None: 
-		REL_PATH = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-	with io.open(REL_PATH, 'r', encoding = 'utf8') as file:
-		# read content of query document (doc, content)
-		qry_name = ""
-		for line in file.readlines():
-			result = line.split()
-			if len(result) > 1:
-				if isTEST:
-					qry_name = result[2]
-				else:
-					qry_name = result[1]
-				continue
-			rel_dict[qry_name].append(result[0])
-	# HMMTraingSetDict{word, probability}
-	return rel_dict	
+def readRELdict(REL_PATH = None, isTraining = True):
+    rel_dict = defaultdict(list)
+    if REL_PATH == None: 
+        REL_PATH = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+    with io.open(REL_PATH, 'r', encoding = 'utf8') as file:
+        # read content of query document (doc, content)
+        qry_name = ""
+        for line in file.readlines():
+            result = line.split()
+            if len(result) > 1:
+                if isTraining:
+                    qry_name = result[1]
+                else:
+                    qry_name = result[2]
+                continue
+            rel_dict[qry_name].append(result[0])
+    # HMMTraingSetDict{word, probability}
+    return rel_dict	
 
 # read background model
 def readBGdict():
