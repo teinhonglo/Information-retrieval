@@ -28,7 +28,7 @@ class VSM(object):
         # read query
         qry = ProcDoc.readFile(qry_path)
         self.qry = ProcDoc.qryPreproc(qry, self.rel_set)
-        [self.qry, self.doc] = Statistical.TFIDF(self.qry, self.doc)
+        [self.qry, self.doc] = Statistical.TFIDF(self.qry, self.doc, self.doc_len)
     
     def evaluate(self, qry_docs_ranking):
         evaluate_model = self.evaluate_model
@@ -38,8 +38,8 @@ class VSM(object):
     def cosineFast(self):
         qry, qry_IDs = self.__dict2np(self.qry)
         doc, doc_IDs = self.__dict2np(self.doc)
-        doc_normalize = doc / np.linalg.norm(doc)
-        result = np.argsort(np.dot(qry, doc.T), axis = 1)
+        doc_normalize = doc
+        result = np.argsort(-np.dot(qry, doc.T), axis = 1)
         qry_docs_ranking = {}
         for q_idx in xrange(len(qry_IDs)):
             docs_ranking = []
@@ -53,7 +53,7 @@ class VSM(object):
         doc, doc_IDs = self.__dict2np(self.doc)
         qry_docs_ranking = {}
         for q_idx, q_ID in xrange(len(qry_IDs)):
-            result = np.argsort(np.dot(qry[q_ID], doc.T), axis = 1)
+            result = np.argsort(-np.dot(qry[q_ID], doc.T), axis = 1)
             docs_ranking = []
             for doc_idx in result:
                 docs_ranking.append(doc_IDs[doc_idx])
