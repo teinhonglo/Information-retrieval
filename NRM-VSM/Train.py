@@ -48,13 +48,12 @@ def main(args):
     print('Building a model whose optimizer=Adam, activation function=relu')
     model = Sequential()
     # input layer
-    model.add(Dense(embed_dim, input_dim = vocab_size))
+    model.add(Dense(embed_dim, input_dim = vocab_size, activation="linear"))
     # hidden layer
     for _ in range(num_hids):
-        model.add(Dense(embed_dim))
+        model.add(Dense(embed_dim, activation="sigmoid"))
     # output layer    
-    model.add(Dense(vocab_size))
-    model.add(Activation('relu'))
+    model.add(Dense(vocab_size, activation="relu"))
     model.summary()
 
     # Model check point

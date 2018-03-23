@@ -60,12 +60,24 @@ class VSM(object):
         evaluate_model = self.evaluate_model
         mAP = evaluate_model.mAP(qry_docs_ranking)
         return mAP
-        
+       
     def cosineFast(self, qry = None, qry_IDs = None):
         # First Step
         if qry is None or qry_IDs is None:
             qry, qry_IDs = self.qry, self.qry_IDs 
         doc, doc_IDs = self.doc, self.doc_IDs
+        # cosine similarity
+        result = np.argsort(-np.dot(qry, doc.T), axis = 1)
+        # prepare ranking list
+        qry_docs_ranking = {}
+        for q_idx, q_ID in enumerate(qry_IDs):
+            docs_ranking = []
+            for doc_idx in result[q_idx]:
+                docs_ranking.append(doc_IDs[doc_idx])
+            qry_docs_ranking[q_ID] = docs_ranking
+        return qry_docs_ranking 
+     
+    def cosineFast_(self, qry, qry_IDs, doc, doc_IDs):
         # cosine similarity
         result = np.argsort(-np.dot(qry, doc.T), axis = 1)
         # prepare ranking list
@@ -105,7 +117,7 @@ class VSM(object):
                 ext_vec += doc[d_idx]
             # intepolated original queries
             qry[q_idx] = alpha * qry[q_idx] + (1 - alpha) * ext_vec
-        return qry, qry_IDs
+        return qry, qry_IDs, doc, doc_IDs
         
     def __dict2np(self, ori_dict):
         num_tar = len(list(ori_dict.keys()))
@@ -118,7 +130,8 @@ class VSM(object):
     
     def saveMdl(self, obj_qry, data_path):
         # save list
-        with open(data_path + "/qry_IDs.pkl", "wb") as f: pickle.dump(self.qry_tf_IDs, f, True)
+        with open(data_path + "/qry_tf_IDs.pkl", "wb") as f: pickle.dump(self.qry_tf_IDs, f, True)
+        with open(data_path + "/qry_IDs.pkl", "wb") as f: pickle.dump(self.qry_IDs, f, True)
         with open(data_path + "/doc_IDs.pkl", "wb") as f: pickle.dump(self.doc_IDs, f, True)
         # save numpy
         np.save(data_path + "/x_qry_tf_mdl.npy", self.qry_tf)
@@ -129,28 +142,33 @@ class VSM(object):
         
         
 def main(args):
+    '''
+    qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+    rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+    data_path = "data/Test"
+    is_train = False
+    doc_path = None
+    '''
     qry_path = args['qry_dataset']
     rel_path = args['rel_dataset']
     data_path = args['data_storage']
     is_train = args['is_train'] 
-    
     doc_path = None
     model = VSM(qry_path, rel_path, is_train, doc_path)
     qry_docs_ranking = model.cosineFast()
-    mAP = model.evaluate(qry_docs_ranking)
     best_qry_mdl = 0
     best_mAP = 0
-    print(mAP)
     for i in range(1, 15, 1):
-        qry, qry_IDs = model.PRF(qry_docs_ranking, i)
+        qry, qry_IDs, doc, doc_IDs = model.PRF(qry_docs_ranking, i)
         qry_docs_ranking_ = model.cosineFast(qry, qry_IDs)
         mAP = model.evaluate(qry_docs_ranking_)
         print(i, mAP)
         if mAP > best_mAP:
-            best_qry_mdl = qry
+            best_qry_mdl = np.copy(qry)
             best_mAP = mAP
     print("best", best_mAP)
     model.saveMdl(best_qry_mdl, data_path)
+    
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="""This program runs NRM-VSM on a prepared corpus.\n
