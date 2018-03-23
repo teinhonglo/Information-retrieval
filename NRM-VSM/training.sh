@@ -28,8 +28,8 @@ fi
 
 MODEL_PATH=$EXPPATH/final.h5
 
-if [ ! -f $TRAIN_DATA ]; then
-  python Train.py --learn_rate 0.001 --batch_size 32 --epochs 20 --num_hids 0 --embed_dim 300 --save_best_only True
+if [ ! -f $MODEL_PATH ]; then
+  python Train.py --learn_rate 0.001 --batch_size 32 --epochs 10 --num_hids 0 --embed_dim 300 --save_best_only True
 fi
   
-python Test.py --exp_path exp --model_name final.h5 --isTraining True
+python Test.py --exp_path exp --model_name final.h5 --isTraining False
