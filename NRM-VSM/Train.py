@@ -10,10 +10,10 @@ import tensorflow as tf
 from keras import backend as K
 ''' Import keras to build a DL model '''
 from keras.models import Sequential
-from keras.layers import Dense, Activation
+from keras.layers import Dense, Activation, Input, BatchNormalization
 from keras.callbacks import ModelCheckpoint
 ''' Setting optimizer    '''
-from keras.optimizers import Adam, SGD
+from keras import optimizers
 import argparse
 from argparse import RawTextHelpFormatter
 
@@ -27,10 +27,10 @@ def str2bool(v):
     elif v.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
     else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')                  
-                  
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+        
 def main(args):
-    optimizer = Adam(lr=args['learn_rate'])
+    optimizer = optimizers.Adam(lr=args['learn_rate'])
     loss = "logcosh"
     batch_size = args['batch_size']
     epochs = args['epochs']
@@ -44,14 +44,13 @@ def main(args):
     print "Read data"
     X = np.load(data_path + "/x_qry_tf_mdl.npy")
     Y = np.load(data_path + "/y_qry_mdl.npy")
-
     print('Building a model whose optimizer=Adam, activation function=relu')
     model = Sequential()
     # input layer
-    model.add(Dense(embed_dim, input_dim = vocab_size, activation="linear"))
+    model.add(BatchNormalization(input_shape =(vocab_size, )))
     # hidden layer
     for _ in range(num_hids):
-        model.add(Dense(embed_dim, activation="sigmoid"))
+        model.add(Dense(embed_dim, activation="linear"))
     # output layer    
     model.add(Dense(vocab_size, activation="relu"))
     model.summary()

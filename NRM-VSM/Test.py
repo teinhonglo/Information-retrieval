@@ -22,6 +22,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
                   inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
+                  
+                  
 def cosineFast(qry, qry_IDs, doc, doc_IDs):
     # cosine similarity
     result = np.argsort(-np.dot(qry, doc.T), axis = 1)
