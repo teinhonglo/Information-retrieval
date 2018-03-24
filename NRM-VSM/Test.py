@@ -11,7 +11,7 @@ from keras import backend as K
 from keras.models import load_model
 
 ''' Setting optimizer '''
-from keras.optimizers import Adam, SGD
+from keras import optimizers
 
 import cPickle as pickle
 from Evaluate import EvaluateModel
@@ -22,7 +22,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 sess = tf.Session(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True),
                   inter_op_parallelism_threads = 1, intra_op_parallelism_threads = 1))
 
-                  
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')                  
                   
 def cosineFast(qry, qry_IDs, doc, doc_IDs):
     # cosine similarity
@@ -35,14 +41,6 @@ def cosineFast(qry, qry_IDs, doc, doc_IDs):
             docs_ranking.append(doc_IDs[doc_idx])
         qry_docs_ranking[q_ID] = docs_ranking
     return qry_docs_ranking 
-                  
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')                  
                   
 def main(args):                  
     exp_path = args["exp_path"]

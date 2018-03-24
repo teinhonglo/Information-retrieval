@@ -50,7 +50,7 @@ def main(args):
     model.add(BatchNormalization(input_shape =(vocab_size, )))
     # hidden layer
     for _ in range(num_hids):
-        model.add(Dense(embed_dim, activation="linear"))
+        model.add(Dense(embed_dim, activation="relu"))
     # output layer    
     model.add(Dense(vocab_size, activation="relu"))
     model.summary()
@@ -66,7 +66,7 @@ def main(args):
                   epochs = epochs, 
                   verbose=1,
                   shuffle=True,
-                  validation_split=0.1
+                  validation_split=0.2
                   #callbacks=callbacks_list
                   )
         model.save(exp_path + "/final.h5")
