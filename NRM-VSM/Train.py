@@ -38,8 +38,8 @@ def main(args):
     num_hids = args['num_hids']
     embed_dim = args['embed_dim']
     vocab_size = 51253
-    exp_path = "exp"
-    data_path = "data/Train"
+    exp_path = args['exp_path']
+    data_path = args['data_path']
 
     print "Read data"
     X = np.load(data_path + "/x_qry_tf_mdl.npy")
@@ -81,6 +81,8 @@ if __name__ == "__main__":
     parser.add_argument('-eps', '--epochs', type = np.int, help='epochs', required=True)
     parser.add_argument('-nh', '--num_hids', type = np.int, help='number of hidden layer', required=True)
     parser.add_argument('-ed', '--embed_dim', type = np.int, help='embedded dim', required=True)
-    parser.add_argument('-sb', '--save_best_only', type=str2bool, nargs='?', const=True, help='Steps')
+    parser.add_argument('-epth', '--exp_path', help='exp path', required=True)
+    parser.add_argument('-dpth', '--data_path', help='data path', required=True)
+    parser.add_argument('-sbo', '--save_best_only', type=str2bool, nargs='?', const=True, help='Steps')
     args = vars(parser.parse_args())
     main(args)
