@@ -60,7 +60,8 @@ def main(args):
     with open(data_path + "/qry_IDs.pkl", "rb") as f: qry_IDs = pickle.load(f)
     with open(data_path + "/doc_IDs.pkl", "rb") as f: doc_IDs = pickle.load(f)
     
-    qry = np.load(data_path + "/x_qry_tf_mdl.npy")
+    qry_tf = np.load(data_path + "/x_qry_tf_mdl.npy")
+    qry = np.load(data_path + "/x_qry_mdl.npy")
     doc = np.load(data_path + "/doc_mdl.npy")
     
     # Load model
@@ -70,7 +71,7 @@ def main(args):
 
     with tf.device('/device:GPU:0'):
         # Train
-        rel_mdl = model.predict(qry)
+        rel_mdl = model.predict(qry_tf)
 
     qry_docs_ranking = cosineFast(rel_mdl, qry_IDs, doc, doc_IDs)
     mAP = evaluate_model.mAP(qry_docs_ranking)

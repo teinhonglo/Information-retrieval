@@ -49,7 +49,7 @@ class VSM(object):
         
         # dict to numpy
         self.qry_tf, self.qry_tf_IDs = self.__dict2np(self.qry_tf)
-        self.qry, self.qry_IDs = self.__dict2np(self.qry)
+        self.qry, self.qry_IDs = self.__dict2np(self.qry, self.qry_tf_IDs)
         self.doc, self.doc_IDs = self.__dict2np(self.doc)
         
         # precompute len(document)
@@ -119,10 +119,11 @@ class VSM(object):
             qry[q_idx] = alpha * qry[q_idx] + (1 - alpha) * ext_vec
         return qry, qry_IDs, doc, doc_IDs
         
-    def __dict2np(self, ori_dict):
+    def __dict2np(self, ori_dict, IDs_list = None):
         num_tar = len(list(ori_dict.keys()))
         obj_vec = np.zeros((num_tar, self.vocab_size))
-        IDs_list = list(ori_dict.keys())
+        if IDs_list is None:
+            IDs_list = list(ori_dict.keys())
         for idx, o_id in enumerate(IDs_list):
             for o_wid, o_wc in ori_dict[o_id].items():
                 obj_vec[idx][o_wid] = o_wc
@@ -130,7 +131,6 @@ class VSM(object):
     
     def saveMdl(self, obj_qry, data_path):
         # save list
-        with open(data_path + "/qry_tf_IDs.pkl", "wb") as f: pickle.dump(self.qry_tf_IDs, f, True)
         with open(data_path + "/qry_IDs.pkl", "wb") as f: pickle.dump(self.qry_IDs, f, True)
         with open(data_path + "/doc_IDs.pkl", "wb") as f: pickle.dump(self.doc_IDs, f, True)
         # save numpy
