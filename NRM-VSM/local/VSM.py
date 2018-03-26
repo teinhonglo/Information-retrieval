@@ -53,9 +53,8 @@ class VSM(object):
         self.doc, self.doc_IDs = self.__dict2np(self.doc)
         
         # precompute len(document)
-        for idx, d_len in enumerate(np.sqrt((self.doc ** 2).sum(axis = 1))):
-            self.doc[idx] = self.doc[idx] / d_len
-  
+        self.doc = Statistical.l2Normalize(self.doc)
+        
     def evaluate(self, qry_docs_ranking):
         evaluate_model = self.evaluate_model
         mAP = evaluate_model.mAP(qry_docs_ranking)
