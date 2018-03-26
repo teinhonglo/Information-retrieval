@@ -29,3 +29,11 @@ def compLenAcc(cmp_dict):
             dict_len += wc
         dicts_len[id] = dict_len
     return dicts_len
+
+def l2Normalize(cmp_np):
+    calc_np = np.copy(cmp_np)
+    l2_norms = np.sum(cmp_np ** 2, axis=1) ** (1. / 2)
+    for idx, l2_norm in enumerate(l2_norms):
+        calc_np[idx] = cmp_np[idx] / l2_norm
+    
+    return calc_np
