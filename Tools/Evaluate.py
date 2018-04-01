@@ -54,28 +54,66 @@ class EvaluateModel(object):
         
         precision /= len(assessment)
         return precision
+
+    def DCG(self, result, q_key):
+        d_cumul_gain = np.zeros(len(result))
+        assessment = self.assessment[q_key]
         
-    def mAP(self, query_docs_point_dict):
+        if result[0] in assessment:
+            d_cumul_gain[0] = 1
+        else:
+            d_cumul_gain[0] = 0
+            
+        for idx, doc_name in enumerate(result[1:]):
+            t_idx = idx + 1
+            c_idx = idx + 2
+            gain = 0.
+            if doc_name in assessment:
+                gain = 1.
+            d_cumul_gain[t_idx] = gain / np.log2(c_idx) + d_cumul_gain[t_idx - 1]
+            
+        return d_cumul_gain
+        
+    def mAP(self, query_docs_dict):
         mAP = 0.
         cumulAP = 0.
-        for q_key, docs_point_list in query_docs_point_dict.items():
-            AP = self.__avePrecision(docs_point_list, q_key)
+        for q_key, doc_list in query_docs_dict.items():
+            AP = self.__avePrecision(doc_list, q_key)
             cumulAP += AP
             self.APs.append([q_key, AP])
-        mAP = cumulAP / len(query_docs_point_dict.keys())
+        mAP = cumulAP / len(query_docs_dict.keys())
         return mAP
     
-    def precisionAtK(self, query_docs_point_dict, atPos):
+    def precisionAtK(self, query_docs_dict, atPos):
         mPAK = 0.
         cumulAP = 0.
-        for q_key, docs_point_list in query_docs_point_dict.items():
-            pAK = self.__avePrecision(docs_point_list, q_key, atPos)
+        num_qry = len(list(query_docs_dict.keys()))
+        for q_key, doc_list in query_docs_dict.items():
+            pAK = self.__avePrecision(docs_list, q_key, atPos)
             cumulAP += pAK
-        mPAK = cumulAP / len(query_docs_point_dict.keys())
+        mPAK = cumulAP / num_qry
         return mPAK
     
-    def NDCG(self, query_docs_point_dict):
-        pass
+    def NDCGAtK(self, query_docs_dict, atPos = None):
+        mPAK = 0.
+        first_qry_key = list(query_docs_dict.keys())[0]
+        num_qry = len(list(query_docs_dict.keys()))
+        num_results = len(query_docs_dict[first_qry_key])
+        dcg = np.zeros(num_results)
+        idcg = np.zeros(num_results)
+        
+        for q_key, doc_list in query_docs_dict.items():
+            dcg += self.DCG(doc_list, q_key)
+            idcg += self.DCG(self.assessment[q_key], q_key)
+        # average
+        dcg /= num_qry 
+        idcg /= num_qry
+        ndcg = dcg / idcg
+        
+        if atPos == None:
+            return ndcg
+        else:
+            return ndcg[atPos]
         
 if __name__ == "__main__":
     eva = EvaluateModel()
