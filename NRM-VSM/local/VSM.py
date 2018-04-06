@@ -155,6 +155,8 @@ def main(args):
     doc_path = None
     model = VSM(qry_path, rel_path, is_train, doc_path)
     qry_docs_ranking = model.cosineFast()
+    mAP = model.evaluate(qry_docs_ranking)
+    print(0, mAP)
     best_qry_mdl = 0
     best_mAP = 0
     for i in range(1, 15, 1):

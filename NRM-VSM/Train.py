@@ -6,6 +6,7 @@ sys.path.append(rootDir +"/../Tools")
 
 import numpy as np
 np.random.seed(5566)
+
 import tensorflow as tf
 from keras import backend as K
 ''' Import keras to build a DL model '''
@@ -31,20 +32,35 @@ def str2bool(v):
         
 def main(args):
     optimizer = optimizers.Adam(lr=args['learn_rate'])
-    loss = "logcosh"
     batch_size = args['batch_size']
     epochs = args['epochs']
     save_best_only = args['save_best_only']
     num_hids = args['num_hids']
     embed_dim = args['embed_dim']
-    vocab_size = 51253
     exp_path = args['exp_path']
     data_path = args['data_path']
+    loss = "logcosh"
+    vocab_size = 51253
+    split_data = 0.2
 
     print "Read data"
     X = np.load(data_path + "/x_qry_tf_mdl.npy")
     Y = np.load(data_path + "/y_qry_mdl.npy")
-    print('Building a model whose optimizer=Adam, activation function=relu')
+    total = X.shape[0]
+    validation_split = int(total * (1 - split_data))
+    tr_x, val_x = X[:validation_split,:], X[validation_split:,:]
+    tr_y, val_y = Y[:validation_split,:], Y[validation_split:,:]
+    '''
+    mean = np.mean(X, axis = 0)
+    stdv = np.std(X, axis = 0)
+    np.save(exp_path + "/mean.npy", mean)
+    np.save(exp_path + "/stdv.npy", stdv)
+    
+    valid_idx = np.nonzero(stdv)
+    tr_x[:, valid_idx] = (tr_x[:, valid_idx] - mean[valid_idx]) / stdv[valid_idx]
+    val_x[:, valid_idx] = (val_x[:, valid_idx] - mean[valid_idx]) / stdv[valid_idx]
+    '''
+    print('Building a model whose optimizer=logcosh, activation function=relu')
     model = Sequential()
     # input layer
     model.add(BatchNormalization(input_shape =(vocab_size, )))
@@ -62,11 +78,13 @@ def main(args):
     with tf.device('/device:GPU:0'):
         # Train
         model.compile(optimizer = optimizer, loss = loss)
-        model.fit(X, Y, 
+        model.fit(tr_x, tr_y, 
+                  validation_data=(val_x, val_y),
                   epochs = epochs, 
                   verbose=1,
-                  shuffle=True,
-                  validation_split=0.2
+                  batch_size=batch_size,
+                  shuffle=True
+                  #validation_split=0.2
                   #callbacks=callbacks_list
                   )
         model.save(exp_path + "/final.h5")
