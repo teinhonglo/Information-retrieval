@@ -1,6 +1,7 @@
 import os
 import fileinput
 import collections
+import numpy as np
 from collections import defaultdict
 
 class EvaluateModel(object):
@@ -13,6 +14,7 @@ class EvaluateModel(object):
             self.assessmentTraingSet_path = rel_set_path
         self.assessment = self.__getAssessment(HMM)
         self.APs = []
+        self.num_docs = 2265
         
     def __getAssessment(self, HMM):
         assessmentTraingSetDict = defaultdict(list)
@@ -35,6 +37,8 @@ class EvaluateModel(object):
                 assessmentTraingSetDict[title].append(result[0])
         return assessmentTraingSetDict
 
+    def getAss(self):
+        return self.assessment
     # result : list [(doc, point)]
     # assessment_list : list [(doc)]
     def __avePrecision(self, result, q_key, atPos = None):
@@ -56,21 +60,22 @@ class EvaluateModel(object):
         return precision
 
     def DCG(self, result, q_key):
-        d_cumul_gain = np.zeros(len(result))
+        d_cumul_gain = np.zeros(self.num_docs)
         assessment = self.assessment[q_key]
         
         if result[0] in assessment:
-            d_cumul_gain[0] = 1
+            d_cumul_gain[0] = 1. / np.log2(2)
         else:
-            d_cumul_gain[0] = 0
+            d_cumul_gain[0] = 0.
             
-        for idx, doc_name in enumerate(result[1:]):
-            t_idx = idx + 1
-            c_idx = idx + 2
+        for s_idx in range(1, self.num_docs):
+            c_idx = s_idx + 2
             gain = 0.
-            if doc_name in assessment:
-                gain = 1.
-            d_cumul_gain[t_idx] = gain / np.log2(c_idx) + d_cumul_gain[t_idx - 1]
+            if s_idx < len(result):
+                doc_name = result[s_idx]
+                if doc_name in assessment:
+                    gain = 1.
+            d_cumul_gain[s_idx] = gain / np.log2(c_idx) + d_cumul_gain[s_idx - 1]
             
         return d_cumul_gain
         
