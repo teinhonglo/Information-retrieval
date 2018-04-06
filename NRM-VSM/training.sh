@@ -1,8 +1,9 @@
 #!/bin/bash
-
 ROOTDIR=`pwd`/..
 DATA=`pwd`/data
 EXPPATH=`pwd`/exp
+
+set -e
 
 if [ ! -d "$DATA" ]; then
   mkdir $DATA
@@ -29,7 +30,7 @@ fi
 MODEL_PATH=$EXPPATH/final.h5
 
 if [ ! -f $MODEL_PATH ] && [ -e $retrain ]; then
-  python Train.py --learn_rate 0.001 --batch_size 16 --epochs 21 --num_hids 3 --embed_dim 64 --exp_path $EXPPATH --data_path $DATA/Train  --save_best_only True
+  python Train.py --learn_rate 0.001 --batch_size 32 --epochs 21 --num_hids 1 --embed_dim 64 --exp_path $EXPPATH --data_path $DATA/Train  --save_best_only True
 fi
 echo ""
 python Test.py --exp_path exp --model_name final.h5 --isTraining True  
