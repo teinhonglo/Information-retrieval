@@ -43,4 +43,4 @@ history_adam = model.fit([data_a, data_b], labels,
                    		)
 						
 ''' Create a HDF5 file '''							
-model.save('score_function.h5')						
+model.save('score_function.h5')	
