@@ -14,42 +14,36 @@ def hinge_loss(y_true, y_pred):
 	epsilon = 1.
 	K.maximum(0, K.sign(y_true) * y_pred)
 
-def absolute_distance(vects):
+def relative_distance(vects):
     x, y = vects
     return x - y
 
-def base_network(input_dim):
-	seq = Sequential()
-    seq.add(Dense(128, input_shape=(input_dim,))
-    seq.add(Dropout(0.2))
-    seq.add(Dense(256, activation='relu'))
-    seq.add(Dropout(0.2))
-	seq.add(Dense(128, activation='relu'))
-	seq.add(Dropout(0.2))
-    seq.add(Dense(1, activation='sigmoid'))
-    return seq
+def baseModel(input_dim):
+    rep_layer1 = Input(shape = (input_dim,), name="rep_layer1")
+    rep_layer2 = Input(shape = (input_dim,), name="rep_layer2")
+    h1 = Dense(128, activation="relu")
+    #d1 = Dropout(0.2)
+    h2 = Dense(128, activation="relu")
+    h3 = Dense(128, activation="sigmoid")
+    encoded_a = h3(h2(h1(rep_layer1)))
+    encoded_b = h3(h2(h1(rep_layer2)))
+    predicts = Lambda(relative_distance, output_shape=(1,))([encoded_a, encoded_b])
+    # Define a trainable model linking the the predicts
+    model = Model(input=[rep_layer1, rep_layer2], output=predicts)
+    return model
 
-	
-batch_size = 16	
-nb_epoch = 50
-validation_split = 0.1
-	
-rep_vec = Input(shape=(input_dim,))
+def embModel(input_dim, vocabulary_size + 1):
+    rep_layer1 = Input(shape = (input_dim,), name="rep_layer1")
+    rep_layer2 = Input(shape = (input_dim,), name="rep_layer2")
+    word_emb = TimeDistributed(Embedding(input_dim=vocabulary_size, output_dim=word_rep, input_length=maxlen))
+    sum = Dense(1)
+    h1 = Dense(128, activation="relu")
+    h2 = Dense(128, activation="relu")
+    h3 = Dense(128, activation="sigmoid")
+    encoded_a = h3(h2(h1(sum(word_emb(rep_layer1)))))
+    encoded_b = h3(h2(h1(sum(word_emb(rep_layer2)))))
+    predicts = predicts = Lambda(relative_distance, output_shape=(1,))([encoded_a, encoded_b])
+    model = Model(input=[input_layer], output=predicts)
+    return model    
 
-base_model = base_network(input_dim)
-model = base_model(rep_vec)
-
-model.compile(optimizer='binary_crossentropy',
-              loss=hinge_loss,
-              metrics=['accuracy'])
-
-history_adam = model.fit([data_a, data_b], labels,
-						batch_size=batch_size,
-						nb_epoch=nb_epoch,
-						verbose=1,
-						shuffle=True,
-						validation_split=validation_split
-                   		)
-						
-''' Create a HDF5 file '''							
-model.save('rankProb.h5')						
+    
