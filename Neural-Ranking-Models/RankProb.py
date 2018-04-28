@@ -16,7 +16,7 @@ def baseModel(input_dim):
     #d1 = Dropout(0.2)
     h2 = Dense(128, activation="relu")(h1)
     h3 = Dense(128, activation="relu")(h2)
-    predicts = Dense(1, activation='linear')(h3)
+    predicts = Dense(1, activation='tanh')(h3)
     model = Model(input=[input_layer], output=predicts)
     return model
 
@@ -29,7 +29,7 @@ def embModel(input_dim, word_rep, vocabulary_size = 51253):
     h1 = Dense(128, activation="relu")(emb_sum)
     h2 = Dense(128, activation="relu")(h1)
     h3 = Dense(128, activation="relu")(h2)
-    predicts = Dense(1, activation='linear')(h3)
+    predicts = Dense(1, activation='tanh')(h3)
     model = Model(input=[input_layer], output=predicts)
     return model
 
@@ -43,8 +43,8 @@ if __name__ == "__main__":
     data_b = np.random.rand(100, input_dim)*3
     labels = np.sum(data_a - data_b, axis=1)
     
-    #model = baseModel(input_dim)
-    model = embModel(input_dim, 64)
+    model = baseModel(input_dim)
+    #model = embModel(input_dim, 64)
     model.summary()
     model.compile(optimizer='Adam',
               loss= 'hinge',
@@ -56,4 +56,4 @@ if __name__ == "__main__":
                         verbose=1,
                         shuffle=True,
                         validation_split=validation_split
-                           )
+                        )    
