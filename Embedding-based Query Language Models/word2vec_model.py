@@ -10,9 +10,10 @@ warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 class word2vec_model():
 	def __init__(self, alpha = 50, c = 0.7):
 		self.word2vec = self.readWord2VecModel()
-		self.vocabulary_length = len(self.word2vec.vocab)
-		first_word = self.word2vec.vocab.keys()[0]
-		self.word_vec_length = len(self.word2vec[first_word])
+        self.vocab = self.word2vec.keys()
+		self.vocabulary_length = len(self.word2vec.keys())
+		first_word = self.word2vec.keys()[0]
+		self.word_vec_length = self.word2vec[first_word].shape[0]
 		self.alpha = alpha
 		self.c = c
 		self.mean_vector = self.calcMeanVec()
@@ -21,12 +22,12 @@ class word2vec_model():
 		word2vec = []
 		with open("../Corpus/word2vec.pickle", "rb") as file:
 			word2vec = Pickle.load(file)
-		word2vec = word2vec.wv
+		#word2vec = word2vec.wv
 		return word2vec
 	
 	def calcMeanVec(self):
 		w2v = self.word2vec
-		w2v_vocab = w2v.vocab
+		w2v_vocab = self.vocab
 		mean_vector = np.zeros(self.word_vec_length)
 		length = self.vocabulary_length
 		for word in w2v_vocab:
@@ -59,6 +60,9 @@ class word2vec_model():
 		
 	def getWord2Vec(self):
 		return self.word2vec	
+    
+    def getVocab(self):
+		return self.vocab    
 	
 	def getMeanVec(self):
 		return self.mean_vector	
