@@ -49,6 +49,25 @@ def read_background_dict():
     # Background{word, probability}
     return BGTraingSetDict
 
+# read background model
+def read_background_np(vocab_size = 51253):
+    obj_vec = np.zeros(vocab_size)
+    # XIN1998
+    for doc_item in os.listdir(bg_modle_path):
+        # join dir path and file name
+        doc_item_path = os.path.join(bg_modle_path, doc_item)
+        # check whether a file exists before read
+        if os.path.isfile(doc_item_path):
+            with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
+                # read content of query document (doc, content)
+                lines = f.readlines()
+                for line in lines:
+                    [id, prob] = line.split()
+                    prob = exp(float(prob))
+                    obj_vec[int(id)] = prob
+    # Background{word, probability}
+    return obj_vec    
+    
 # document preprocess
 def doc_preprocess(dictionary):
     dictionary = collections.OrderedDict(sorted(dictionary.items()))
@@ -130,11 +149,22 @@ def unigram(topic_wordcount_dict):
 # modeling    
 def modeling(topic_wordprob_dict, background_model, alpha):
     modeling_dict = {}
+    for topic in topic_wordprob_dict:
+        word_model = {}
+        wordprob = topic_wordprob_dict[topic]
+        for bg_word, bg_word_prob in background_model.items():
+            if bg_word in wordprob:
+                word_model[bg_word] = (1-alpha) * wordprob[bg_word] + (alpha) * background_model[bg_word]
+            else:
+                word_model[bg_word] = (alpha) * background_model[bg_word]
+        modeling_dict[topic] = dict(word_model)
+    '''
     for topic, wordprob in topic_wordprob_dict.items():
         word_model = {}
         for word in wordprob.keys():
             word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
         modeling_dict[topic] = dict(word_model)
+    '''    
     return modeling_dict
 
 # word count
@@ -202,4 +232,15 @@ def TFIDF(docs_words_dict):
             idf = 1 / log(1 + total_docs / doc_freq[word])
             doc_tfidf[word] = (1 + log(tf)) * idf
         set_tfidf[doc] = doc_tfidf
-    return set_tfidf        
+    return set_tfidf      
+
+def dict2np(ori_dict, IDs_list = None, vocab_size=51253):
+    num_tar = len(list(ori_dict.keys()))
+    obj_vec = np.zeros((num_tar, vocab_size))
+    if IDs_list is None:
+        IDs_list = list(ori_dict.keys())
+    for idx, o_id in enumerate(IDs_list):
+        for o_wid, o_wc in ori_dict[o_id].items():
+            obj_vec[idx][int(o_wid)] = o_wc
+    
+    return obj_vec, IDs_list	
