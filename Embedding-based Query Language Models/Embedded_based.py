@@ -7,7 +7,7 @@ import os.path
 def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_list, m):
 	
 	word2vec_wv = word2vec.getWord2Vec()
-	vocab = word2vec_wv.vocab
+	vocab = word2vec_wv.getVocab()
 	vocab_length = len(word2vec_wv[vocab.keys()[0]])
 	query_embedded = {}
 	collection_total_similarity = {}
