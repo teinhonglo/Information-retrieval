@@ -38,7 +38,6 @@ def precision(result, assessment_list):
         if doc_name in assessment:
             count += 1
             precision += count * 1.0 / iterative
-    
     precision /= len(assessment)
     return precision
     
