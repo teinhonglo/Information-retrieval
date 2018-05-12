@@ -81,8 +81,8 @@ for m in m_list:
     [tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 1, int(m))
     tmp_eqe1 = ProcDoc.modeling(tmp_eqe1, background_model, query_lambda)
     tmp_eqe2 = ProcDoc.modeling(tmp_eqe2, background_model, query_lambda)
-    EQE1.append(ProcDoc.dict2np(tmp_eqe1))
-    EQE2.append(ProcDoc.dict2np(tmp_eqe2))
+    EQE1.append([ProcDoc.dict2np(tmp_eqe1), tmp_eqe1])
+    EQE2.append([ProcDoc.dict2np(tmp_eqe2), tmp_eqe2])
 
 Pickle.dump(EQE1, open("model/eqe1_10.pkl", "wb"), True)
 Pickle.dump(EQE2, open("model/eqe2_10.pkl", "wb"), True)
@@ -96,7 +96,8 @@ assessment = readAssessment.get_assessment()
 query_docs_point_fb = {}
 query_model_fb = {}
 mAP_list = []
-for query_model in EQE2:
+for eqe_list in EQE2:
+    query_model, query_model_dict = eqe_list
     for step in range(1):
         qry_mdl, qry_IDs = query_model
         # kl divergence
@@ -136,7 +137,7 @@ for query_model in EQE2:
         '''
         if step < 1:
             # save one shot result
-            Pickle.dump(query_model, open("model/query_model.pkl", "wb"), True)
+            Pickle.dump(query_model_dict, open("model/query_model.pkl", "wb"), True)
             Pickle.dump(query_docs_point_dict, open("model/query_docs_point_dict.pkl", "wb"), True)
         # load one shot result
         query_docs_point_fb = Pickle.load(open("model/query_docs_point_dict.pkl", "rb"))
