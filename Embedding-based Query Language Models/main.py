@@ -18,8 +18,8 @@ data = {}                # content of document (doc, content)
 background_model = {}    # word count of 2265 document (word, number of words)
 general_model = {}
 query = {}                # query
-query_lambda = 0.36
-doc_lambda = 0.82
+query_lambda = 0
+doc_lambda = 0.9
 remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
 
 document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
@@ -63,12 +63,12 @@ for q, q_content in query.items():
 query_unigram = ProcDoc.unigram(dict(query_wordcount))
 query_model = query_unigram
 Pickle.dump(query_model, open("model/query_model.pkl", "wb"), True)
-'''
+
 # remove template file
 for rm_file in remove_list:
     if os.path.isfile("model/" + rm_file):
         os.remove("model/" + rm_file)
-'''        
+        
 # Embedded Query Expansion
 m_list = np.linspace(1, 80, num=1)
 m = 1
@@ -78,9 +78,9 @@ evaluate_model = EvaluateModel("../Corpus/TDT2/AssessmentTrainSet/AssessmentTrai
 EQE1 = []
 EQE2 = []
 for m in m_list:
-    [tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 1, int(m))
-    tmp_eqe1 = ProcDoc.modeling(tmp_eqe1, background_model, query_lambda)
-    tmp_eqe2 = ProcDoc.modeling(tmp_eqe2, background_model, query_lambda)
+    #[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 1, int(m))
+    tmp_eqe1 = ProcDoc.modeling(query_model, background_model, query_lambda)
+    tmp_eqe2 = ProcDoc.modeling(query_model, background_model, query_lambda)
     EQE1.append([ProcDoc.dict2np(tmp_eqe1), tmp_eqe1])
     EQE2.append([ProcDoc.dict2np(tmp_eqe2), tmp_eqe2])
 
