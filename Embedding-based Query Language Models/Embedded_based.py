@@ -13,6 +13,7 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
     collection_total_similarity = {}
     
     np.random.seed(1337)
+    print "Word vector"
     # assign word vector to collection
     if os.path.isfile("model/collection_embedded.pkl") == True:
         # check if a file exist
@@ -52,7 +53,7 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
                             #query_embedded[word] = word2vec.getMeanVec()
                             #pass
         Pickle.dump(query_embedded, open("model/query_embedded.pkl", "wb"), True)                
-    
+    print "Calculate Similarity"
     if os.path.isfile("model/collection_total_similarity.pkl") == True: 
         collection_total_similarity = Pickle.load(open("model/collection_total_similarity.pkl", "rb"))
     else:
@@ -68,12 +69,12 @@ def EmbeddedQuery(query_wordcount, collection, word2vec, interpolated_aplpha_lis
         Pickle.dump(collection_total_similarity, open("model/collection_total_similarity.pkl", "wb"), True)
         
 
-    #print "Conditional Independence of Query Terms"    
+    print "Conditional Independence of Query Terms"    
     # Conditional Independence of Query Terms
     query_model_eqe1 = Expansion.embedded_query_expansion_ci(query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha_list, m)
     #Pickle.dump(query_model_eqe1, open("model/eqe1.pkl", "wb"), True)
 
-    #print "Query-Independent Term Similarities"    
+    print "Query-Independent Term Similarities"    
     # Query-Independent Term Similarities
     query_model_eqe2 = Expansion.embedded_query_expansion_qi(query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha_list, m)
     #Pickle.dump(query_model_eqe2, open("model/eqe2.pkl", "wb"), True)

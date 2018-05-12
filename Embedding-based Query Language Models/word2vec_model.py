@@ -43,6 +43,7 @@ class word2vec_model():
             total_similarity[word] = 0
             word_sq_vec = np.array(collection.values())
             cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 1)
+            #cosine_vectors = np.dot(cur_word_vec, word_sq_vec.T)
             for cosine_result in cosine_vectors:
                 total_similarity[word] += self.sigmoid(cosine_result)
         return total_similarity        
