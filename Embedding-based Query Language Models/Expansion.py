@@ -10,6 +10,7 @@ import copy
 import visualization
 
 def specific_modeling(feedback_doc):
+    print "Specific Model"
     # normalize, sum of the (word_prob = 1) in the document
     feedback_w_doc = ProcDoc.inverted_word_doc(dict(feedback_doc))
     for word, doc_unigram in feedback_w_doc.items():
@@ -36,6 +37,7 @@ def specific_modeling(feedback_doc):
     return specific_model
 
 def significant_modeling(general_model, specific_model, feedback_doc, feedback_doc_wc):
+    print "Significant Model"
     lambda_sw = 0.1
     lambda_s = 0.2
     lambda_g = 0.7
@@ -56,7 +58,6 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
     print "EM Training"
     # EM training
     for step in xrange(100):
-        print "Step", step
         # E Step:
         for doc_name, word_count in feedback_doc_wc.items():
             hidden_word_variable = {}
@@ -130,127 +131,7 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
                 query_model[q_key][word] = (1 - lambda_ir_fb) * query_model[q_key][word] + lambda_ir_fb * ir_fb_w_prob
         '''	
         query_model[q_key] = ProcDoc.softmax(dict(query_model[q_key]))	
-        
+    query_model, query_IDs = ProcDoc.dict2np(query_model)
         # plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
         
-    return query_model 
-'''
-Query Expansion using global analysis
-	embedded_query_expansion_ci: # Conditional Independence of Query Terms
-	embedded_query_expansion_qi: # Query-Independent Term Similarities
-	
-'''	
-# Conditional Independence of Query Terms	
-def embedded_query_expansion_ci(query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
-	# load query model
-	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
-	embedded_query_expansion = query_model
-	
-	
-	update_embedded_query_expansion = {}
-	if os.path.isfile("model/update_embedded_query_expansion_ci.pkl") == True:
-		# check if a file exist
-		update_embedded_query_expansion = Pickle.load(open("model/update_embedded_query_expansion_ci.pkl", "rb"))
-	else:	
-		# calculate every query
-		for query, query_word_count_dict in query_wordcount.items():
-			top_prob_dict = {}
-			# calculate every word in collection
-			for word in collection.keys():
-				total_probability = collection_total_similarity[word]
-				p_w_q = 0
-				if not word in query_word_count_dict:
-					p_w_q = total_probability				# p(w|q)
-					# total probability theory(for every query term)
-					for query_term in query_word_count_dict.keys():
-						if query_term in query_embedded:
-							cur_word_similarity = word2vec.getWordSimilarity(query_embedded[query_term], collection[word])
-							p_w_q *= (cur_word_similarity / total_probability)
-				# storage probability
-				top_prob_dict[word] = p_w_q
-			# softmax
-			top_prob_dict = ProcDoc.softmax(top_prob_dict)
-			# sorted top_prob_dict by value(probability)
-			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
-			update_embedded_query_expansion[query] = top_prob_list
-		# storage update expansion	
-		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_ci.pkl", "wb"), True)
-	
-	# update query model	
-	for update_query, update_query_word_list in update_embedded_query_expansion.items():
-		filepath = "visual/" + update_query + "_ci.png"
-		if os.path.isfile(filepath) == False:
-			visualization.visualization(collection, update_query_word_list, filepath)
-			
-		for update_word, update_count in update_query_word_list[:m]:
-			update = update_count
-			origin = 0
-			if update_word in query_model[update_query]:
-				origin = query_model[update_query][update_word]
-				query_model[update_query].pop(update_word, None)
-				
-			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update	
-		
-		for un_changed_word in query_model[update_query].keys():
-			embedded_query_expansion[update_query][un_changed_word] *= interpolated_aplpha
-		
-		# softmax	
-		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
-	return 	embedded_query_expansion		
-	
-# Query-Independent Term Similarities
-def embedded_query_expansion_qi(query_embedded, query_wordcount, collection, collection_total_similarity, word2vec, interpolated_aplpha, m):
-	# copy query model
-	query_model = Pickle.load(open("model/query_model.pkl", "rb"))
-	embedded_query_expansion = query_model
-	
-	update_embedded_query_expansion = {}
-	if os.path.isfile("model/update_embedded_query_expansion_qi.pkl") == True:
-		# check if a file exist
-		update_embedded_query_expansion = Pickle.load(open("model/update_embedded_query_expansion_qi.pkl", "rb"))
-	else:	
-		# calculate every query
-		for query, query_word_count_dict in query_wordcount.items():
-			top_prob_dict = {}
-			# calculate every word in collection
-			for word in collection.keys():
-				# for every word in current query
-				query_length = ProcDoc.word_sum(query_word_count_dict) * 1.0
-				# p(w|q)
-				p_w_q = 0
-				if not word in query_word_count_dict:
-					for word_sq, word_sq_count in query_word_count_dict.items():
-						total_probability = collection_total_similarity[word_sq]
-						if word_sq in query_embedded:
-							cur_word_similarity = word2vec.getWordSimilarity(collection[word], query_embedded[word_sq])
-							p_w_q += (cur_word_similarity / total_probability )  * (word_sq_count / query_length)
-				
-				# storage probability
-				top_prob_dict[word] = p_w_q
-			# softmax	
-			top_prob_dict = ProcDoc.softmax(top_prob_dict)
-			# sorted top_prob_dict by value(probability)
-			top_prob_list = sorted(top_prob_dict.items(), key=operator.itemgetter(1), reverse = True)
-			# storage update query model value
-			update_embedded_query_expansion[query] = top_prob_list
-		Pickle.dump(update_embedded_query_expansion, open("model/update_embedded_query_expansion_qi.pkl", "wb"), True)	
-	
-	# update query model	
-	for update_query, update_query_word_list in update_embedded_query_expansion.items():
-		filepath = "visual/" + update_query + "_qi.png"
-		if os.path.isfile(filepath) == False:
-			visualization.visualization(collection, update_query_word_list, filepath)
-		for update_word, update_count in update_query_word_list[:m]:
-			update = update_count
-			origin = 0
-			if update_word in query_model[update_query]:
-				origin = query_model[update_query][update_word]
-				query_model[update_query].pop(update_word, None)
-				
-			embedded_query_expansion[update_query][update_word] = interpolated_aplpha * origin + (1 - interpolated_aplpha) * update
-			
-		for un_changed_word in query_model[update_query].keys():
-			embedded_query_expansion[update_query][un_changed_word] *= interpolated_aplpha	
-		# softmax		
-		embedded_query_expansion[update_query] = ProcDoc.softmax(embedded_query_expansion[update_query])	
-	return 	embedded_query_expansion			
+    return [query_model, query_IDs]

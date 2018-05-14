@@ -9,7 +9,7 @@ from Evaluate import EvaluateModel
 import Expansion
 import plot_diagram
 import word2vec_model
-import Embedded_based
+from Embedded_based import EmbeddedBased
 from collections import defaultdict
 from math import log
 import cPickle as Pickle
@@ -23,7 +23,7 @@ doc_lambda = 0.9
 remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
 
 document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
 
 # document model
 data = ProcDoc.read_file(document_path)
@@ -74,13 +74,16 @@ m_list = np.linspace(1, 80, num=1)
 m = 1
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
+embd = EmbeddedBased(query_wordcount, collection, word2vec)
 evaluate_model = EvaluateModel("../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt")
 EQE1 = []
 EQE2 = []
+print "Embedded..."
 for m in m_list:
-    #[tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 1, int(m))
-    tmp_eqe1 = ProcDoc.modeling(query_model, background_model, query_lambda)
-    tmp_eqe2 = ProcDoc.modeling(query_model, background_model, query_lambda)
+    tmp_eqe1 = embd.embedded_query_expansion_ci(1, int(m))
+    tmp_eqe2 = embd.embedded_query_expansion_qi(1, int(m))
+    tmp_eqe1 = ProcDoc.modeling(tmp_eqe1, background_model, query_lambda)
+    tmp_eqe2 = ProcDoc.modeling(tmp_eqe2, background_model, query_lambda)
     EQE1.append([ProcDoc.dict2np(tmp_eqe1), tmp_eqe1])
     EQE2.append([ProcDoc.dict2np(tmp_eqe2), tmp_eqe2])
 
@@ -98,8 +101,8 @@ query_model_fb = {}
 mAP_list = []
 for eqe_list in EQE2:
     query_model, query_model_dict = eqe_list
-    for step in range(1):
-        qry_mdl, qry_IDs = query_model
+    qry_mdl, qry_IDs = query_model
+    for step in range(10):
         # kl divergence
         query_result = np.dot(qry_mdl, np.log(doc_mdl.T))
         result = np.argsort(-query_result, axis = 1)
@@ -134,7 +137,11 @@ for eqe_list in EQE2:
             query_docs_point_dict[q_key] = docs_point_list
         # mean average precision    
 		'''
-        '''
+        mAP = evaluate_model.mAP(query_docs_point_dict)
+        mAP_list.append(mAP)
+        print "mAP"
+        print mAP
+        
         if step < 1:
             # save one shot result
             Pickle.dump(query_model_dict, open("model/query_model.pkl", "wb"), True)
@@ -143,12 +150,9 @@ for eqe_list in EQE2:
         query_docs_point_fb = Pickle.load(open("model/query_docs_point_dict.pkl", "rb"))
         query_model_fb = Pickle.load(open("model/query_model.pkl", "rb"))
             
-        query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
-        '''
-        mAP = evaluate_model.mAP(query_docs_point_dict)
-        mAP_list.append(mAP)
-        print "mAP"
-        print mAP
+        [qry_mdl, qry_IDs] = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
+        
+
     
 print np.argmax(np.array(mAP_list), axis = 0), mAP_list[np.argmax(np.array(mAP_list), axis = 0)]
 # plot_diagram.plotList(m_list, mAP_list, "Conditional Independence of Query Terms", "mAP")
