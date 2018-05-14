@@ -1,3 +1,4 @@
+from __future__ import print_function
 import ProcDoc
 from math import log
 import plot_diagram
@@ -10,7 +11,6 @@ import copy
 import visualization
 
 def specific_modeling(feedback_doc):
-    print "Specific Model"
     # normalize, sum of the (word_prob = 1) in the document
     feedback_w_doc = ProcDoc.inverted_word_doc(dict(feedback_doc))
     for word, doc_unigram in feedback_w_doc.items():
@@ -37,7 +37,6 @@ def specific_modeling(feedback_doc):
     return specific_model
 
 def significant_modeling(general_model, specific_model, feedback_doc, feedback_doc_wc):
-    print "Significant Model"
     lambda_sw = 0.1
     lambda_s = 0.2
     lambda_g = 0.7
@@ -55,9 +54,9 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         
     hidden_significant_doc_word = {}
     objective_value_list = []
-    print "EM Training"
     # EM training
-    for step in xrange(100):
+    for step in xrange(100):      
+        print("EM Training: " + step, end="\r")
         # E Step:
         for doc_name, word_count in feedback_doc_wc.items():
             hidden_word_variable = {}
@@ -77,9 +76,9 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
         
         significant_model = {word: word_sum / denominator for word, word_sum in dict(significant_model).items()}
 		
-		# softmax
+	# softmax
         significant_model = ProcDoc.softmax(dict(significant_model))
-		# Objective function
+	# Objective function
         objective_value = 0.0
         for doc_name, word_count in feedback_doc_wc.items():
             for word, count in word_count.items():
