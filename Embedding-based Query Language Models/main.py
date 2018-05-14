@@ -9,7 +9,7 @@ from Evaluate import EvaluateModel
 import Expansion
 import plot_diagram
 import word2vec_model
-import Embedded_based
+from Embedded_based import EmbeddedBased
 from collections import defaultdict
 from math import log
 import cPickle as Pickle
@@ -74,13 +74,16 @@ m_list = np.linspace(1, 80, num=1)
 m = 1
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
+embd = EmbeddedBased(query_wordcount, collection, word2vec)
 evaluate_model = EvaluateModel("../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt")
 EQE1 = []
 EQE2 = []
+print "Embedded..."
 for m in m_list:
-    [tmp_eqe1, tmp_eqe2] = Embedded_based.EmbeddedQuery(query_wordcount, collection, word2vec, 1, int(m))
-    tmp_eqe1 = ProcDoc.modeling(query_model, background_model, query_lambda)
-    tmp_eqe2 = ProcDoc.modeling(query_model, background_model, query_lambda)
+    tmp_eqe1 = embd.embedded_query_expansion_ci(1, int(m))
+    tmp_eqe2 = embd.embedded_query_expansion_qi(1, int(m))
+    tmp_eqe1 = ProcDoc.modeling(tmp_eqe1, background_model, query_lambda)
+    tmp_eqe2 = ProcDoc.modeling(tmp_eqe2, background_model, query_lambda)
     EQE1.append([ProcDoc.dict2np(tmp_eqe1), tmp_eqe1])
     EQE2.append([ProcDoc.dict2np(tmp_eqe2), tmp_eqe2])
 
