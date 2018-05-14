@@ -38,7 +38,6 @@ class word2vec_model():
     def sumOfTotalSimilarity(self, cur_set, collection):
         # avoid memory error
         total_similarity ={}
-        
         for word, cur_word_vec in cur_set.items():
             total_similarity[word] = 0
             word_sq_vec = np.array(collection.values())
