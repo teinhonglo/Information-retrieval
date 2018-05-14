@@ -3,7 +3,6 @@ sys.path.append("../Tools")
 
 import operator
 import numpy as np
-import readAssessment
 import ProcDoc
 from Evaluate import EvaluateModel
 import Expansion
@@ -11,7 +10,6 @@ import plot_diagram
 import word2vec_model
 from Embedded_based import EmbeddedBased
 from collections import defaultdict
-from math import log
 import cPickle as Pickle
 
 data = {}                # content of document (doc, content)
@@ -24,6 +22,7 @@ remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_
 
 document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+relevance_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
 # document model
 data = ProcDoc.read_file(document_path)
@@ -75,7 +74,7 @@ m = 1
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
 word2vec = word2vec_model.word2vec_model()
 embd = EmbeddedBased(query_wordcount, collection, word2vec)
-evaluate_model = EvaluateModel("../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt")
+evaluate_model = EvaluateModel(relevance_path)
 EQE1 = []
 EQE2 = []
 print "Embedded..."
@@ -102,7 +101,7 @@ mAP_list = []
 for eqe_list in EQE2:
     query_model, query_model_dict = eqe_list
     qry_mdl, qry_IDs = query_model
-    for step in range(10):
+    for step in range(2):
         # kl divergence
         query_result = np.dot(qry_mdl, np.log(doc_mdl.T))
         result = np.argsort(-query_result, axis = 1)
@@ -113,30 +112,6 @@ for eqe_list in EQE2:
             for doc_idx in result[q_idx]:
                 docs_ranking.append(doc_IDs[doc_idx])
             query_docs_point_dict[qry_IDs[q_idx]] = docs_ranking
-
-        '''
-        query_docs_point_dict = {}
-        AP = 0
-        mAP = 0
-        for q_key, q_word_prob in query_model.items():
-            docs_point = {}
-            for doc_key, doc_words_prob in doc_unigram.items():
-                point = 0
-                # calculate each query value for the document
-                for query_word, query_prob in q_word_prob.items():
-                    word_probability = 0            # P(w | D)
-                    # check if word at query exists in the document
-                    if query_word in doc_words_prob:
-                        word_probability = doc_words_prob[query_word]
-                    # KL divergence 
-                    # (query model) * log(doc_model)             
-                    point += query_model[q_key][query_word] * log((1-doc_lambda) * word_probability + doc_lambda * background_model[query_word])
-                docs_point[doc_key] = point
-                # sorted each doc of query by point
-            docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
-            query_docs_point_dict[q_key] = docs_point_list
-        # mean average precision    
-		'''
         mAP = evaluate_model.mAP(query_docs_point_dict)
         mAP_list.append(mAP)
         print "mAP"
@@ -150,10 +125,8 @@ for eqe_list in EQE2:
         query_docs_point_fb = Pickle.load(open("model/query_docs_point_dict.pkl", "rb"))
         query_model_fb = Pickle.load(open("model/query_model.pkl", "rb"))
             
-        [qry_mdl, qry_IDs] = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), step + 1)
-        
-
-    
+        [qry_mdl, qry_IDs] = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), 9)       
+   
 print np.argmax(np.array(mAP_list), axis = 0), mAP_list[np.argmax(np.array(mAP_list), axis = 0)]
 # plot_diagram.plotList(m_list, mAP_list, "Conditional Independence of Query Terms", "mAP")
 
