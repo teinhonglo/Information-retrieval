@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from scipy.spatial.distance import cosine
 import numpy as np
@@ -41,12 +42,14 @@ class word2vec_model():
         # avoid memory error
         total_similarity ={}
         for word, cur_word_vec in cur_set.items():
+            print("sumOfTotalSimilarity: " + str(len(total_similarity)), end="\r")
             total_similarity[word] = 0
             word_sq_vec = np.array(collection.values())
-            cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 1)
-            #cosine_vectors = np.dot(cur_word_vec, word_sq_vec.T)
+            #cosine_vectors = (cur_word_vec * word_sq_vec).sum(axis = 1)
+            cosine_vectors = np.dot(cur_word_vec, word_sq_vec.T)
             for cosine_result in cosine_vectors:
                 total_similarity[word] += self.sigmoid(cosine_result)
+        print()        
         return total_similarity        
     
     def getWordSimilarity(self, w1_vec, w2_vec):
