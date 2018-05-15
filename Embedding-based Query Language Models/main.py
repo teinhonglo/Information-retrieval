@@ -18,10 +18,11 @@ general_model = {}
 query = {}                # query
 query_lambda = 0
 doc_lambda = 0.9
-remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
-
+#remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
+remove_list=[]
 document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+word_emb_path = "data/word2vec_dict.pkl"
 relevance_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
 # document model
@@ -72,7 +73,7 @@ for rm_file in remove_list:
 m_list = np.linspace(1, 80, num=1)
 m = 1
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
-word2vec = word2vec_model.word2vec_model()
+word2vec = word2vec_model.word2vec_model(word_emb_path)
 embd = EmbeddedBased(query_wordcount, collection, word2vec)
 evaluate_model = EvaluateModel(relevance_path)
 EQE1 = []
@@ -94,7 +95,6 @@ EQE2 = Pickle.load(open("model/eqe2_10.pkl", "rb"))
 '''
 # query process
 print "query ..."
-assessment = readAssessment.get_assessment()
 query_docs_point_fb = {}
 query_model_fb = {}
 mAP_list = []
