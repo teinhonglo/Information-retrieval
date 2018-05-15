@@ -16,12 +16,15 @@ data = {}                # content of document (doc, content)
 background_model = {}    # word count of 2265 document (word, number of words)
 general_model = {}
 query = {}                # query
-query_lambda = 0.357
-doc_lambda = 0.825
-remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
+
+query_lambda = 0
+doc_lambda = 0.9
+#remove_list = ["update_embedded_query_expansion_ci.pkl", "update_embedded_query_expansion_qi.pkl", "collection_embedded.pkl", "query_embedded.pkl", "collection_total_similarity.pkl"]
+remove_list=[]
 
 document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
 query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+word_emb_path = "data/word2vec_dict.pkl"
 relevance_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
 # document model
@@ -72,7 +75,8 @@ for rm_file in remove_list:
 m_list = np.linspace(4, 4, num=1)
 m = 1
 interpolated_aplpha_list = np.linspace(0, 1.0, num=11)
-word2vec = word2vec_model.word2vec_model(54, 0.71)
+word2vec = word2vec_model.word2vec_model(word_emb_path)
+
 embd = EmbeddedBased(query_wordcount, collection, word2vec)
 evaluate_model = EvaluateModel(relevance_path)
 EQE1 = []

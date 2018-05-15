@@ -9,8 +9,10 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 class word2vec_model():
-    def __init__(self, alpha = 50, c = 0.7):
-        self.word2vec = self.readWord2VecModel()
+    def __init__(self, file_path = None, alpha = 50, c = 0.7):
+        if file_path == None:
+            file_path = "../Corpus/word2vec_dict.pkl"
+        self.word2vec = self.readWord2VecModel(file_path)
         self.vocab = self.word2vec.keys()
         self.vocabulary_length = len(self.word2vec.keys())
         first_word = self.word2vec.keys()[0]
@@ -19,9 +21,9 @@ class word2vec_model():
         self.c = c
         self.mean_vector = self.calcMeanVec()
         
-    def readWord2VecModel(self):
+    def readWord2VecModel(self, file_path):
         word2vec = []
-        with open("data/glove300.txt.pkl", "rb") as file:
+        with open(file_path, "rb") as file:
             word2vec = Pickle.load(file)
         #word2vec = word2vec.wv
         return word2vec
