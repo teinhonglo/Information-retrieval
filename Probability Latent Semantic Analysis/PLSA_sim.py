@@ -3,6 +3,11 @@ import numpy as np
 from scipy import sparse
 np.random.seed(1331)
 
+def calc_x_pzdw(x, pzdw):
+    for ki in xrange(k):
+        pzdw[:, :, ki] = x * pzdw[:, :, ki]
+    return pzdw
+
 def PLSA(X, k):
     # Return pLSA probability matrix p of m*n matrix X  
     # X is the document-word co-occurence matrix  
@@ -14,9 +19,9 @@ def PLSA(X, k):
     pz = np.random.rand(k).astype(np.float16)  # init p(z), k topics
       
     # random initialize
-    pdz = np.random.rand(k,n).astype(np.float16)
-    pwz = np.random.rand(k,m).astype(np.float16)
-    pzdw = np.random.rand(m,n,k).astype(np.float16)
+    pdz = np.random.rand(k,n)
+    pwz = np.random.rand(k,m)
+    pzdw = np.random.rand(m,n,k)
     R=sum(sum(x))
     h=0
       
@@ -24,31 +29,27 @@ def PLSA(X, k):
     iteration=0;  
     print('EM Training:');  
     for iteration in xrange(101):
-        deno = np.zeros(k).astype(np.float16)                  # denominator of p(d/z) and p(w/z)  
-        denopzdw = np.zeros((m,n)).astype(np.float16)          # denominator of p(z/d,w)  
-        numepdz = np.zeros((k,n)).astype(np.float16)           # numerator of p(d/z)  
-        numepwz = np.zeros((k,m)).astype(np.float16)           # numerator of p(w/z)  
+        deno = np.zeros(k)                  # denominator of p(d/z) and p(w/z)  
+        denopzdw = np.zeros((m,n))          # denominator of p(z/d,w)  
+        numepdz = np.zeros((k,n))           # numerator of p(d/z)  
+        numepwz = np.zeros((k,m))           # numerator of p(w/z)  
         print("iteration :" ,iteration, end="\r")
-        for ki in xrange(k):
-            for i in xrange(m):
-                for j in xrange(n):
-                    deno[ki] = deno[ki] + x[i, j] * pzdw[i, j, ki]
+        pzdw = calc_x_pzdw(x, pzdw)
+        deno = deno + np.sum(np.sum(pzdw, axis=0), axis=0)
                     
         # p(d/z)  
         for ki in xrange(k):
             for j in xrange(n):
-                for i in xrange(m):  
-                    # denominator of P(d|z), matrix
-                    numepdz[ki,j] = numepdz[ki, j] + x[i, j] * pzdw[i, j, ki]
+                # denominator of P(d|z), matrix
+                numepdz[ki,j] = numepdz[ki, j] + np.sum(pzdw, axis=0)[j, ki]
                 pdz[ki,j] = numepdz[ki,j] / deno[ki]  # numerator / denominator
         # disp(pdz);  
           
         # p(w/z)  
         for ki in xrange(k):
             for i in xrange(m):
-                for j in xrange(n):
-                    # denominator of P(w|z), matrix
-                    numepwz[ki,i]=numepwz[ki,i] + x[i,j] * pzdw[i,j,ki]
+                # denominator of P(w|z), matrix
+                numepwz[ki,i]=numepwz[ki,i] + np.sum(pzdw, axis=1)[i, ki]
                 # numerator / denominator
                 pwz[ki,i] = numepwz[ki,i] / deno[ki]
         # disp(pwz);  
