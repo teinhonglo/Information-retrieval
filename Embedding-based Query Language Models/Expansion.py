@@ -56,7 +56,7 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
     objective_value_list = []
     # EM training
     for step in xrange(100):      
-        print("EM Training: " + step, end="\r")
+        print("EM Training: " + str(step), end="\r")
         # E Step:
         for doc_name, word_count in feedback_doc_wc.items():
             hidden_word_variable = {}

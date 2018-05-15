@@ -14,7 +14,7 @@ def main():
     tsne = TSNE(n_components=2, random_state=0)
     np.set_printoptions(suppress=True)
     Y = tsne.fit_transform(wv[:1000,:])
-    # area = np.pi * similiarity
+    # area = np.pi * similarity
     plt.figure(figsize=(18, 18))
     plt.scatter(Y[:, 0], Y[:, 1])
     
