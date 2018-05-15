@@ -4,6 +4,8 @@ import cPickle as Pickle
 import os.path
 import ProcDoc
 import operator
+import visualization
+
 class EmbeddedBased():
     def __init__(self, query_wordcount, collection, word2vec):
         word2vec = word2vec
