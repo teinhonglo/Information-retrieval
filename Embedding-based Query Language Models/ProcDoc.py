@@ -196,11 +196,13 @@ def outputRank(query_docs_point_dict):
             outfile.write("\n")        
 
 # softmax            
-def softmax(model):
+def softmax(model, isExp = False):
     model_word_sum  = 1.0 * word_sum(model)
-    model = {w: c / model_word_sum for w, c in dict(model).items()}
+    if isExp:
+        model = {w: exp(c) / model_word_sum for w, c in dict(model).items()}
+    else:
+        model = {w: c / model_word_sum for w, c in dict(model).items()}
     return model
-            
             
 def outputModel(model):
     cquery_docs_point_dict = collections.OrderedDict(sorted(query_docs_point_dict.items()))
