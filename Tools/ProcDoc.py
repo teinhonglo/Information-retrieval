@@ -12,9 +12,7 @@ from webbrowser import BackgroundBrowser
 from collections import defaultdict
 from math import log
 
-bg_modle_path = "../Information-retrieval/Corpus/background"
 Cluster_path = "Topic"
-
 
 # read file(query or document)
 def readFile(filepath):
@@ -261,4 +259,19 @@ def smoothing(topic_wordprob_dict, background_model, alpha):
 def softmax(model):
     model_word_sum  = 1.0 * sum(wordcount.values())
     model = {w: c / model_word_sum for w, c in dict(model).items()}
-    return model    
+    return model
+
+def dict2npDense(ori_dict, collections, IDs_list = None):
+    vocab_size = len(collections)
+    num_tar = len(list(ori_dict.keys()))
+    obj_vec = np.zeros((num_tar, vocab_size))
+    
+    if IDs_list is None:
+        IDs_list = list(ori_dict.keys())
+        
+    for idx, o_id in enumerate(IDs_list):
+        for o_wid, o_wc in ori_dict[o_id].items():
+            o_wid_idx = collections.index(o_wid)
+            obj_vec[idx][o_wid_idx] = o_wc
+            
+    return obj_vec, IDs_list    

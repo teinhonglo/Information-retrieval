@@ -1,5 +1,6 @@
 
 
+
 # output ranking list	
 def outputRank(query_docs_point_dict):
 	cquery_docs_point_dict = sorted(query_docs_point_dict.items(), key=operator.itemgetter(0))
