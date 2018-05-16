@@ -5,32 +5,33 @@ import itertools
 np.random.seed(1331)
 
 
-class PLSA(object):
+class pLSA(object):
     def __init__(self, X, k, pwz = None, pzd = None):
         # X is the document-word co-occurence matrix  
-        # word--rows(m), document--collums(n)
+        # word -> rows(m), document -> collums(n)
         # k is the number of the topics--z  
         self.epsilon = np.finfo(float).eps
         self.x = X
-        self.nm, self.nn = np.nonzero(self.x)
+        [self.nm, self.nn] = np.nonzero(self.x)
         [m, n] = self.x.shape  # m words, n documents
         # p(z|D)
-        if pzd == None:
+        if pzd is None:
             # random initialize
             self.pzd = np.random.rand(n,k)
         else:
             self.pzd = pzd
-        if pwz == None:
+        if pwz is None:
             # random initialize
             self.pwz = np.random.rand(k,m)
         else:
-            self.pwz
+            self.pwz = pwz
         # p(z | w, D)
         self.pzdw = np.random.rand(m,n,k)
+        print(self.x.shape, self.pwz.shape, self.pzd.shape, self.pzdw.shape)
     
     def EM_Trainging(self, iteration=20):
-        # Return pLSA probability matrix p of m*n matrix X  
-        # co-occurence matrix
+        # Return pLSA probability matrix
+        # co-occurence matrix (m * n)
         x = self.x
         # Latent variable model
         pzd = self.pzd
@@ -40,11 +41,13 @@ class PLSA(object):
         epsilon = self.epsilon
         #  iteration   
         print('EM Training:');  
-        for iteration in xrange(1):
+        for iteration in xrange(iteration):
+            start_time = time.time()
             denopzdw = np.zeros((m,n))          # denominator of p(z/d,w)  
             deno = np.zeros((k)) + epsilon      # denominator of p(w/z) and p(d/z)
             numepzd = np.zeros((n,k))           # numerator of p(z/d)  
             numepwz = np.zeros((k,m))           # numerator of p(w/z)  
+            count = 0
             print("iteration :" ,iteration)
             print("E step:")
             for i in xrange(m):
@@ -52,15 +55,14 @@ class PLSA(object):
                     for ki in xrange(k):
                         # numerator of p(z/d,w)
                         pzdw[i, j, ki] = pwz[ki, i] * pzd[j, ki]
-                        
-            print("p(z|w,d)")
+
             # denominator of p(z/d,w)  
             denopzdw = np.sum(pzdw, axis=2)
             pzdw /= denopzdw[:,:,None]
             # M step
             print("M step:")
             # cache function of p(w/z)
-            pzdw = self.calc_x_pzdw(x, pzdw)
+            pzdw = self._calc_x_pzdw(x, pzdw)
             # p(w/z)
             # numerator of p(w/z) 
             numepwz = np.transpose(np.sum(pzdw, axis = 1))
@@ -75,29 +77,38 @@ class PLSA(object):
             # denominator of p(z/d)
             deno += np.sum(x, axis = 0)
             pzd /= deno[:, None]
+            self._obj_function(x, pwz, pzd, pzdw)
+            end_time = time.time()
+            print(end_time - start_time)
             print()
         return [pzd, pwz, pzdw]
         
-    def Objetcive(self, x, pwz, pzd):
-        m = self.nm
-        n = self.nn
-        for i, j in itertools.izip(m, n):
-            pass
-        pass    
+    def __obj_function(self, x, pwz, pzd, pzdw):
+        print("Estimation")
+        # maximum collection likelihood estimation
+        k = pzdw.shape[2]
+        loss = 0.
+        for i, j in itertools.izip(self.nm, self.nn):
+            pwd = 0.
+            for ki in xrange(k):
+                pwd += pwz[ki, i] * pzd[j, ki]
+            loss += x[i, j] * pwd
+        print(loss)
     
-    def calc_x_pzdw(self, x, pzdw):
+    def __calc_x_pzdw(self, x, pzdw):
         m, n, k = pzdw.shape
         pzdw *= x[:,:, None]
         return pzdw
-        
-X = np.random.randint(4, size=(14000, 2265)).astype("float")    
-#X = np.random.randint(4, size=(3, 4)).astype("float")
-print(X)
-k=4
-model = PLSA(X, k)
-import time
-start_time = time.time()
-[pzd, pwz, pzdw]=model.EM_Trainging(1)
-end_time = time.time()
-print(end_time - start_time)
-print(pwz)
+
+if __name__ == "__main__":
+    # Example
+    X = np.random.randint(4, size=(14000, 2265)).astype("float")    
+    #X = np.random.randint(4, size=(3, 4)).astype("float")
+    k=2
+    iteration=16
+    model = pLSA(X, k)    
+    start_time = time.time()
+    [pzd, pwz, pzdw]=model.EM_Trainging(iteration)
+    end_time = time.time()
+    print("Total:", end_time - start_time)
+    print(pwz)

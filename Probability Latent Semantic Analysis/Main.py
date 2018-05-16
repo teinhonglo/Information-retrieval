@@ -1,74 +1,42 @@
-# -*- coding: utf-8 -*-
-import ProcDoc
-import PLSA
-import codecs
-from collections import defaultdict
+import os
+import sys
+sys.path.append("../Tools")
+
 import numpy as np
+import cPickle as pickle
+import ProcDoc
+from PLSA_class import pLSA
+from Clustering import ClusterModel
 
-def run():
-	INIT_PROBABILITY = 1.0 / 60
-	topic_word_prob_dict = ProcDoc.read_clusters()									# read cluster P(W|T), {T: {W:Prob}}
-	doc_topic_prob_dict = defaultdict(dict)														# P(T|D),{D:{T:Prob}} 
-	doc_word_topic_prob_dict = defaultdict(dict)									# P(T| w, D), {D: {word:{T:prob}}}
-	doc_wc_dict = ProcDoc.read_doc_dict()  											# read document (Doc No.,Doc content)  
-	doc_wc_dict = ProcDoc.doc_preprocess(doc_wc_dict)
-	# calculate word of the background
-	# convert (Doc No.,Doc content) to (Doc_No, {word, count})
-	for docName, content in doc_wc_dict.items():
-		temp_dict = ProcDoc.word_count(content, {})
-		doc_wc_dict[docName] = temp_dict
+np.random.seed(1337)
+corpus = "TDT2"
+doc_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"
+cluster_dir = "Topic"
+num_of_topic = 4
+doc = ProcDoc.readFile(doc_path)
+doc_dict = ProcDoc.docPreproc(doc)
 
-	# initialize P(T|D)
-	print "Initialize P(T|D)"
-	for docName, wordCount in doc_wc_dict.items():
-		topic_prob = {}
-		for topic, wordProb in topic_word_prob_dict.items():
-			doc_topic_prob_dict[docName][topic] = INIT_PROBABILITY
-			
-	'''
-	print "Initialize P(T| w, D)"
-	for docName, wordCount in doc_wc_dict.items():	
-		word_list = {}
-		for word, frequency in wordCount.items():	
-			topic_prob = {}
-			for topic, wordProb in topic_word_prob_dict.items():
-				topic_prob[topic] = 0.0
-			word_list[word] = topic_prob
-		doc_word_topic_prob_dict[docName] = word_list
-	'''
-	print "start PLSA"
-	[topic_word_prob_dict, doc_topic_prob_dict] = PLSA.Probability_LSA(doc_wc_dict, doc_topic_prob_dict, topic_word_prob_dict, doc_word_topic_prob_dict)
-	print "end PLSA"
-	
-	p_plsa = {}			# PLSA P(W|D) {D: {W : Prob}}
-	for doc, topic_prob_list in doc_topic_prob_dict.items():
-		p_plsa_word = {}
-		for topic, doc_prob in topic_prob_list.items():
-			for word, word_prob in topic_word_prob_dict[topic].items():
-				print word, word_prob
-				if word in p_plsa_word:
-					p_plsa_word[word] += word_prob * doc_prob
-				else:
-					p_plsa_word[word] = word_prob * doc_prob
-			
-		p_plsa[doc] = p_plsa_word
+# general model
+collection = {}
+for doc_ID, word_count in doc_dict.items():
+    for word, count in word_count.items():
+        if word in collection:
+            collection[word] += count
+        else:
+            collection[word] = count
 
-	return p_plsa
-	
-p_w_d = run()
-with codecs.open("cluster_word_prob.txt", 'w', "utf-8") as outfile:	
-	isFirst = True
-	for d, w_p in p_w_d.items():
-		if isFirst:
-			title = "doc"
-			for w in w_p.keys():
-				title += ", " + w
-			outfile.write(title + "\n")	
-			isFirst = False
-		else:	
-			outfile.write(d)
-			word_prob = ""
-			for p in w_p.values():
-				prob += "," + p 
-			outfile.write(prob)
-			outfile.write("\n")
+if not os.path.isfile(cluster_dir + "/pwz_list.pkl"):
+    cluster_mdl = ClusterModel(doc_dict, collection.keys(), num_of_topic)
+    cluster_mdl.save(cluster_dir)
+
+with open(cluster_dir + "/pwz_list.pkl", "rb") as pwz_file: pwz = pickle.load(pwz_file)
+doc_np, doc_IDs = ProcDoc.dict2npDense(doc_dict, collection.keys())
+pwd = np.ones((doc_np.shape[0], num_of_topic))
+doc_np = np.transpose(doc_np)
+# PLSA
+model = pLSA(doc_np, num_of_topic, pwz, pwd)
+[pzd, pwz, pzdw] = model.EM_Trainging(20)
+with open("exp/pzd.pkl", "wb") as pzd_file : pickle.dump(pzd, pzd_file, True)
+with open("exp/pwz.pkl", "wb") as pwz_file : pickle.dump(pwz, pwz_file, True)
+with open("exp/pzdw.pkl", "wb") as pzdw_file : pickle.dump(pzwd, pzwd_file, True)
+            
