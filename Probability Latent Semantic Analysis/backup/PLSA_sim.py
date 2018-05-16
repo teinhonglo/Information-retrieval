@@ -75,7 +75,7 @@ def PLSA(X, k):
     print()    
     return [pz, pdz, pwz, pzdw]
 
-X = np.random.rand(5, 8)
+X = np.random.rand(10000, 500)
 k=4
 [pz, pdz, pwz, pzdw]=PLSA(X,k)
 print(pz)
