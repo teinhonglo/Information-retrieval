@@ -38,5 +38,5 @@ model = pLSA(doc_np, num_of_topic, pwz, pwd)
 [pzd, pwz, pzdw] = model.EM_Trainging(20)
 with open("exp/pzd.pkl", "wb") as pzd_file : pickle.dump(pzd, pzd_file, True)
 with open("exp/pwz.pkl", "wb") as pwz_file : pickle.dump(pwz, pwz_file, True)
-with open("exp/pzdw.pkl", "wb") as pzdw_file : pickle.dump(pzwd, pzwd_file, True)
+with open("exp/pzdw.pkl", "wb") as pzdw_file : pickle.dump(pzdw, pzdw_file, True)
             

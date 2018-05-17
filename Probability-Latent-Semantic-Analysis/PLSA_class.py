@@ -12,6 +12,7 @@ class pLSA(object):
         # k is the number of the topics--z  
         self.epsilon = np.finfo(float).eps
         self.x = X
+        self.k = k
         [self.nm, self.nn] = np.nonzero(self.x)
         [m, n] = self.x.shape  # m words, n documents
         # p(z|D)
@@ -37,6 +38,7 @@ class pLSA(object):
         pzd = self.pzd
         pwz = self.pwz
         pzdw = self.pzdw
+        k = self.k
         m, n = x.shape
         epsilon = self.epsilon
         #  iteration   
@@ -62,7 +64,7 @@ class pLSA(object):
             # M step
             print("M step:")
             # cache function of p(w/z)
-            pzdw = self._calc_x_pzdw(x, pzdw)
+            pzdw = self.__calc_x_pzdw(x, pzdw)
             # p(w/z)
             # numerator of p(w/z) 
             numepwz = np.transpose(np.sum(pzdw, axis = 1))
@@ -77,7 +79,7 @@ class pLSA(object):
             # denominator of p(z/d)
             deno += np.sum(x, axis = 0)
             pzd /= deno[:, None]
-            self._obj_function(x, pwz, pzd, pzdw)
+            self.__obj_function(x, pwz, pzd, pzdw)
             end_time = time.time()
             print(end_time - start_time)
             print()
