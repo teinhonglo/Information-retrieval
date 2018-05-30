@@ -13,6 +13,7 @@ corpus = "TDT2"
 doc_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"
 cluster_dir = "Topic"
 num_of_topic = 4
+iterations = 20
 doc = ProcDoc.readFile(doc_path)
 doc_dict = ProcDoc.docPreproc(doc)
 
@@ -35,8 +36,9 @@ pwd = np.ones((doc_np.shape[0], num_of_topic))
 doc_np = np.transpose(doc_np)
 # PLSA
 model = pLSA(doc_np, num_of_topic, pwz, pwd)
-[pzd, pwz, pzdw] = model.EM_Trainging(20)
+[pzd, pwz, pzdw] = model.EM_Trainging(iterations)
 with open("exp/pzd.pkl", "wb") as pzd_file : pickle.dump(pzd, pzd_file, True)
 with open("exp/pwz.pkl", "wb") as pwz_file : pickle.dump(pwz, pwz_file, True)
 with open("exp/pzdw.pkl", "wb") as pzdw_file : pickle.dump(pzdw, pzdw_file, True)
+with open("exp/w_IDs.pkl", "wb") as wIDs_file : pickle.dump(collection.keys(), wIDs_file, True)
             
