@@ -47,7 +47,7 @@ class pLSA(object):
             start_time = time.time()
             denopzdw = np.zeros((m,n))          # denominator of p(z/d,w)  
             deno = np.zeros((k)) + epsilon      # denominator of p(w/z) and p(d/z)
-            numepzd = np.zeros((n,k))           # numerator of p(z/d)  
+            #numepzd = np.zeros((n,k))           # numerator of p(z/d)  
             numepwz = np.zeros((k,m))           # numerator of p(w/z)  
             count = 0
             print("iteration :" ,iteration)
