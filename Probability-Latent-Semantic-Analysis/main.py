@@ -27,6 +27,7 @@ for doc_ID, word_count in doc_dict.items():
             collection[word] = count
 
 if not os.path.isfile(cluster_dir + "/pwz_list.pkl"):
+    with open("exp/w_IDs.pkl", "wb") as wIDs_file : pickle.dump(collection.keys(), wIDs_file, True)
     cluster_mdl = ClusterModel(doc_dict, collection.keys(), num_of_topic)
     cluster_mdl.save(cluster_dir)
 
@@ -40,5 +41,4 @@ model = pLSA(doc_np, num_of_topic, pwz, pwd)
 with open("exp/pzd.pkl", "wb") as pzd_file : pickle.dump(pzd, pzd_file, True)
 with open("exp/pwz.pkl", "wb") as pwz_file : pickle.dump(pwz, pwz_file, True)
 with open("exp/pzdw.pkl", "wb") as pzdw_file : pickle.dump(pzdw, pzdw_file, True)
-with open("exp/w_IDs.pkl", "wb") as wIDs_file : pickle.dump(collection.keys(), wIDs_file, True)
             
