@@ -258,7 +258,7 @@ def smoothing(topic_wordprob_dict, background_model, alpha):
 # softmax            
 def softmax(model):
     model_word_sum  = 1.0 * sum(wordcount.values())
-    model = {w: c / model_word_sum for w, c in dict(model).items()}
+    model = {w: exp(c) / model_word_sum for w, c in dict(model).items()}
     return model
 
 def dict2npDense(ori_dict, collections, IDs_list = None):
