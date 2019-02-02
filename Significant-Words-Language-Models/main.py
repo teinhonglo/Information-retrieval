@@ -2,17 +2,16 @@ from __future__ import print_function
 import os, sys
 sys.path.append("../Tools")
 
-import os
 import fileinput
 import collections
 from math import log
 import operator
 import numpy as np
-import evaluate
+import cPickle as Pickle
+
 import ProcDoc
 import Expansion
 from Evaluate import EvaluateModel
-import cPickle as Pickle
 import plot_diagram
 
 data = {}                # content of document (doc, content)
