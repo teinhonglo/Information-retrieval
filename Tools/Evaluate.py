@@ -48,6 +48,7 @@ class EvaluateModel(object):
         assessment = self.assessment[q_key]
         if atPos == None:
             atPos = len(assessment)
+         
         for doc_name in result:
             iterative += 1
             if count == atPos: break

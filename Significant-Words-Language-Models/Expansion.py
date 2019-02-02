@@ -100,7 +100,7 @@ def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, gen
         feedback_doc = {}
         feedback_doc_wc = {}
         # Extract feedback document
-        for doc_name, point in docs_point_list[0:topN]:
+        for doc_name in docs_point_list[0:topN]:
             feedback_doc[doc_name] = copy.deepcopy(doc_unigram[doc_name])
             feedback_doc_wc[doc_name] = copy.deepcopy(doc_wordcount[doc_name])
         # generate specific model
