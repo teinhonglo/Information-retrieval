@@ -39,9 +39,10 @@ def create_model(MAX_QRY_LENGTH = 50, MAX_DOC_LENGTH = 2900, NUM_OF_FEATS = 10, 
     # MLP(DENSE(len(r(q,d))))
     phi_h = Dense(alpha_size, activation="softmax", name="TrainMat")(homoMat)
     dot_prod = dot([concat_r, phi_h], axes = 1, normalize=True , name="rel_dot")
+    psg_feats = concatenate([concat_r, dot_prod])
     # tanh(dot(r.transpose * h))
     #pred = Activation("tanh", name="activation_tanh")(dot_prod)
-    pred = Dense(1, activation="tanh", name="activation_tanh")(dot_prod)
+    pred = Dense(1, activation="tanh", name="activation_tanh")(psg_feats)
     
     # We now have everything we need to define our model.
     model = Model(inputs = [psgMat, homoMat], outputs = pred)

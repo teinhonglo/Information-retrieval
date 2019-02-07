@@ -43,7 +43,7 @@ evaluate_model = EvaluateModel("../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSi
 params = {'input_data_process': input_data_process,
           'dim_x': MAX_QRY_LENGTH,
           'dim_y': MAX_DOC_LENGTH,
-		  'dim_x1': NUM_OF_FEATS,
+	  'dim_x1': NUM_OF_FEATS,
           'batch_size': batch_size,
           'shuffle': False}
 

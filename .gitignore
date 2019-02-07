@@ -15,6 +15,7 @@
 *.pyc
 *.pkl
 *.json
+*.hdf5
 
 # profiling files and core files
 *.nvprof
