@@ -89,18 +89,18 @@ def significant_modeling(general_model, specific_model, feedback_doc, feedback_d
     #plot_diagram.plotList(objective_value_list)
     return significant_model            
 
-def feedback(query_docs_point_dict, query_model, doc_unigram, doc_wordcount, general_model, background_model, topN):
+def feedback(query_docs_dict, query_model, doc_unigram, doc_wordcount, general_model, background_model, topN):
     lambda_bg = 0.1
     lambda_fb = 0.8
     lambda_ir_fb = 0.2
     lambda_q = 0.1
     specific_model = {}
     significant_model_dict = {}
-    for q_key, docs_point_list in query_docs_point_dict.items():
+    for q_key, docs_list in query_docs_dict.items():
         feedback_doc = {}
         feedback_doc_wc = {}
         # Extract feedback document
-        for doc_name, point in docs_point_list[0:topN]:
+        for doc_name in docs_list[0:topN]:
             feedback_doc[doc_name] = copy.deepcopy(doc_unigram[doc_name])
             feedback_doc_wc[doc_name] = copy.deepcopy(doc_wordcount[doc_name])
         # generate specific model
