@@ -36,11 +36,7 @@ class InputDataProcess(object):
         # generate h featrues
         self.input_feats = self.__genFeature(self.num_feats)
         
-    def genTrainValidSet(self, percent = None, type_rank = "pointwise", isTest = False):
-        ranks = ["pointwise", "pairwise"]
-        if not type_rank in ranks: 
-            print("invalid")
-            return -1
+    def genTrainValidSet(self, percent = None, isTest = False):
         print "generate training set and validation set"
         if percent == None: percent = 80
         qry = self.qry
