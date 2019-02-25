@@ -53,6 +53,24 @@ def readRELdict(REL_PATH = None, isTraining = True):
 
 # read background model
 def readBGdict():
+    BGTraingSet = {}
+    # XIN1998
+    for doc_item in os.listdir(bg_modle_path):
+        # join dir path and file name
+        doc_item_path = os.path.join(bg_modle_path, doc_item)
+        # check whether a file exists before read
+        if os.path.isfile(doc_item_path):
+            with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
+                # read content of query document (doc, content)
+                lines = f.readlines()
+                for line in lines:
+                    [id, prob] = line.split()
+                    prob = exp(float(prob))
+                    BGTraingSet[id] = prob
+    # Background{word, probability}
+    return BGTraingSet
+
+def readBGnp():
     BGTraingSet = np.zeros(51253)
     # XIN1998
     for doc_item in os.listdir(bg_modle_path):
@@ -141,6 +159,7 @@ def qryPreproc(dictionary, rel_set = None, res_pos = False, topN = None):
             int_rep = int_rep[:topN]
         # replace old content    
         qry_new[key] = int_rep
+
     if not res_pos:    
         qry_freq = {}    
         # term probability(word_count / word sum)    
@@ -160,7 +179,7 @@ def wordCount(content, bg_word):
     # return word count dictionary        
     return bg_word
 
-def docFreq(doc, vocab_size = 51253):
+def docFreqnp(doc, vocab_size = 51253):
     #0:docfreq 1:count
     corpus_dFreq_total = np.zeros((vocab_size, 2))
     for name, word_list in doc.items():
@@ -228,8 +247,7 @@ def rmStopWord(ori_content, corpus_dFreq_total, threshold = 0.1):
         elif cont_type == type(dict):
             word_list.pop(word, None)
         # assign new value to name    
-        ori_content[name] = word_list    
-            
+        ori_content[name] = word_list          
     return ori_content
 
 
@@ -246,18 +264,18 @@ def unigram(topic_wordcount_dict):
     return topic_wordprob_dict 
 
 # modeling    
-def smoothing(topic_wordprob_dict, background_model, alpha):
+def smoothing(topic_wordprob_dict, background_model_dict, alpha):
     modeling_dict = {}
     for topic, wordprob in topic_wordprob_dict.items():
         word_model = {}
         for word in wordprob.keys():
-            word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model[word]
+            word_model[word] = (1-alpha) * wordprob[word] + (alpha) * background_model_dict[word]
         modeling_dict[topic] = dict(word_model)
     return modeling_dict
 
 # softmax            
 def softmax(model):
-    model_word_sum  = 1.0 * sum(wordcount.values())
+    model_word_sum  = 1.0 * sum(model.values())
     model = {w: exp(c) / model_word_sum for w, c in dict(model).items()}
     return model
 
