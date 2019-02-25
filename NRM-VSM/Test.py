@@ -42,7 +42,7 @@ def cosineFast(qry, qry_IDs, doc, doc_IDs):
         qry_docs_ranking[q_ID] = docs_ranking
     return qry_docs_ranking 
                   
-def main(args):                  
+def main(args): 
     exp_path = args["exp_path"]
     isTraining = args["isTraining"]
     model_name = args["model_name"]
