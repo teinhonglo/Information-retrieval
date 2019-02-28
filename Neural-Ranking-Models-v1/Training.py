@@ -2,7 +2,7 @@ import sys
 sys.path.append("../Tools")
 import numpy as np
 
-from sklearn import preprocessing
+#from sklearn import preprocessing
 import ProcDoc
 
 
@@ -23,7 +23,7 @@ if document_path == None:
     document_path = "../Corpus/" + corpus + "/SPLIT_DOC_WDID_NEW"
         
 # relevancy set
-self.hmm_training_set = ProcDoc.readRELdict()
+hmm_training_set = ProcDoc.readRELdict()
         
 # read document, reserve position
 doc = ProcDoc.readFile(document_path)
@@ -31,7 +31,8 @@ doc = ProcDoc.docPreproc(doc, RES_POS)
 		
 # read query, reserve position
 qry = ProcDoc.readFile(query_path)
-qry = ProcDoc.qryPreproc(qry, self.hmm_training_set, RES_POS)
+qry = ProcDoc.qryPreproc(qry, hmm_training_set, RES_POS)
+
 
 # (pointwise or pairwise) and (sparse or embeddings)
 # prepare data and label
