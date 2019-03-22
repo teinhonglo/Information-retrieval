@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import codecs
 import io
 import os
@@ -11,7 +12,6 @@ from math import exp
 from webbrowser import BackgroundBrowser
 from collections import defaultdict
 from math import log
-
 Cluster_path = "Topic"
 
 # read file(query or document)
@@ -52,12 +52,12 @@ def readRELdict(REL_PATH = None, isTraining = True):
     return rel_dict    
 
 # read background model
-def readBGdict():
+def readBGdict(bg_model_path):
     BGTraingSet = {}
     # XIN1998
-    for doc_item in os.listdir(bg_modle_path):
+    for doc_item in os.listdir(bg_model_path):
         # join dir path and file name
-        doc_item_path = os.path.join(bg_modle_path, doc_item)
+        doc_item_path = os.path.join(bg_model_path, doc_item)
         # check whether a file exists before read
         if os.path.isfile(doc_item_path):
             with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
@@ -70,12 +70,12 @@ def readBGdict():
     # Background{word, probability}
     return BGTraingSet
 
-def readBGnp():
+def readBGnp(bg_model_path):
     BGTraingSet = np.zeros(51253)
     # XIN1998
-    for doc_item in os.listdir(bg_modle_path):
+    for doc_item in os.listdir(bg_model_path):
         # join dir path and file name
-        doc_item_path = os.path.join(bg_modle_path, doc_item)
+        doc_item_path = os.path.join(bg_model_path, doc_item)
         # check whether a file exists before read
         if os.path.isfile(doc_item_path):
             with io.open(doc_item_path, 'r', encoding = 'utf8') as f:
@@ -86,7 +86,7 @@ def readBGnp():
                     prob = exp(float(prob))
                     BGTraingSet[int(id)] = prob
     # Background{word, probability}
-    return np.array([BGTraingSet])
+    return BGTraingSet
 
 # document preprocess
 def docPreproc(dictionary, res_pos = False, topN = None):
@@ -127,8 +127,7 @@ def docPreproc(dictionary, res_pos = False, topN = None):
         for doc_key, doc_content in doc_new.items():
             doc_words = wordCount(doc_content, {})
             doc_new[doc_key] = doc_words
-        #dictionary = TFIDF(dictionary)    
-        
+        #dictionary = TFIDF(dictionary)
     return doc_new
 
 # query preprocess
@@ -159,13 +158,14 @@ def qryPreproc(dictionary, rel_set = None, res_pos = False, topN = None):
             int_rep = int_rep[:topN]
         # replace old content    
         qry_new[key] = int_rep
-
+        
     if not res_pos:    
         qry_freq = {}    
         # term probability(word_count / word sum)    
         for qry_key, qry_content in qry_new.items():
             qry_words = wordCount(qry_content, {})
             qry_new[qry_key] = qry_words
+            #print(qry_new[qry_new.keys()[0]])
         #dictionary = TFIDF(dictionary)    
     return qry_new
 
@@ -279,8 +279,7 @@ def softmax(model):
     model = {w: exp(c) / model_word_sum for w, c in dict(model).items()}
     return model
 
-def dict2npDense(ori_dict, collections, IDs_list = None):
-    vocab_size = len(collections)
+def dict2npSparse(ori_dict, IDs_list = None, vocab_size = 51253):
     num_tar = len(list(ori_dict.keys()))
     obj_vec = np.zeros((num_tar, vocab_size))
     
@@ -289,7 +288,20 @@ def dict2npDense(ori_dict, collections, IDs_list = None):
         
     for idx, o_id in enumerate(IDs_list):
         for o_wid, o_wc in ori_dict[o_id].items():
-            o_wid_idx = collections.index(o_wid)
+            obj_vec[idx][int(o_wid)] = o_wc
+            
+    return obj_vec, IDs_list    
+
+def dict2npDense(ori_dict, IDs_list = None, vocab_size = 51253):
+    num_tar = len(list(ori_dict.keys()))
+    obj_vec = np.zeros((num_tar, vocab_size))
+    
+    if IDs_list is None:
+        IDs_list = list(ori_dict.keys())
+        
+    for idx, o_id in enumerate(IDs_list):
+        for o_wid, o_wc in ori_dict[o_id].items():
+            o_wid_idx = IDs_list.index(o_wid)
             obj_vec[idx][o_wid_idx] = o_wc
             
     return obj_vec, IDs_list    
