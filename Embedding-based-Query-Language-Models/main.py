@@ -82,7 +82,7 @@ evaluate_model = EvaluateModel(relevance_path)
 EQE1 = []
 EQE2 = []
 print "Embedded..."
-
+# Embedding-based system (hyperparameter)
 tmp_eqe1 = embd.embedded_query_expansion_ci(0.4, 4)
 tmp_eqe2 = embd.embedded_query_expansion_qi(0.4, 4)
 tmp_eqe1 = ProcDoc.modeling(tmp_eqe1, background_model, query_lambda)
@@ -104,6 +104,7 @@ mAP_list = []
 for eqe_list in EQE2:
     query_model, query_model_dict = eqe_list
     qry_mdl, qry_IDs = query_model
+    # pseudo relevance feedback (swm)
     for step in range(2):
         # kl divergence
         query_result = np.dot(qry_mdl, np.log(doc_mdl.T))
@@ -121,13 +122,13 @@ for eqe_list in EQE2:
         print mAP
         
         if step < 1:
-            # save one shot result
+            # save one-shot result
             Pickle.dump(query_model_dict, open("model/query_model.pkl", "wb"), True)
             Pickle.dump(query_docs_point_dict, open("model/query_docs_point_dict.pkl", "wb"), True)
-        # load one shot result
+        # load one-shot result
         query_docs_point_fb = Pickle.load(open("model/query_docs_point_dict.pkl", "rb"))
         query_model_fb = Pickle.load(open("model/query_model.pkl", "rb"))
-            
+        # swm    
         [qry_mdl, qry_IDs] = Expansion.feedback(query_docs_point_fb, query_model_fb, dict(doc_unigram), dict(doc_wordcount), dict(general_model), dict(background_model), 10)       
         
    
