@@ -9,22 +9,21 @@ class EvaluateModel(object):
         # TDT2 path ../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt
         # HMMTrainingSet path ../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain
         if rel_set_path == None:
-            self.assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+            self.answerTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
         else:
-            self.assessmentTraingSet_path = rel_set_path
-        self.assessment = self.__getAssessment(HMM)
+            self.answerTraingSet_path = rel_set_path
+        self.answer = self.__getAssessment(HMM)
         self.APs = []
         self.num_docs = 2265
         
     def __getAssessment(self, HMM):
-        assessmentTraingSetDict = defaultdict(list)
-        assessmentTraingSet_path = self.assessmentTraingSet_path
-        with open(assessmentTraingSet_path, 'r') as file:
+        answerTraingSetDict = defaultdict(list)
+        answerTraingSet_path = self.answerTraingSet_path
+        with open(answerTraingSet_path, 'r') as f:
             # read content of query document (doc, content)
             title = ""
-            for line in file.readlines():
-                result = line.split()
-                
+            for line in f.readlines():
+                result = line.split()              
                 if len(result) == 0:
                     continue
                 if len(result) > 1:
@@ -34,37 +33,37 @@ class EvaluateModel(object):
                         title = result[1]
                     continue
 
-                assessmentTraingSetDict[title].append(result[0])
-        return assessmentTraingSetDict
+                answerTraingSetDict[title].append(result[0])
+                
+        return answerTraingSetDict
 
-    def getAss(self):
-        return self.assessment
+    def getAset(self):
+        return self.answer
     # result : list [(doc, point)]
-    # assessment_list : list [(doc)]
+    # answer_list : list [(doc)]
     def __avePrecision(self, result, q_key, atPos = None):
         iterative = 0.
         count = 0.
         precision = 0.
-        assessment = self.assessment[q_key]
+        answer = self.answer[q_key]
         if atPos == None:
-            atPos = len(assessment)
-         
+            atPos = len(answer)
+    
         for doc_name in result:
             iterative += 1
             if count == atPos: break
-                
-            if doc_name in assessment:
+            if doc_name in answer:
                 count += 1
                 precision += count / iterative
-        
-        precision /= len(assessment)
+         
+        precision /= len(answer)
         return precision
 
     def DCG(self, result, q_key):
         d_cumul_gain = np.zeros(self.num_docs)
-        assessment = self.assessment[q_key]
+        answer = self.answer[q_key]
         
-        if result[0] in assessment:
+        if result[0] in answer:
             d_cumul_gain[0] = 1. / np.log2(2)
         else:
             d_cumul_gain[0] = 0.
@@ -74,7 +73,7 @@ class EvaluateModel(object):
             gain = 0.
             if s_idx < len(result):
                 doc_name = result[s_idx]
-                if doc_name in assessment:
+                if doc_name in answer:
                     gain = 1.
             d_cumul_gain[s_idx] = gain / np.log2(c_idx) + d_cumul_gain[s_idx - 1]
             
@@ -110,7 +109,7 @@ class EvaluateModel(object):
         
         for q_key, doc_list in query_docs_dict.items():
             dcg += self.DCG(doc_list, q_key)
-            idcg += self.DCG(self.assessment[q_key], q_key)
+            idcg += self.DCG(self.answer[q_key], q_key)
         # average
         dcg /= num_qry 
         idcg /= num_qry
