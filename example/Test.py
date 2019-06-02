@@ -6,18 +6,35 @@ sys.path.append("../Tools")
 import ProcDoc
 import Evaluate
 
-qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+is_training = False
+is_short = True
+
+
+if is_training:
+    qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+    rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+else:
+    if is_short:
+        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+    else:
+        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+    rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+
 doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
 bg_path = "../Corpus/background"
-rel_path = ""
-isTraining = False
+
+# read relevant set for queries and documents
+eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
+rel_set = eval_mdl.getAset()
+
 alpha = 0.8
 beta = 0.4
 
 qry_file = ProcDoc.readFile(qry_path)
 doc_file = ProcDoc.readFile(doc_path)
 
-qry_mdl_dict = ProcDoc.qryPreproc(qry_file)
+qry_mdl_dict = ProcDoc.qryPreproc(qry_file, rel_set)
 doc_mdl_dict = ProcDoc.docPreproc(doc_file)
 
 qry_unimdl_dict = ProcDoc.unigram(qry_mdl_dict)
@@ -46,6 +63,5 @@ for q_idx, q_ID in enumerate(qry_IDs):
     qry_docs_ranking[q_ID] = docs_ranking
 
 #eval_mdl = EvaluateModel(rel_path, isTraining)
-eval_mdl = Evaluate.EvaluateModel()
 mAP = eval_mdl.mAP(qry_docs_ranking)
 print mAP
