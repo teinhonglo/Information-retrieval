@@ -8,7 +8,7 @@ import Evaluate
 
 is_training = False
 is_short = True
-
+is_spoken = False
 
 if is_training:
     qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
@@ -20,7 +20,11 @@ else:
         qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
     rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
-doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+if is_spoken:
+    doc_path = "../Corpus/TDT2/Spoken_Doc"
+else:
+    doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+
 dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
 bg_path = "../Corpus/background"
 
