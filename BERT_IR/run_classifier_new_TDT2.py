@@ -582,11 +582,12 @@ def main():
                 tmp_eval_loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
                 
                 logits = logits.detach().cpu().numpy()
+                label_ids = label_ids.detach().cpu().numpy()
                 pred_ids = np.argmax(logits, axis = 1)
-                label_ids = np.argmax(label_ids.to('cpu').numpy(), axis = 1)
                 tmp_eval_accuracy = accuracy(logits, label_ids)
 
                 eval_loss += tmp_eval_loss.mean().item()
+                eval_accuracy += tmp_eval_accuracy
                         
                 nb_eval_examples += input_ids.size(0)
                 nb_eval_steps += 1
@@ -601,7 +602,7 @@ def main():
         eval_accuracy = eval_accuracy / nb_eval_examples
         loss = tr_loss/nb_tr_steps if args.do_train else None
         loss = tr_loss/nb_tr_steps if args.do_train else None
-        classification_report_detail(preds, lables)
+        classification_report_detail(preds, labels)
         result = {'eval_loss': eval_loss,
                   'eval_accuracy': eval_accuracy,
                   'global_step': global_step,
