@@ -33,7 +33,7 @@ from tqdm import tqdm, trange
 
 from torch.nn import CrossEntropyLoss, MSELoss
 from scipy.stats import pearsonr, spearmanr
-from sklearn.metrics import matthews_corrcoef, f1_score
+from sklearn.metrics import matthews_corrcoef, f1_score, classification_report
 
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WEIGHTS_NAME, CONFIG_NAME
 from pytorch_pretrained_bert.modeling import BertForSequenceClassification, BertConfig
@@ -254,6 +254,12 @@ def acc_and_f1(preds, labels):
         "acc_and_f1": (acc + f1) / 2,
     }
 
+def classification_report_detail(preds, labels):
+    print(classification_report(labels, preds, labels=[0, 1]))
+
+def accuracy(out, labels):
+    outputs = np.argmax(out, axis=1)
+    return np.sum(outputs == labels)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -561,6 +567,8 @@ def main():
         eval_loss, eval_accuracy = 0, 0
         nb_eval_steps, nb_eval_examples = 0, 0
         pair_offset = 0
+        preds = []
+        labels = []
         with open(args.output_dir + "/pointwise_ranking_results.short.txt", "w") as writer:
             for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"): 
                 input_ids = input_ids.to(device)
@@ -574,7 +582,8 @@ def main():
                 tmp_eval_loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
                 
                 logits = logits.detach().cpu().numpy()
-                label_ids = label_ids.to('cpu').numpy()
+                pred_ids = np.argmax(logits, axis = 1)
+                label_ids = np.argmax(label_ids.to('cpu').numpy(), axis = 1)
                 tmp_eval_accuracy = accuracy(logits, label_ids)
 
                 eval_loss += tmp_eval_loss.mean().item()
@@ -582,13 +591,17 @@ def main():
                 nb_eval_examples += input_ids.size(0)
                 nb_eval_steps += 1
             
-                for i in range(input_ids.size(0)):                 
+                for i in range(input_ids.size(0)):
+                    preds.append(pred_ids[i])
+                    labels.append(label_ids[i])
                     writer.write(all_tdt2_id[pair_offset + i] + "," + str(logits[i][0]) + "," + str(logits[i][1]) + "\n")
                 pair_offset += input_ids.size(0)
 
         eval_loss = eval_loss / nb_eval_steps
         eval_accuracy = eval_accuracy / nb_eval_examples
         loss = tr_loss/nb_tr_steps if args.do_train else None
+        loss = tr_loss/nb_tr_steps if args.do_train else None
+        classification_report_detail(preds, lables)
         result = {'eval_loss': eval_loss,
                   'eval_accuracy': eval_accuracy,
                   'global_step': global_step,
