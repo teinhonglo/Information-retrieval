@@ -31,6 +31,19 @@ else:
 dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
 bg_path = "../Corpus/background"
 
+# Mean Max Normalization
+def MMNorm(rawdata):
+    norm = np.zeros((len(qry_IDs), len(doc_IDs)))
+    row=0
+    col=0
+    for query in rawdata:
+        for doc in query:
+           norm[row][col] = (doc - np.min(query) ) / (np.max(query) - np.min(query))
+           col+=1
+        row+=1
+        col=0
+    return norm
+
 # Bert results
 def BERTResults(results_path, qry_IDs, doc_IDs):
     rel_mat = np.zeros((len(qry_IDs), len(doc_IDs)))
@@ -75,11 +88,13 @@ for doc_idx in range(doc_mdl_np.shape[0]):
 for qry_idx in range(qry_mdl_np.shape[0]):
     qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
 
-#kl_div = np.dot(qry_mdl_np, np.log(doc_mdl_np.T))
-#results = np.argsort(-kl_div, axis = 1)
+kl_div = np.dot(qry_mdl_np, np.log(doc_mdl_np.T))
+norm = MMNorm(kl_div)
+results = np.argsort(-norm, axis = 1)
+#print(norm)
 
-BERT_rel_mat = BERTResults(bert_results, qry_IDs, doc_IDs)
-results = np.argsort(-BERT_rel_mat, axis = 1)
+#BERT_rel_mat = BERTResults(bert_results, qry_IDs, doc_IDs)
+#results = np.argsort(-BERT_rel_mat, axis = 1)
 
 qry_docs_ranking = {}
 for q_idx, q_ID in enumerate(qry_IDs):
@@ -90,4 +105,7 @@ for q_idx, q_ID in enumerate(qry_IDs):
 
 #eval_mdl = EvaluateModel(rel_path, isTraining)
 mAP = eval_mdl.mAP(qry_docs_ranking)
+
+#print(qry_docs_ranking)
 print mAP
+
