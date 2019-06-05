@@ -31,17 +31,12 @@ else:
 dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
 bg_path = "../Corpus/background"
 
-# Mean Max Normalization
-def MMNorm(rawdata):
-    norm = np.zeros((len(qry_IDs), len(doc_IDs)))
-    row=0
-    col=0
-    for query in rawdata:
-        for doc in query:
+# Min-Max Normalization
+def MinMaxNorm(rawdata):
+    norm = np.zeros((rawdata.shape[0], rawdata.shape[1]))
+    for row, query in enumerate(rawdata):
+        for col, doc in enumerate(query):
            norm[row][col] = (doc - np.min(query) ) / (np.max(query) - np.min(query))
-           col+=1
-        row+=1
-        col=0
     return norm
 
 # Bert results
@@ -89,7 +84,7 @@ for qry_idx in range(qry_mdl_np.shape[0]):
     qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
 
 kl_div = np.dot(qry_mdl_np, np.log(doc_mdl_np.T))
-norm = MMNorm(kl_div)
+norm = MinMaxNorm(kl_div)
 results = np.argsort(-norm, axis = 1)
 #print(norm)
 
