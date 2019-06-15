@@ -15,7 +15,7 @@
 # limitations under the License.
 """BERT finetuning runner."""
 
-from __future__ import absolute_import, division, print_function
+#from __future__ import absolute_import, division, print_function
 
 import argparse
 import csv
@@ -81,11 +81,11 @@ class InputFeatures(object):
 class DataProcessor(object):
     """Base class for data converters for sequence classification data sets."""
 
-    def get_train_examples(self, data_dir):
+    def get_train_examples(self, data_diri, trainset):
         """Gets a collection of `InputExample`s for the train set."""
         raise NotImplementedError()
 
-    def get_dev_examples(self, data_dir):
+    def get_dev_examples(self, data_dir, testset):
         """Gets a collection of `InputExample`s for the dev set."""
         raise NotImplementedError()
 
@@ -109,16 +109,16 @@ class DataProcessor(object):
 class TDT2Processor(DataProcessor):
     """Processor for the TDT2 data set."""
 
-    def get_train_examples(self, data_dir):
+    def get_train_examples(self, data_dir, trainset):
         """See base class."""
-        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.csv")))
+        logger.info("LOOKING AT {}".format(os.path.join(data_dir, trainset)))
         return self._create_examples(
-            self._read_csv(os.path.join(data_dir, "train.csv")))
+            self._read_csv(os.path.join(data_dir, trainset)))
 
-    def get_dev_examples(self, data_dir):
+    def get_dev_examples(self, data_dir, testset):
         """See base class."""
         return self._create_examples(
-            self._read_csv(os.path.join(data_dir, "test_short_eval.csv")))
+            self._read_csv(os.path.join(data_dir, testset)))
 
     def get_labels(self):
         """See base class."""
@@ -351,6 +351,9 @@ def main():
                              "Positive power of 2: static loss scaling value.\n")
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
+    
+    parser.add_argument('--set_trainset', type=str, default='train.csv',help='Choose the dataset which you want to train.')
+    parser.add_argument('--set_testset', type=str, default='test_short.all.csv', help='Choose the dataset which you want to train.')
     args = parser.parse_args()
 
     if args.server_ip and args.server_port:
@@ -414,7 +417,7 @@ def main():
     train_examples = None
     num_train_optimization_steps = None
     if args.do_train:
-        train_examples = processor.get_train_examples(args.data_dir)
+        train_examples = processor.get_train_examples(args.data_dir, args.set_trainset)
         num_train_optimization_steps = int(
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
         if args.local_rank != -1:
@@ -528,26 +531,27 @@ def main():
                     optimizer.zero_grad()
                     global_step += 1
 
-    if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
-        # Save a trained model and the associated configuration
-        model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
+    if args.do_train  or args.do_eval:
 
-        # If we save using the predefined names, we can load using `from_pretrained`
-        output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
-        output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
-        torch.save(model_to_save.state_dict(), output_model_file)
-        model_to_save.config.to_json_file(output_config_file)
-        tokenizer.save_vocabulary(args.output_dir)
+        if args.do_train:
+            # Save a trained model and the associated configuration
+            model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
+
+            # If we save using the predefined names, we can load using `from_pretrained`
+            output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
+            output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
+            torch.save(model_to_save.state_dict(), output_model_file)
+            model_to_save.config.to_json_file(output_config_file)
+            tokenizer.save_vocabulary(args.output_dir)
 
         # Load a trained model and vocabulary that you have fine-tuned
         model = BertForSequenceClassification.from_pretrained(args.output_dir, num_labels=num_labels)
         tokenizer = BertTokenizer.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
-    else:
-        model = BertForSequenceClassification.from_pretrained(args.bert_model, num_labels=num_labels)
+
     model.to(device)
 
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
-        eval_examples = processor.get_dev_examples(args.data_dir)
+        eval_examples = processor.get_dev_examples(args.data_dir, args.set_testset)
         eval_features = convert_examples_to_features(
             eval_examples, label_list, args.max_seq_length, tokenizer)
         logger.info("***** Running evaluation *****")
@@ -569,7 +573,7 @@ def main():
         pair_offset = 0
         preds = []
         labels = []
-        with open(args.output_dir + "/pointwise_ranking_results.short.txt", "w") as writer:
+        with open(args.output_dir + "/" + args.set_trainset.split('.')[0] + "_" + args.set_testset.split('.')[0] + ".txt", "w") as writer:
             for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"): 
                 input_ids = input_ids.to(device)
                 input_mask = input_mask.to(device)
