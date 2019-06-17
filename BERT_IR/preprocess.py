@@ -3,19 +3,56 @@
 import numpy as np
 import sys
 sys.path.append("../Tools")
-np.random.seed(10)
+np.random.seed(9)
 
 import ProcDoc
 import Evaluate
 import os
+import argparse
 
-is_training = False
-is_short = False
-is_spoken = False
-task_name = "TDT2"
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+parser = argparse.ArgumentParser()
+
+## Required parameters
+parser.add_argument("--output_dir",
+                     default="data",
+                     type=str)
+
+parser.add_argument("--task_name",
+                     default="TDT2",
+                     type=str)
+
+parser.add_argument("--is_training",
+                     default=None,
+                     type=str2bool,
+                     required=True)
+
+parser.add_argument("--is_short",
+                     default=None,
+                     type=str2bool,
+                     required=True)
+
+parser.add_argument("--is_spoken",
+                     default=None,
+                     type=str2bool,
+                     required=True)
+
+args = parser.parse_args()
+
+is_training = args.is_training
+is_short = args.is_short
+is_spoken = args.is_spoken
+task_name = args.task_name
 
 output_name = ""
-output_dir = "data/" + task_name
+output_dir = args.output_dir + "/" + task_name
 
 if not os.path.isdir(output_dir):
     os.makedirs(output_dir)
