@@ -6,10 +6,44 @@ sys.path.append("../Tools")
 
 import ProcDoc
 import Evaluate
+import argparse
 
-is_training = False
-is_short = False
-is_spoken = False
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+parser = argparse.ArgumentParser()
+
+## Required parameters
+parser.add_argument("--bert_results",
+                     default="exp/TDT2_exp",
+                     type=str)
+
+parser.add_argument("--is_training",
+                     default=None,
+                     type=str2bool,
+                     required=True)
+
+parser.add_argument("--is_short",
+                     default=None,
+                     type=str2bool,
+                     required=True)
+
+parser.add_argument("--is_spoken",
+                     default=None,
+                     type=str2bool,
+                     required=True)
+
+args = parser.parse_args()
+
+is_training = args.is_training
+is_short = args.is_short
+is_spoken = args.is_spoken
+bert_results = args.bert_results
 
 if is_training:
     qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
@@ -17,10 +51,8 @@ if is_training:
 else:
     if is_short:
         qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
-        bert_results = "exp/TDT2_exp/pointwise_ranking_results.short.txt"
     else:
         qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
-        bert_results = "exp/TDT2_exp/pointwise_ranking_results.txt"
     rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
 if is_spoken:
