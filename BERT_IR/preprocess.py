@@ -70,16 +70,15 @@ else:
         output_name = "test_long"
     rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
-output_eval_name = output_name + ".all"
 
 if is_spoken:
     doc_path = "../Corpus/TDT2/Spoken_Doc"
+    output_eval_name = output_name + "_spk.all.csv"
     output_name = output_name + "_spk.csv"
-    output_eval_name = output_eval_name + "_spk.csv"
 else:
     doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+    output_eval_name = output_name + ".all.csv"
     output_name = output_name + ".csv"
-    output_eval_name = output_eval_name + ".csv"
 
 dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
 ID_map = {}
