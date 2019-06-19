@@ -1,8 +1,8 @@
 #!/bin/bash
 TASK_NAME="TDT2"
 DATA_DIR="data"
-OUTPUT_EXPDIR="exp/TDT2_exp"
-stage=3
+OUTPUT_EXPDIR="exp/TDT2_spk_exp"
+stage=1
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ if [ $stage -le 1 ]; then
                                    --data_dir $DATA_DIR/$TASK_NAME --bert_model bert-base-chinese \
                                    --max_seq_length 128 --train_batch_size 32 --learning_rate 2e-5 \
                                    --num_train_epochs 3.0 --output_dir $OUTPUT_EXPDIR \
-                                   --set_trainset train.csv --set_testset test_short.all.csv
+                                   --set_trainset train_spk.csv --set_testset test_short_spk.all.csv
 fi
 
 #if [ $stage -le 2 ]; then
@@ -37,5 +37,5 @@ fi
 
 if [ $stage -le 3 ]; then
     # text (short query)
-    python BERT_test.py --bert_results $OUTPUT_EXPDIR/train_test_short.txt --is_training false --is_short true --is_spoken false 
+    python BERT_test.py --bert_results $OUTPUT_EXPDIR/train_spk_test_short_spk.txt --is_training false --is_short true --is_spoken true 
 fi
