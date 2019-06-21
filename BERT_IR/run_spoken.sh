@@ -1,7 +1,7 @@
 #!/bin/bash
 TASK_NAME="TDT2"
-DATA_DIR="data"
-OUTPUT_EXPDIR="exp/TDT2_spk_exp"
+DATA_DIR="data_test_v1"
+OUTPUT_EXPDIR="exp_test_v1/TDT2_spk_exp"
 stage=1
 
 set -euo pipefail
