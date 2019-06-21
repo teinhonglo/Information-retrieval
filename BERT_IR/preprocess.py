@@ -5,6 +5,7 @@ import sys
 sys.path.append("../Tools")
 np.random.seed(9)
 
+
 import ProcDoc
 import Evaluate
 import os
@@ -52,6 +53,7 @@ is_spoken = args.is_spoken
 task_name = args.task_name
 
 output_name = ""
+
 output_dir = args.output_dir + "/" + task_name
 
 if not os.path.isdir(output_dir):
