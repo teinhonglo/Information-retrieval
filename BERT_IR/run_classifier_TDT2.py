@@ -40,8 +40,6 @@ from pytorch_pretrained_bert.modeling import BertForSequenceClassification, Bert
 from pytorch_pretrained_bert.tokenization import BertTokenizer
 from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
 
-from modeling import BertForSequenceClassificationForTDT
-
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     level = logging.INFO)
@@ -149,6 +147,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10000 == 0:
             logger.info("Writing example %d of %d" % (ex_index, len(examples)))
+            
 
         tokens_a = tokenizer.tokenize(example.text_a)
 
@@ -427,7 +426,7 @@ def main():
 
     # Prepare model
     cache_dir = args.cache_dir if args.cache_dir else os.path.join(str(PYTORCH_PRETRAINED_BERT_CACHE), 'distributed_{}'.format(args.local_rank))
-    model = BertForSequenceClassificationForTDT.from_pretrained(args.bert_model,
+    model = BertForSequenceClassification.from_pretrained(args.bert_model,
               cache_dir=cache_dir,
               num_labels=num_labels)
     if args.fp16:
@@ -497,6 +496,7 @@ def main():
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
         model.train()
+        
         for _ in trange(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
@@ -505,8 +505,9 @@ def main():
                 input_ids, input_mask, segment_ids, label_ids = batch
 
                 # define a new function to compute loss values for both output_modes
-                logits = model(input_ids, segment_ids, input_mask, input_weight=input_mask.unsqueeze(-1).float(),labels=None)
-               
+                logits = model(input_ids, segment_ids, input_mask, labels=None)
+                #logits *= scale_weight * (num_labels + 1 / scale_weight)
+                
                 loss_fct = CrossEntropyLoss()
                 loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
                 if n_gpu > 1:
@@ -547,7 +548,7 @@ def main():
             tokenizer.save_vocabulary(args.output_dir)
 
         # Load a trained model and vocabulary that you have fine-tuned
-        model = BertForSequenceClassificationForTDT.from_pretrained(args.output_dir, num_labels=num_labels)
+        model = BertForSequenceClassification.from_pretrained(args.output_dir, num_labels=num_labels)
         tokenizer = BertTokenizer.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
 
     model.to(device)
