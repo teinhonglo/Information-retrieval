@@ -18,8 +18,8 @@ class BertEmbeddingsForTDT(BertEmbeddings):
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
         #input_weight_embeddings = self.word_embeddings(input_weight)
        
-        embeddings = words_embeddings + position_embeddings + token_type_embeddings
-        embeddings = embeddings * input_weight
+        embeddings = words_embeddings + position_embeddings + token_type_embeddings + input_weight
+        #embeddings = embeddings * input_weight
         embeddings = self.LayerNorm(embeddings)
         embeddings = self.dropout(embeddings)
         return embeddings
