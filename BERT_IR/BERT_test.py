@@ -45,6 +45,7 @@ is_short = args.is_short
 is_spoken = args.is_spoken
 bert_results = args.bert_results
 
+
 if is_training:
     qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
     rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
@@ -116,12 +117,16 @@ for qry_idx in range(qry_mdl_np.shape[0]):
     qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
 
 kl_div = np.dot(qry_mdl_np, np.log(doc_mdl_np.T))
-norm = MinMaxNorm(kl_div)
-results = np.argsort(-norm, axis = 1)
-#print(norm)
+kl_norm = MinMaxNorm(kl_div)
+#kl_results = np.argsort(-kl_norm, axis = 1)
 
-#BERT_rel_mat = BERTResults(bert_results, qry_IDs, doc_IDs)
-#results = np.argsort(-BERT_rel_mat, axis = 1)
+
+BERT_rel_mat = BERTResults(bert_results, qry_IDs, doc_IDs)
+BERT_norm = MinMaxNorm(BERT_rel_mat)
+#BERT_results = np.argsort(-BERT_norm, axis = 1)
+
+combine = kl_norm*0 + BERT_norm*1
+results = np.argsort(-combine, axis = 1)
 
 qry_docs_ranking = {}
 for q_idx, q_ID in enumerate(qry_IDs):

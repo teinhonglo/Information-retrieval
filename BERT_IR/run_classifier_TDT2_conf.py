@@ -40,16 +40,26 @@ from pytorch_pretrained_bert.modeling import BertForSequenceClassification, Bert
 from pytorch_pretrained_bert.tokenization import BertTokenizer
 from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
 
+from modeling import BertForSequenceClassificationForTDT
+
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt = '%m/%d/%Y %H:%M:%S',
+                   datefmt = '%m/%d/%Y %H:%M:%S',
                     level = logging.INFO)
 logger = logging.getLogger(__name__)
 
+def UniGram(tokens):
+    unigram=[]
+    for token in tokens:
+        prob = len([i for i, v in enumerate(tokens) if v == token])
+        unigram.append(prob/len(tokens))
+
+    return unigram
+    
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
 
-    def __init__(self, tdt2_id, text_a, text_b=None, label=None):
+    def __init__(self, tdt2_id, text_a, text_a_conf=None, text_b=None, text_b_conf=None, label=None):
         """Constructs a InputExample.
 
         Args:
@@ -63,19 +73,23 @@ class InputExample(object):
         """
         self.tdt2_id = tdt2_id
         self.text_a = text_a
+        self.text_a_conf = text_a_conf
         self.text_b = text_b
+        self.text_b_conf = text_b_conf
         self.label = label
 
 
 class InputFeatures(object):
     """A single set of features of data."""
 
-    def __init__(self, tdt2_id, input_ids, input_mask, segment_ids, label_id):
+    def __init__(self, tdt2_id, input_ids, input_mask, segment_ids, label_id, weights):
         self.tdt2_id = tdt2_id
         self.input_ids = input_ids
         self.input_mask = input_mask
         self.segment_ids = segment_ids
         self.label_id = label_id
+        self.weights = weights
+
 
 
 class DataProcessor(object):
@@ -128,14 +142,16 @@ class TDT2Processor(DataProcessor):
         """Creates examples for the training and dev sets."""
         examples = []
         for (i, line) in enumerate(lines):
-            if i == 0:
+            if i == 0 :
                 continue
             tdt2_id = "%s" % (line[0] + "," + line[2])
             text_a = line[1]
-            text_b = line[3]
+            text_a_conf = line[2].split(":")
+            text_b = line[4]
+            text_b_conf = line[5].split(":")
             label = line[-1]
             examples.append(
-                InputExample(tdt2_id=tdt2_id, text_a=text_a, text_b=text_b, label=label))
+                InputExample(tdt2_id=tdt2_id, text_a=text_a, text_a_conf=text_a_conf, text_b=text_b, text_b_conf=text_b_conf, label=label))
         return examples
 
 def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer):
@@ -147,21 +163,30 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10000 == 0:
             logger.info("Writing example %d of %d" % (ex_index, len(examples)))
-            
 
         tokens_a = tokenizer.tokenize(example.text_a)
-
+        
         tokens_b = None
         if example.text_b:
             tokens_b = tokenizer.tokenize(example.text_b)
+ 
+            #tokens_a_prob = UniGram(tokens_a)
+            #tokens_b_prob= UniGram(tokens_b)
+            
+            tokens_a_prob = [float(i) for i in example.text_a_conf]
+            tokens_b_prob = [float(i) for i in example.text_b_conf]
+                        
             # Modifies `tokens_a` and `tokens_b` in place so that the total
             # length is less than the specified length.
             # Account for [CLS], [SEP], [SEP] with "- 3"
             _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
+            _truncate_seq_pair(tokens_a_prob, tokens_b_prob, max_seq_length - 3)
+            
         else:
             # Account for [CLS] and [SEP] with "- 2"
             if len(tokens_a) > max_seq_length - 2:
                 tokens_a = tokens_a[:(max_seq_length - 2)]
+                
 
         # The convention in BERT is:
         # (a) For sequence pairs:
@@ -183,9 +208,12 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         # the entire model is fine-tuned.
         tokens = ["[CLS]"] + tokens_a + ["[SEP]"]
         segment_ids = [0] * len(tokens)
-
+        
+        weights = [0] + tokens_a_prob + [0]
+          
         if tokens_b:
             tokens += tokens_b + ["[SEP]"]
+            weights += tokens_b_prob + [0]
             segment_ids += [1] * (len(tokens_b) + 1)
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
@@ -193,16 +221,19 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         # The mask has 1 for real tokens and 0 for padding tokens. Only real
         # tokens are attended to.
         input_mask = [1] * len(input_ids)
-
+       
         # Zero-pad up to the sequence length.
         padding = [0] * (max_seq_length - len(input_ids))
         input_ids += padding
         input_mask += padding
         segment_ids += padding
+        weights += padding
 
+        #print(len(weights))
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(segment_ids) == max_seq_length
+        assert len(weights) == max_seq_length
 
         label_id = label_map[example.label]
         if ex_index < 5:
@@ -215,13 +246,15 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
             logger.info(
                     "segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
             logger.info("label: %s (id = %d)" % (example.label, label_id))
-
+        
         features.append(
                 InputFeatures(tdt2_id=example.tdt2_id,
                               input_ids=input_ids,
                               input_mask=input_mask,
                               segment_ids=segment_ids,
-                              label_id=label_id))
+                              label_id=label_id,
+                              weights = weights))
+    
     return features
 
 
@@ -426,7 +459,7 @@ def main():
 
     # Prepare model
     cache_dir = args.cache_dir if args.cache_dir else os.path.join(str(PYTORCH_PRETRAINED_BERT_CACHE), 'distributed_{}'.format(args.local_rank))
-    model = BertForSequenceClassification.from_pretrained(args.bert_model,
+    model = BertForSequenceClassificationForTDT.from_pretrained(args.bert_model,
               cache_dir=cache_dir,
               num_labels=num_labels)
     if args.fp16:
@@ -488,7 +521,9 @@ def main():
         all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
         all_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
-        train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        all_weights = torch.tensor([f.weights for f in train_features], dtype=torch.float)
+        train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids,
+                                   all_weights)
         if args.local_rank == -1:
             train_sampler = RandomSampler(train_data)
         else:
@@ -496,18 +531,16 @@ def main():
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
         model.train()
-        
         for _ in trange(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
             for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)
-                input_ids, input_mask, segment_ids, label_ids = batch
+                input_ids, input_mask, segment_ids, label_ids, weights= batch
 
                 # define a new function to compute loss values for both output_modes
-                logits = model(input_ids, segment_ids, input_mask, labels=None)
-                #logits *= scale_weight * (num_labels + 1 / scale_weight)
-                
+                logits = model(input_ids, segment_ids, input_mask, input_weight=weights.unsqueeze(-1),labels=None)
+               
                 loss_fct = CrossEntropyLoss()
                 loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
                 if n_gpu > 1:
@@ -534,22 +567,21 @@ def main():
                     optimizer.zero_grad()
                     global_step += 1
 
-    if args.do_train  or args.do_eval:
 
-        if args.do_train:
-            # Save a trained model and the associated configuration
-            model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
+    if args.do_train:
+        # Save a trained model and the associated configuration
+        model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
 
-            # If we save using the predefined names, we can load using `from_pretrained`
-            output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
-            output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
-            torch.save(model_to_save.state_dict(), output_model_file)
-            model_to_save.config.to_json_file(output_config_file)
-            tokenizer.save_vocabulary(args.output_dir)
+        # If we save using the predefined names, we can load using `from_pretrained`
+        output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
+        output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
+        torch.save(model_to_save.state_dict(), output_model_file)
+        model_to_save.config.to_json_file(output_config_file)
+        tokenizer.save_vocabulary(args.output_dir)
 
-        # Load a trained model and vocabulary that you have fine-tuned
-        model = BertForSequenceClassification.from_pretrained(args.output_dir, num_labels=num_labels)
-        tokenizer = BertTokenizer.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
+    # Load a trained model and vocabulary that you have fine-tuned
+    model = BertForSequenceClassificationForTDT.from_pretrained(args.output_dir, num_labels=num_labels)
+    tokenizer = BertTokenizer.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
 
     model.to(device)
 
@@ -565,7 +597,8 @@ def main():
         all_input_mask = torch.tensor([f.input_mask for f in eval_features], dtype=torch.long)
         all_segment_ids = torch.tensor([f.segment_ids for f in eval_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in eval_features], dtype=torch.long)
-        eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        all_weights = torch.tensor([f.weights for f in eval_features], dtype=torch.float)
+        eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_weights)
         # Run prediction for full data
         eval_sampler = SequentialSampler(eval_data)
         eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
@@ -577,14 +610,15 @@ def main():
         preds = []
         labels = []
         with open(args.output_dir + "/" + args.set_trainset.split('.')[0] + "_" + args.set_testset.split('.')[0] + ".txt", "w") as writer:
-            for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"): 
+            for input_ids, input_mask, segment_ids, label_ids, weights in tqdm(eval_dataloader, desc="Evaluating"): 
                 input_ids = input_ids.to(device)
                 input_mask = input_mask.to(device)
                 segment_ids = segment_ids.to(device)
                 label_ids = label_ids.to(device)
+                weights = weights.to(device)
             
                 with torch.no_grad():
-                    logits = model(input_ids, segment_ids, input_mask)
+                    logits = model(input_ids, segment_ids, input_mask, weights.unsqueeze(-1)) 
                 loss_fct = CrossEntropyLoss()
                 tmp_eval_loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
                 
