@@ -54,6 +54,21 @@ def UniGram(tokens):
         unigram.append(prob/len(tokens))
 
     return unigram
+
+def UniGramFast(tokens):
+    term_freq = {}
+    token_length = len(tokens)
+    unigram = []
+    for token in tokens:
+        if token in term_freq:
+            term_freq[token] += 1
+        else:
+            term_freq[token] = 1
+    
+    for token in tokens:
+        prob = term_freq[token] / token_length
+        unigram.append(prob)
+    return unigram
     
 
 class InputExample(object):
@@ -144,10 +159,10 @@ class TDT2Processor(DataProcessor):
         for (i, line) in enumerate(lines):
             if i == 0 :
                 continue
-            tdt2_id = "%s" % (line[0] + "," + line[2])
-            text_a = line[1]
+            tdt2_id = "%s" % (line[0] + "," + line[3])
+            text_a = "".join(line[1].split(":"))
             text_a_conf = line[2].split(":")
-            text_b = line[4]
+            text_b = "".join(line[4].split(":"))
             text_b_conf = line[5].split(":")
             label = line[-1]
             examples.append(
@@ -170,11 +185,11 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         if example.text_b:
             tokens_b = tokenizer.tokenize(example.text_b)
  
-            #tokens_a_prob = UniGram(tokens_a)
-            #tokens_b_prob= UniGram(tokens_b)
+            tokens_a_prob = UniGramFast(tokens_a)
+            tokens_b_prob= UniGramFast(tokens_b)
             
-            tokens_a_prob = [float(i) for i in example.text_a_conf]
-            tokens_b_prob = [float(i) for i in example.text_b_conf]
+            #tokens_a_prob = [float(i) for i in example.text_a_conf]
+            #tokens_b_prob = [float(i) for i in example.text_b_conf]
                         
             # Modifies `tokens_a` and `tokens_b` in place so that the total
             # length is less than the specified length.
@@ -243,6 +258,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
                     [str(x) for x in tokens]))
             logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
             logger.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
+            logger.info("weights: %s" % " ".join([str(x) for x in weights]))
             logger.info(
                     "segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
             logger.info("label: %s (id = %d)" % (example.label, label_id))
