@@ -37,8 +37,6 @@ class EvaluateModel(object):
                 
         return answerTraingSetDict
 
-    def getAset(self):
-        return self.answer
     # result : list [(doc, point)]
     # answer_list : list [(doc)]
     def __avePrecision(self, result, q_key, atPos = None):
@@ -120,5 +118,11 @@ class EvaluateModel(object):
         else:
             return ndcg[atPos]
         
+    def getAset(self):
+        return self.answer
+
+    def getAPs(self):
+        return self.APs
+
 if __name__ == "__main__":
     eva = EvaluateModel()
