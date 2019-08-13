@@ -64,9 +64,9 @@ def readBGdict(bg_model_path):
                 # read content of query document (doc, content)
                 lines = f.readlines()
                 for line in lines:
-                    [id, prob] = line.split()
+                    [ID, prob] = line.split()
                     prob = exp(float(prob))
-                    BGTraingSet[id] = prob
+                    BGTraingSet[ID] = prob
     # Background{word, probability}
     return BGTraingSet
 
@@ -82,20 +82,45 @@ def readBGnp(bg_model_path):
                 # read content of query document (doc, content)
                 lines = f.readlines()
                 for line in lines:
-                    [id, prob] = line.split()
+                    [ID, prob] = line.split()
                     prob = exp(float(prob))
-                    BGTraingSet[int(id)] = prob
+                    BGTraingSet[int(ID)] = prob
     # Background{word, probability}
     return BGTraingSet
 
 # document preprocess
-def docPreproc(dictionary, res_pos = False, topN = None):
+def confPreproc(dictionary):
+    # parameter:
+    # dictionary: doc {d_id: string content, ...}
+    # output : if use_conf == TRUE : return doc {d_id: {wID1: wID1_conf, wID2: wID2_conf,...}. d_id2:{...}, ...}
+    #          if use_conf == FALSE : return doc {d_id: {wID1: 1.0, wID2: 1.0,...}. d_id2:{...}, ...}
+    collect = {}
+    for key, value in dictionary.items():
+        cur_docs = {}
+        count = 0
+        # split content by special character
+        for line in dictionary[key].split('\n'):
+            if count < 3:
+                count += 1
+                continue
+            else:    
+                info = line.strip(' ').split(' ')
+                if len(info) != 5:
+                    continue
+                word = info[0]
+                conf = info[3]
+                cur_docs[int(word)] = conf
+        collect[key] = cur_docs
+    return collect
+
+# document preprocess
+def docPreproc(dictionary, res_pos = False, res_line = False, topN = None):
     # parameter:
     # dictionary: doc {d_id: string content, ...}
     # rel_pos: bool, reserved position
     # topN: int, top N word
     # output : if res_pos == TRUE : return doc {d_id: [int wID0, int wID3 , int wID0], ...}
-    #          if res_pos == FALSE : return qry {d_id: [int wID0:, int wID0_count, int wID3:, int wID3_count], ...}
+    #          if res_pos == FALSE : return doc {d_id: [int wID0:, int wID0_count, int wID3:, int wID3_count], ...}
     doc_new = {}
     for key, value in dictionary.items():
         content = ""
@@ -106,13 +131,19 @@ def docPreproc(dictionary, res_pos = False, topN = None):
             if count < 3:
                 count += 1
                 continue
-            else:    
-                for word in line.split('-1'):
-                    temp_content += word + " "
+            else:
+                if res_line:
+                    temp_content += line + " "
+                else:
+                    for word in line.split('-1'):
+                        temp_content += word + " " 
+        if res_line:
+            pass
+            #temp_content = temp_content[:-5]
         # delete double white space
         for word in temp_content.split():
             content += word + " "
-
+        
         # content to int list
         int_rep = map(int, content.split())
         # topN
@@ -122,7 +153,7 @@ def docPreproc(dictionary, res_pos = False, topN = None):
         doc_new[key] = int_rep
         
     if not res_pos:
-        doc_freq = {}    
+        doc_freq = {}
         # term probability(word_count / word sum)    
         for doc_key, doc_content in doc_new.items():
             doc_words = wordCount(doc_content, {})
@@ -131,7 +162,7 @@ def docPreproc(dictionary, res_pos = False, topN = None):
     return doc_new
 
 # query preprocess
-def qryPreproc(dictionary, rel_set = None, res_pos = False, topN = None):
+def qryPreproc(dictionary, rel_set = None, res_pos = False, res_line = False, topN = None):
     # parameter:
     # dictionary: query {q_id: string content, ...}
     # rel_set: relevance {q_id: [d_id2, d_id3], ...}
@@ -146,8 +177,13 @@ def qryPreproc(dictionary, rel_set = None, res_pos = False, topN = None):
         temp_content = ""
         # split content by special character
         for line in dictionary[key].split('\n'):
-            for word in line.split('-1'):
-                temp_content += word + " "
+            if res_line:
+                temp_content += line + " "
+            else:
+                for word in line.split('-1'):
+                    temp_content += word + " "
+        if res_line:
+            temp_content = temp_content[:-5]
         # delete double white space
         for word in temp_content.split():
             content += word + " "
