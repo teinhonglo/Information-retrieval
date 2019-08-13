@@ -131,14 +131,14 @@ class TDT2Processor(DataProcessor):
             if i == 0:
                 continue
             tdt2_id = "%s" % (line[0] + "," + line[2])
-            text_a = ''.join(line[1].split(":"))
+            text_a = ''.join(line[1].split(":")[0])
             text_b = ''.join(line[3].split(":"))
             label = line[-1]
             examples.append(
                 InputExample(tdt2_id=tdt2_id, text_a=text_a, text_b=text_b, label=label))
         return examples
 
-def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer):
+def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer, do_passage = False):
     """Loads a data file into a list of `InputBatch`s."""
 
     label_map = {label : i for i, label in enumerate(label_list)}
@@ -146,8 +146,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     features = []
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10000 == 0:
-            logger.info("Writing example %d of %d" % (ex_index, len(examples)))
-            
+            logger.info("Writing example %d of %d" % (ex_index, len(examples))) 
 
         tokens_a = tokenizer.tokenize(example.text_a)
 
@@ -158,6 +157,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
             # length is less than the specified length.
             # Account for [CLS], [SEP], [SEP] with "- 3"
             _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
+            tokens_b_ = tokenizer.tokenize(example.text_b)
         else:
             # Account for [CLS] and [SEP] with "- 2"
             if len(tokens_a) > max_seq_length - 2:
@@ -181,6 +181,59 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         # For classification tasks, the first vector (corresponding to [CLS]) is
         # used as as the "sentence vector". Note that this only makes sense because
         # the entire model is fine-tuned.
+        if do_passage:
+            len_tokens_b = max_seq_length - len(tokens_a) - 3
+            st_idx = 0
+            ed_idx = len_tokens_b
+            num_passage = 5
+            for i in range(num_passage):
+                tokens_b = tokens_b_[st_idx:ed_idx]
+                tokens = ["[CLS]"] + tokens_a + ["[SEP]"]
+                segment_ids = [0] * len(tokens)
+
+                if tokens_b:
+                    tokens += tokens_b + ["[SEP]"]
+                    segment_ids += [1] * (len(tokens_b) + 1)
+
+                input_ids = tokenizer.convert_tokens_to_ids(tokens)
+
+                # The mask has 1 for real tokens and 0 for padding tokens. Only real
+                # tokens are attended to.
+                input_mask = [1] * len(input_ids)
+
+                # Zero-pad up to the sequence length.
+                padding = [0] * (max_seq_length - len(input_ids))
+                input_ids += padding
+                input_mask += padding
+                segment_ids += padding
+
+                assert len(input_ids) == max_seq_length
+                assert len(input_mask) == max_seq_length
+                assert len(segment_ids) == max_seq_length
+
+                label_id = label_map[example.label]
+                if ex_index < 5:
+                    logger.info("*** Example ***")
+                    logger.info("tdt2_id: %s" % (example.tdt2_id))
+                    logger.info("tokens: %s" % " ".join(
+                        [str(x) for x in tokens]))
+                    logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
+                    logger.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
+                    logger.info(
+                        "segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
+                    logger.info("label: %s (id = %d)" % (example.label, label_id))
+
+                features.append(
+                    InputFeatures(tdt2_id=example.tdt2_id,
+                              input_ids=input_ids,
+                              input_mask=input_mask,
+                              segment_ids=segment_ids,
+                              label_id=label_id))
+                st_idx += len_tokens_b
+                ed_idx = st_idx + len_tokens_b
+                if(ed_idx > len(tokens_b_)): break
+
+            continue
         tokens = ["[CLS]"] + tokens_a + ["[SEP]"]
         segment_ids = [0] * len(tokens)
 
@@ -420,7 +473,7 @@ def main():
     if args.do_train:
         train_examples = processor.get_train_examples(args.data_dir, args.set_trainset)
         num_train_optimization_steps = int(
-            len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
+            332896 / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
         if args.local_rank != -1:
             num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
 
@@ -556,7 +609,7 @@ def main():
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         eval_examples = processor.get_dev_examples(args.data_dir, args.set_testset)
         eval_features = convert_examples_to_features(
-            eval_examples, label_list, args.max_seq_length, tokenizer)
+            eval_examples, label_list, args.max_seq_length, tokenizer, do_passage = True)
         logger.info("***** Running evaluation *****")
         logger.info("  Num examples = %d", len(eval_examples))
         logger.info("  Batch size = %d", args.eval_batch_size)
@@ -576,7 +629,7 @@ def main():
         pair_offset = 0
         preds = []
         labels = []
-        with open(args.output_dir + "/" + args.set_trainset.split('.')[0] + "_" + args.set_testset.split('.')[0] + ".txt", "w") as writer:
+        with open(args.output_dir + "/" + args.set_trainset.split('.')[0] + "_" + args.set_testset.split('.')[0] + "_p5.txt", "w") as writer:
             for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"): 
                 input_ids = input_ids.to(device)
                 input_mask = input_mask.to(device)
