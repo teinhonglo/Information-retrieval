@@ -6,6 +6,7 @@
 !/src/doc/*
 !/src/*/Makefile
 !/src/*/README
+*/exp*
 
 # Compiled Object files and python ciles
 *.slo
