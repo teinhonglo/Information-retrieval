@@ -2,10 +2,10 @@
 TASK_NAME="TDT3"
 DATA_DIR="data"
 OUTPUT_EXPDIR="exp_uni_text/TDT3"
-stage=2
-train_set=uni_train
-test_set=uni_test_short
+stage=0
 att_type=conf #uni idf
+train_set=${att_type}_train
+test_set=${att_type}_test_short
 
 set -euo pipefail
 
