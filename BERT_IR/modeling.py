@@ -59,7 +59,7 @@ class BertForSequenceClassificationForTDT(BertForSequenceClassification):
    
     def forward(self, input_ids, token_type_ids=None, attention_mask=None, input_weight=None,labels=None):
         _, pooled_output = self.bert(input_ids, token_type_ids, attention_mask, input_weight, output_all_encoded_layers=False)
-        print(pooled_output.size())
+        #print(pooled_output.size())
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
 

@@ -160,7 +160,7 @@ class TDT2Processor(DataProcessor):
             if i == 0 :
                 continue
             tdt2_id = "%s" % (line[0] + "," + line[3])
-            text_a = "".join(line[1].split(":"))
+            text_a = "".join(line[1].split(":")[0])
             text_a_conf = line[2].split(":")
             text_b = "".join(line[4].split(":"))
             text_b_conf = line[5].split(":")
@@ -183,20 +183,20 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         
         tokens_b = None
         if example.text_b:
-            tokens_b = tokenizer.tokenize(example.text_b)
- 
-            tokens_a_prob = UniGramFast(tokens_a)
-            tokens_b_prob= UniGramFast(tokens_b)
-            
+            tokens_b = tokenizer.tokenize(example.text_b) 
             #tokens_a_prob = [float(i) for i in example.text_a_conf]
             #tokens_b_prob = [float(i) for i in example.text_b_conf]
                         
             # Modifies `tokens_a` and `tokens_b` in place so that the total
             # length is less than the specified length.
             # Account for [CLS], [SEP], [SEP] with "- 3"
+            tokens_a_prob = UniGramFast(tokens_a)
+            tokens_b_prob = UniGramFast(tokens_b)
+
             _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
             _truncate_seq_pair(tokens_a_prob, tokens_b_prob, max_seq_length - 3)
-            
+            #tokens_a_prob = UniGramFast(tokens_a)
+            #tokens_b_prob = UniGramFast(tokens_b)
         else:
             # Account for [CLS] and [SEP] with "- 2"
             if len(tokens_a) > max_seq_length - 2:
@@ -248,7 +248,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(segment_ids) == max_seq_length
-        assert len(weights) == max_seq_length
+        #assert len(weights) == max_seq_length
 
         label_id = label_map[example.label]
         if ex_index < 5:
@@ -414,11 +414,13 @@ def main():
         ptvsd.wait_for_attach()
 
     processors = {
-        "tdt2": TDT2Processor
+        "tdt2": TDT2Processor,
+        "tdt3": TDT2Processor
     }
 
     num_labels_task = {
-        "tdt2": 2
+        "tdt2": 2,
+        "tdt3": 2
     }
 
     if args.local_rank == -1 or args.no_cuda:
