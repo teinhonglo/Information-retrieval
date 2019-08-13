@@ -5,18 +5,19 @@ OUTPUT_EXPDIR="exp_uni_text/TDT3"
 stage=2
 train_set=uni_train
 test_set=uni_test_short
+att_type=conf #uni idf
 
 set -euo pipefail
 
 if [ $stage -le 0 ]; then 
     # text (train, test_short, test_long)
-    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training true --is_short false --is_spoken false
-    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short true --is_spoken false
-    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short false --is_spoken false
+    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training true --is_short false --is_spoken false --att_type $att_type
+    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short true --is_spoken false --att_type $att_type
+    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short false --is_spoken false --att_type $att_type
     # spoken (train, test_short, test_long)
-    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training true --is_short false --is_spoken true
-    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short true --is_spoken true
-    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short false --is_spoken true
+    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training true --is_short false --is_spoken true --att_type $att_type
+    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short true --is_spoken true --att_type $att_type
+    python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short false --is_spoken true --att_type $att_type
 fi
 
 if [ $stage -le 1 ]; then

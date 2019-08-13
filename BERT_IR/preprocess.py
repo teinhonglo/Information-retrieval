@@ -47,13 +47,17 @@ parser.add_argument("--is_spoken",
                      type=str2bool,
                      required=True)
 
+parser.add_argument("--att_type",
+                     default="uni",
+                     type=str)
+
 args = parser.parse_args()
 
 is_training = args.is_training
 is_short = args.is_short
 is_spoken = args.is_spoken
 task_name = args.task_name
-att = "uni"
+att = args.att_type
 att_types = ["uni", "conf", "idf"]
  
 if att_types.index(att) == 0:

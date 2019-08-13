@@ -2,7 +2,7 @@
 TASK_NAME="TDT2"
 DATA_DIR="data_test"
 OUTPUT_EXPDIR="exp/TDT2"
-stage=3
+stage=0
 train_set=train
 test_set=test_short
 
