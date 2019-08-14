@@ -1,7 +1,7 @@
 #!/bin/bash
 TASK_NAME="TDT2"
-DATA_DIR="data_test"
-OUTPUT_EXPDIR="exp/TDT2"
+DATA_DIR="data"
+OUTPUT_EXPDIR="exp/${TASK_NAME}"
 stage=0
 train_set=train
 test_set=test_short

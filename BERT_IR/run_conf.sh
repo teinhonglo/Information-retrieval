@@ -1,9 +1,9 @@
 #!/bin/bash
-TASK_NAME="TDT3"
-DATA_DIR="data"
-OUTPUT_EXPDIR="exp_uni_text/TDT3"
-stage=0
-att_type=conf #uni idf
+TASK_NAME="TDT2"
+stage=1
+att_type=idf #uni idf conf
+OUTPUT_EXPDIR="exp_${att_type}/${TASK_NAME}"
+DATA_DIR="data_${att_type}"
 train_set=${att_type}_train
 test_set=${att_type}_test_short
 

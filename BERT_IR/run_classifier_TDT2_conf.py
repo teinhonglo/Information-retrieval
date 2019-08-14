@@ -160,7 +160,7 @@ class TDT2Processor(DataProcessor):
             if i == 0 :
                 continue
             tdt2_id = "%s" % (line[0] + "," + line[3])
-            text_a = "".join(line[1].split(":")[0])
+            text_a = "".join(line[1].split(":"))
             text_a_conf = line[2].split(":")
             text_b = "".join(line[4].split(":"))
             text_b_conf = line[5].split(":")
@@ -190,8 +190,8 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
             # Modifies `tokens_a` and `tokens_b` in place so that the total
             # length is less than the specified length.
             # Account for [CLS], [SEP], [SEP] with "- 3"
-            tokens_a_prob = UniGramFast(tokens_a)
-            tokens_b_prob = UniGramFast(tokens_b)
+            tokens_a_prob = example.text_a_conf #UniGramFast(tokens_a)
+            tokens_b_prob = example.text_b_conf #UniGramFast(tokens_b)
 
             _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
             _truncate_seq_pair(tokens_a_prob, tokens_b_prob, max_seq_length - 3)
@@ -659,7 +659,6 @@ def main():
 
         eval_loss = eval_loss / nb_eval_steps
         eval_accuracy = eval_accuracy / nb_eval_examples
-        loss = tr_loss/nb_tr_steps if args.do_train else None
         loss = tr_loss/nb_tr_steps if args.do_train else None
         classification_report_detail(preds, labels)
         result = {'eval_loss': eval_loss,

@@ -131,7 +131,7 @@ class TDT2Processor(DataProcessor):
             if i == 0:
                 continue
             tdt2_id = "%s" % (line[0] + "," + line[2])
-            text_a = ''.join(line[1].split(":")[0])
+            text_a = ''.join(line[1].split(":"))
             text_b = ''.join(line[3].split(":"))
             label = line[-1]
             examples.append(
