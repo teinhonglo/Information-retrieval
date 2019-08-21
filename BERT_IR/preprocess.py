@@ -76,9 +76,15 @@ if not os.path.isdir(output_dir):
     os.makedirs(output_dir)
 
 if is_training:
-    qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
-    rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-    output_name = "train"
+    if task_name == "TDT2":
+        qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+        rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+        output_name = "train"
+    elif task_name == "TDT3":
+        qry_path = "../Corpus/TDT3/XinTrainQryTDT3/QUERY_WDID_NEW"
+        rel_path = "../Corpus/TDT3/QDRelevanceTDT3_forHMMOutSideTrain731-2004New"
+        output_name = "train"
+        
 else:
     if task_name == "TDT2":
         if is_short:
