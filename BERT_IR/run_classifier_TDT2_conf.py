@@ -184,14 +184,15 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         tokens_b = None
         if example.text_b:
             tokens_b = tokenizer.tokenize(example.text_b) 
-            #tokens_a_prob = [float(i) for i in example.text_a_conf]
-            #tokens_b_prob = [float(i) for i in example.text_b_conf]
                         
             # Modifies `tokens_a` and `tokens_b` in place so that the total
             # length is less than the specified length.
             # Account for [CLS], [SEP], [SEP] with "- 3"
             tokens_a_prob = example.text_a_conf #UniGramFast(tokens_a)
             tokens_b_prob = example.text_b_conf #UniGramFast(tokens_b)
+            
+            #tokens_a_prob = [float(i) for i in example.text_a_conf]
+            #tokens_b_prob = [float(i) for i in example.text_b_conf]
 
             _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
             _truncate_seq_pair(tokens_a_prob, tokens_b_prob, max_seq_length - 3)
