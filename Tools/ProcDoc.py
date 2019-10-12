@@ -138,8 +138,7 @@ def docPreproc(dictionary, res_pos = False, res_line = False, topN = None):
                     for word in line.split('-1'):
                         temp_content += word + " " 
         if res_line:
-            pass
-            #temp_content = temp_content[:-5]
+            temp_content = temp_content[:-5]
         # delete double white space
         for word in temp_content.split():
             content += word + " "
