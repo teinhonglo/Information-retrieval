@@ -1,12 +1,13 @@
 # Compiled extensionless executable files in /src/*/
 # This stanza must precede wildcard patterns below!
-/Corpus/*/*/*
+Corpus
 !/src/lm/test_data/
 !/src/*/?*.*
 !/src/doc/*
 !/src/*/Makefile
 !/src/*/README
 */exp*
+*/NN_Model
 
 # Compiled Object files and python ciles
 *.slo
