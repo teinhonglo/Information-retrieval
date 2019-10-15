@@ -44,7 +44,7 @@ if __name__ == "__main__":
     labels = np.sum(data_a - data_b, axis=1)
     
     #model = baseModel(input_dim)
-    model = embModel(input_dim, 64)
+    model = baseModel(input_dim)
     model.summary()
     model.compile(optimizer='Adam',
               loss= 'hinge',

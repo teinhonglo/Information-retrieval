@@ -70,6 +70,12 @@ def UniGramFast(tokens):
         unigram.append(prob)
     return unigram
     
+def normalize(tokens_prob, norm_type="sum"):
+    if norm_type == "sum":
+        norm = [float(i)/sum(tokens_prob) for i in tokens_prob]
+    elif norm_type == "max":
+        norm = [float(i)/max(tokens_prob) for i in tokens_prob]
+    return norm
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -178,21 +184,22 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10000 == 0:
             logger.info("Writing example %d of %d" % (ex_index, len(examples)))
+        if ex_index == 100:
+            break
 
         tokens_a = tokenizer.tokenize(example.text_a)
         
         tokens_b = None
         if example.text_b:
             tokens_b = tokenizer.tokenize(example.text_b) 
-                        
+            tokens_a_prob = [float(i) for i in example.text_a_conf]
+            tokens_b_prob = [float(i) for i in example.text_b_conf]
+
+            #tokens_a_prob = normalize(tokens_a_prob)
+            #tokens_b_prob = normalize(tokens_b_prob)
             # Modifies `tokens_a` and `tokens_b` in place so that the total
             # length is less than the specified length.
             # Account for [CLS], [SEP], [SEP] with "- 3"
-            tokens_a_prob = example.text_a_conf #UniGramFast(tokens_a)
-            tokens_b_prob = example.text_b_conf #UniGramFast(tokens_b)
-            
-            #tokens_a_prob = [float(i) for i in example.text_a_conf]
-            #tokens_b_prob = [float(i) for i in example.text_b_conf]
 
             _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
             _truncate_seq_pair(tokens_a_prob, tokens_b_prob, max_seq_length - 3)
@@ -540,6 +547,9 @@ def main():
         all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
         all_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
+        for f in train_features:
+            print(len(f.weights), f.weights)
+            break
         all_weights = torch.tensor([f.weights for f in train_features], dtype=torch.float)
         train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids,
                                    all_weights)

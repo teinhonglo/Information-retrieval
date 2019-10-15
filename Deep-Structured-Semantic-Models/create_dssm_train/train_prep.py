@@ -4,7 +4,7 @@ import cPickle as Pickle
 
 np.random.seed(1337)
 
-model_path = "../../Corpus/model/TDT3/UM/"
+model_path = "../Corpus/model/TDT3/UM/"
 with open(model_path + "query_list.pkl", "rb") as q_file : query_list = Pickle.load(q_file)
 with open(model_path + "doc_list.pkl", "rb") as d_file : doc_list = Pickle.load(d_file)
 with open(model_path + "HMMTraingSetDict.pkl", "rb") as h_file : HMMTraingSetDict = Pickle.load(h_file)

@@ -82,7 +82,6 @@ for q, q_content in test_query.items():
 test_query_unigram = test_query_wordcount
 test_query_list = test_query_unigram.keys()
 
-
 test_query_model = []
 for q in test_query_list:
     vocabulary = np.zeros(51253)

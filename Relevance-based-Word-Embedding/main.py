@@ -1,81 +1,121 @@
-import operator
+#!/usr/bin/env python
 import numpy as np
+import sys
+import nn_Predict as nn_model
+sys.path.append("../Tools")
+
 import ProcDoc
-from collections import defaultdict
-from math import log
-import cPickle as Pickle
-import evaluate
+import Evaluate
 
-rel_qry_lambda = 0.1
-qry_lambda = 0.1
-doc_lambda = 0.8
+is_training = True
+is_short = False
+is_spoken = True
+model_name = "SSWLM_E"
+results_file = "NRM_rank_" + model_name
+nn_method = "NN_Model/TDT2/RLE_" + model_name
+topN = 10
 
-optimizer = ["Adagrad", "Nadam", "Adam"]
-losses = ["k", "c"]
+if is_training:
+    qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+    rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+    results_file += "_train"
+else:
+    if is_short:
+        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+        results_file += "_short"
+    else:
+        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+        results_file += ""
+    rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 
+if is_spoken:
+    doc_path = "../Corpus/TDT2/Spoken_Doc"
+    nn_method += "_S.h5"
+    results_file += "_spk.txt"
+    rel_lambda = 0.6
+else:
+    doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+    nn_method += ".h5"
+    results_file += ".txt"
+    rel_lambda = 0.5
 
-with open("query_model.pkl", "rb") as file: query_model = Pickle.load(file)
-with open("query_list.pkl", "rb") as file:	query_list = Pickle.load(file)
-print query_model.shape
+dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
+bg_path = "../Corpus/background"
 
-with open("doc_model.pkl", "rb") as file: doc_model = Pickle.load(file)
-with open("doc_list.pkl", "rb") as file: doc_list = Pickle.load(file)
-print doc_model.shape
+# read relevant set for queries and documents
+eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
+rel_set = eval_mdl.getAset()
 
-with open("statistic/UM.pkl", "rb") as file : rel_query_model = Pickle.load(file)
-#with open("NN_result/SSWLM_S_RLE.pkl", "rb") as file : rel_query_model = Pickle.load(file)
-print rel_query_model.shape
+alpha = 0.8
+beta = 0.4
 
-background_model = ProcDoc.read_background_dict()
-print background_model.shape
-'''
-bg_qry = [background_model for i in xrange(query_model.shape[0])] 
-bg_qry = np.vstack(bg_qry)
-with open("bg_qry.pkl", "wb") as f: Pickle.dump(bg_qry, f, True)
-print bg_qry.shape
-'''
-evl = evaluate.evaluate_model(True)
+qry_file = ProcDoc.readFile(qry_path)
+doc_file = ProcDoc.readFile(doc_path)
 
-''' document smoothing '''
-for doc_idx in xrange(doc_model.shape[0]):
-	doc_vec = doc_model[doc_idx]
-	doc_model[doc_idx] = (1 - doc_lambda) * doc_vec + doc_lambda * background_model
+qry_mdl_dict = ProcDoc.qryPreproc(qry_file, rel_set)
+doc_mdl_dict = ProcDoc.docPreproc(doc_file)
 
-mAP_list = []
-query_rel_list = []
-query_bg_list = []	
-doc_model = np.log(doc_model)
+qry_unimdl_dict = ProcDoc.unigram(qry_mdl_dict)
+doc_unimdl_dict = ProcDoc.unigram(doc_mdl_dict)
 
+# origin query model
+qry_mdl_np, qry_IDs = ProcDoc.dict2npSparse(qry_unimdl_dict)
+# refine query model
+ref_qry_mdl_np, qry_IDs = ProcDoc.dict2npSparse(qry_unimdl_dict)
+doc_mdl_np, doc_IDs = ProcDoc.dict2npSparse(doc_unimdl_dict)
 
-for rel_qry_lambda in [np.linspace(0, 1., num=11)[7]]:
-	''' query smoothing '''	
-	with open("bg_qry.pkl", "rb") as file: query_model = Pickle.load(file)
-	for qry_idx in range(query_model.shape[0]):
-		qry_vec = query_model[qry_idx]
-		query_model[qry_idx] = (1 - rel_qry_lambda) * qry_vec + rel_qry_lambda * rel_query_model[qry_idx]
-		#query_model[qry_idx] = (1 - qry_lambda) * qry_vec + qry_lambda * background_model
-	result = np.argsort(-np.dot(query_model, doc_model.T), axis = 1)
-	query_docs_ranking = {}
-	''' speedup '''
-	for q_idx in range(len(query_list)):
-		docs_ranking = []
-		for doc_idx in result[q_idx]:
-			docs_ranking.append(doc_list[doc_idx])
-		query_docs_ranking[query_list[q_idx]] = docs_ranking
-	
-	''' query 
-	for query_key, query_vec in  zip(query_list, query_model):
-		print len(query_docs_ranking.keys())
-		query_result = np.argsort(-(query_vec * doc_model).sum(axis = 1))
-		docs_ranking = []
-		for doc_idx in query_result:
-			docs_ranking.append(doc_list[doc_idx])
-			query_docs_ranking[query_key] = docs_ranking
-		
-	mAP = eval.mean_average_precision(query_docs_ranking)	
-	print mAP, qry_lambda, rel_qry_lambda
-	'''
-	mAP = evl.mean_average_precision(query_docs_ranking)	
-	print mAP
-with open('eswlm_ranking_result.pkl', "wb") as file :	Pickle.dump(query_docs_ranking, file, True)
+NRM_mdl_np = nn_model.predict(nn_method, qry_mdl_np)
 
+bg_mdl_np = ProcDoc.readBGnp(bg_path)
+
+# smoothing
+for doc_idx in range(doc_mdl_np.shape[0]):
+    doc_mdl_np[doc_idx] = (1-alpha) * doc_mdl_np[doc_idx] + alpha * bg_mdl_np
+
+# smoothing
+for qry_idx in range(qry_mdl_np.shape[0]):
+    qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
+
+# query results
+with open(results_file, "wb") as writer:
+    ''' query smoothing '''    
+    for qry_idx in range(ref_qry_mdl_np.shape[0]):
+        ref_qry_mdl_np[qry_idx] = (1 - rel_lambda) * qry_mdl_np[qry_idx]  + rel_lambda * NRM_mdl_np[qry_idx]
+    ranking = np.dot(ref_qry_mdl_np, np.log(doc_mdl_np.T))
+    results = np.argsort(-ranking, axis = 1)
+
+    qry_docs_ranking = {}
+    for q_idx, q_ID in enumerate(qry_IDs):
+        docs_ranking = []
+        for doc_idx in results[q_idx]:
+            docs_ranking.append(doc_IDs[doc_idx])
+            writer.write(q_ID + "," + doc_IDs[doc_idx] + ",0," + str(ranking[q_idx][doc_idx]) + "\n")
+        qry_docs_ranking[q_ID] = docs_ranking
+
+    #eval_mdl = EvaluateModel(rel_path, isTraining)
+    mAP = eval_mdl.mAP(qry_docs_ranking)
+    print rel_lambda, mAP
+
+# assessment results
+with open("pseudo_" + str(topN) + "_" + results_file, "wb") as writer:
+    ''' query smoothing '''    
+    for qry_idx in range(ref_qry_mdl_np.shape[0]):
+        ref_qry_mdl_np[qry_idx] = (1 - rel_lambda) * qry_mdl_np[qry_idx]  + rel_lambda * NRM_mdl_np[qry_idx]
+    ranking = np.dot(ref_qry_mdl_np, np.log(doc_mdl_np.T))
+    results = np.argsort(-ranking, axis = 1)
+
+    qry_docs_ranking = {}
+    for q_idx, q_ID in enumerate(qry_IDs):
+        writer.write("Query " + str(q_idx) + " " + q_ID + " " + str(topN) + "\n")
+        docs_ranking = []
+        for count, doc_idx in enumerate(results[q_idx]):
+            docs_ranking.append(doc_IDs[doc_idx])
+            writer.write(doc_IDs[doc_idx] + "\n")
+            if count == topN:
+                break
+        writer.write("\n")
+        qry_docs_ranking[q_ID] = docs_ranking
+
+    #eval_mdl = EvaluateModel(rel_path, isTraining)
+    mAP = eval_mdl.mAP(qry_docs_ranking)
+    print rel_lambda, mAP

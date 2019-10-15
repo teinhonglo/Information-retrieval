@@ -28,6 +28,7 @@ hmm_training_set = ProcDoc.readRELdict()
 # read document, reserve position
 doc = ProcDoc.readFile(document_path)
 doc = ProcDoc.docPreproc(doc, RES_POS)
+print doc
 		
 # read query, reserve position
 qry = ProcDoc.readFile(query_path)

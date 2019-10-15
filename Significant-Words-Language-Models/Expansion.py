@@ -140,8 +140,8 @@ def feedback(query_docs_dict, query_model, doc_unigram, doc_wordcount, general_m
     #plot_diagram.plotModel(general_model, specific_model, significant_model, feedback_doc_wc, feedback_doc)
 	
     if topN == None:
-        with open("rel_supervised_swlm_entropy_s.pkl", "wb") as file: Pickle.dump(query_model, file, True)    
+        with open("rel_supervised_swlm_entropy.pkl", "wb") as file: Pickle.dump(query_model, file, True)    
     else:	
-        with open("rel_swlm_entropy_S_"+str(topN)+".pkl", "wb") as file: Pickle.dump(query_model, file, True)    
+        with open("rel_swlm_entropy_"+str(topN)+".pkl", "wb") as file: Pickle.dump(query_model, file, True)    
 	
     return query_model 	

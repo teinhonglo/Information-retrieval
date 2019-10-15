@@ -1,5 +1,5 @@
 #!/bin/bash
-TASK_NAME="TDT2"
+TASK_NAME="TDT3"
 DATA_DIR="data"
 OUTPUT_EXPDIR="exp/${TASK_NAME}"
 stage=0
@@ -17,6 +17,7 @@ if [ $stage -le 0 ]; then
     python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training true --is_short false --is_spoken true
     python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short true --is_spoken true
     python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short false --is_spoken true
+    exit 0;
 fi
 
 if [ $stage -le 1 ]; then

@@ -67,7 +67,7 @@ def read_relevance_dict():
     
 # document preprocess
 def doc_preprocess(dictionary):
-    dictionary = collections.OrderedDict(sorted(dictionary.items()))
+    doc_new = {}
     for key, value in dictionary.items():
         content = ""
         temp_content = ""
@@ -77,25 +77,24 @@ def doc_preprocess(dictionary):
             if count < 3:
                 count += 1
                 continue
-            else:    
-                for word in line.split('-1'):
-                    temp_content += word + " "
+            for word in line.split('-1'):
+                temp_content += word + " "
         # delete double white space
         for word in temp_content.split():
             content += word + " "
         # replace old content
-        dictionary[key]    = content
+        doc_new[key] = content
     doc_freq = {}    
     # term probability(word_count / word sum)    
-    for doc_key, doc_content in dictionary.items():
+    for doc_key, doc_content in doc_new.items():
         doc_words = word_count(doc_content, {})
-        dictionary[doc_key] = doc_words
+        doc_new[doc_key] = doc_words
     #dictionary = TFIDF(dictionary)    
-    return dictionary
+    return doc_new
 
 # query preprocess
 def query_preprocess(dictionary):
-    dictionary = collections.OrderedDict(sorted(dictionary.items()))
+    qry_new = {}
     for key, value in dictionary.items():
         content = ""
         temp_content = ""
@@ -107,8 +106,9 @@ def query_preprocess(dictionary):
         for word in temp_content.split():
             content += word + " "
         # replace old content
-        dictionary[key]    = content
-    return dictionary
+        qry_new[key] = content
+    
+    return qry_new
 
 def inverse_document_frequency(doc_word_unigram_dcit):
     invert_word_document = inverted_word_doc(doc_word_unigram_dcit)

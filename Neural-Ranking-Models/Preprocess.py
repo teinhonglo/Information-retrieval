@@ -72,10 +72,8 @@ class InputDataProcess(object):
         qry = self.qry
         doc = self.doc
         # --------------------------------------------------------------------------
-        # if pointwise and sparse input = 1 (i.e., concat qry and doc)
-        # if pointwise embedding, input = 2 (i.e., emb * 1, weight * 1)
-        # if pairwise (d+, d-)and sparse input = 2 (e.g., q_d+, q_d-)
-        # if pairwise (d+, d-), embedding, input = 4 (i.e., emb * 2, weight * 2)
+        # if pointwise and (sparse or embedding) input = 1 (i.e., concat qry and doc)
+        # if pairwise (d+, d-)and (sparse and embedding) input = 2 (e.g., q_d+, q_d-)
         # --------------------------------------------------------------------------
         return feats
 		

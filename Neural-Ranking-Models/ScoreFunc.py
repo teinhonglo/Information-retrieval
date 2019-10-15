@@ -6,8 +6,9 @@ np.random.seed(1337)
 
 from keras.datasets import mnist
 from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Input, Lambda, TimeDistributed, Embedding, Flatten, Convolution2D, Reshape
+from keras.layers import Dense, Dropout, Input, Lambda, TimeDistributed, Embedding, Flatten, Convolution2D, Reshape, Dot
 from keras.optimizers import Adam
+from keras.layers.merge import concatenate, dot
 from keras import backend as K
 
 def baseModel(input_dim):
@@ -22,9 +23,8 @@ def baseModel(input_dim):
 
 def embModel(input_dim, word_rep, vocabulary_size = 51253):
     input_layer = Input(shape = (input_dim,), name="input_layer")
-    word_emb = Embedding(input_dim=vocabulary_size + 1, output_dim=word_rep, input_length=input_dim)(input_layer)
-    word_emb = Reshape((input_dim, word_rep, 1))(word_emb)
-    emb_sum = Convolution2D(filters=1, kernel_size=(input_dim, 1), strides=(input_dim, 1), padding='same', name="weight_sum_")(word_emb)
+    word_emb = Embedding(input_dim=vocabulary_size + 1, output_dim=word_rep, input_length=(input_dim,))(input_layer)
+    emb_sum = K.sum(keras.multiply(word_emb, word_emb[:K.expand_dims]), axis=-1, keepdims=True)
     emb_sum = Flatten()(emb_sum)
     h1 = Dense(128, activation="relu")(emb_sum)
     h2 = Dense(128, activation="relu")(h1)

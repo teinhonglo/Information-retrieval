@@ -5,6 +5,7 @@ Baseline    | 0.574318007306 (exp/TDT2) | 0.55384490469 (exp/TDT2_spk) |
 NRM (SWM) | 0.565662433378 (0.5) | 0.545264361817 (0.6) |
 NRM (SWM) + BERT (0.5) |0.703741805616 | 0.685245165241 |
 BERT + IDF | 0.559831755844 | 0.549767249658 |
+BERT + IDF (norm) | 0.593208623417 | 0.560658042366 |
 
 ## Short queries (Training = short queries)
 MAP           | TD  | SD |

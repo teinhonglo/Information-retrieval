@@ -69,6 +69,7 @@ with codecs.open(dict_path, 'r', encoding='utf-8') as rf:
     for idx, line in enumerate(rf.readlines()):
         info = line.split("\r\n")[0].split(" ")
         ID_map[idx] = info[-1]
+        print(info[-1], len(info[-1]))
 
 qry_mdl_dict = ID2Word(qry_mdl_dict, ID_map)
 doc_mdl_dict = ID2Word(doc_mdl_dict, ID_map)

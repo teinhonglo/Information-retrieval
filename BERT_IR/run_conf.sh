@@ -1,8 +1,8 @@
 #!/bin/bash
 TASK_NAME="TDT2"
-stage=1
+stage=0
 att_type=idf #uni idf conf
-OUTPUT_EXPDIR="exp_${att_type}/${TASK_NAME}"
+OUTPUT_EXPDIR="exp_rand_${att_type}/${TASK_NAME}"
 DATA_DIR="data_${att_type}"
 train_set=${att_type}_train
 test_set=${att_type}_test_short
@@ -27,6 +27,7 @@ if [ $stage -le 1 ]; then
                                    --max_seq_length 128 --train_batch_size 32 --learning_rate 2e-5 \
                                    --num_train_epochs 3.0 --output_dir $OUTPUT_EXPDIR \
                                    --set_trainset ${train_set}.csv --set_testset ${test_set}.all.csv
+    exit 0;
 fi
 
 if [ $stage -le 2 ]; then
