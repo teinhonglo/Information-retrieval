@@ -33,20 +33,32 @@ general_model = {}
 query = {}                # query
 query_lambda = 0.4
 doc_lambda = 0.8
+is_train = False
+is_short = True
+is_spoken = False
 
-document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
-query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
-#query_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
-#rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
-#query_path = "../Corpus/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+if is_train:
+    query_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+    rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+else:
+    if is_short:
+        query_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+    else:
+        query_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+    rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+
+if is_spoken:
+    document_path = "../Corpus/TDT2/Spoken_Doc"
+else:
+    document_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+
 
 # document model
 data = ProcDoc.read_file(document_path)
 doc_wordcount = ProcDoc.doc_preprocess(data)
 doc_unigram = ProcDoc.unigram(doc_wordcount)
 
-with open("doc_unimdl.dict", "wb") as f: Pickle.dump(doc_unigram, f, True)
+#with open("doc_unimdl.dict", "wb") as f: Pickle.dump(doc_unigram, f, True)
 
 #word_idf = ProcDoc.inverse_document_frequency(doc_wordcount)
 
@@ -77,25 +89,26 @@ for q, q_content in query.items():
     query_wordcount[q] = ProcDoc.word_count(q_content, {})
 
 query_unigram = ProcDoc.unigram(query_wordcount)
-with open("qry_unimdl.dict", "wb") as f: Pickle.dump(query_unigram, f, True)
+#with open("qry_unimdl.dict", "wb") as f: Pickle.dump(query_unigram, f, True)
 query_model = ProcDoc.modeling(query_unigram, background_model, query_lambda)
 
-#for q, w_uni in query_model.items():
-#    if q in HMMTraingSetDict:
-#        continue
-#    else:
-#        query_model.pop(q, None)
+if is_train:
+    for q, w_uni in query_model.items():
+        if q in HMMTraingSetDict:
+            continue
+        else:
+            query_model.pop(q, None)
 
 print(len(query_model.keys()))
 
 # query process
 print("query ...")
 
-evaluate_model = EvaluateModel(rel_path, False)
+evaluate_model = EvaluateModel(rel_path, is_train)
 query_docs_point_fb = {}
 query_model_fb = {}
 mAP_list = []
-for step in [9]:
+for step in range(1,11):
     query_docs_dict = {}
     query_docs_point_dict = {}
     AP = 0
@@ -136,12 +149,6 @@ for step in [9]:
         # save load shot result
     query_docs_point_fb = Pickle.load(open("query_docs_dict.pkl", "rb"))
     query_model_fb = Pickle.load(open("query_model.pkl", "rb"))
-    query_model = Expansion.feedback(HMMTraingSetDict, query_model_fb, doc_unigram, doc_wordcount, general_model, background_model, None)
-    for q_key, q_cont in query_model.items():
-        print(q_key)
-        for word, prob in q_cont.items():
-            print(word, prob)
-        print()
-    print("Expansion end")
+    query_model = Expansion.feedback(query_docs_point_fb, query_model_fb, doc_unigram, doc_wordcount, general_model, background_model, step)
 #plot_diagram.plotList(mAP_list)
     

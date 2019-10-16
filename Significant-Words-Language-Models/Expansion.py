@@ -1,6 +1,6 @@
 import ProcDoc
 from math import log, exp
-import plot_diagram
+#import plot_diagram
 from collections import defaultdict
 import copy
 import cPickle as Pickle
