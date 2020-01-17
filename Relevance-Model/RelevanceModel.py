@@ -13,6 +13,8 @@ import ProcDoc
 from math import exp
 
 def feedback(query_list, query_model, doc_list, doc_model, background_model, query_docs_ranking, topM = 9, smoothing = 0.0):
+    ''' inverted key '''
+    doc_IDs = {doc_ID:int(idx) for idx, doc_ID in enumerate(doc_list)}
     ''' smoothing '''
     vocabulary_size = doc_model.shape[1]
     for d_idx, doc_vec in enumerate(doc_model):
@@ -25,7 +27,7 @@ def feedback(query_list, query_model, doc_list, doc_model, background_model, que
         q_t_d = np.zeros(len(query_docs_ranking[q_key][:topM]))
         w_d = np.zeros(vocabulary_size)
         for rank_idx, doc_key in enumerate(query_docs_ranking[q_key][:topM]):
-            doc_idx = doc_list.index(doc_key)
+            doc_idx = doc_IDs[doc_key]
             doc_vec = doc_model[doc_idx]
             # P(q_t|D)
             q_non_zero, = np.where(q_vec != 0)
