@@ -1,34 +1,37 @@
 '''
     parameter                type    
     query_docs_ranking         dict        {q_key:[d_key...], ...}
-    query_list              list        [q_key, ....]
-    query_model             numpy        [[query_unigram], ....]
-    doc_list                list        [d_key, .....]
-    doc_model                numpy        [[doc_unigram]]
+    qry_IDs_list              list        [q_key, ....]
+    qry_mdl             numpy        [[query_unigram], ....]
+    doc_IDs_list                list        [d_key, .....]
+    doc_mdl                numpy        [[doc_unigram]]
     
 '''
 
 import numpy as np
 import ProcDoc
 from math import exp
+import logging
 
-def feedback(query_list, query_model, doc_list, doc_model, background_model, query_docs_ranking, topM = 9, smoothing = 0.0):
+def feedback(qry_IDs_list, qry_mdl, doc_IDs_list, doc_mdl, bg_mdl, query_docs_ranking, topM = 9, smoothing = 0.0):
+    logging.debug("RM3 feedback")
+    ''' Initialize '''
+    RM3 = np.zeros((qry_mdl.shape[0], qry_mdl.shape[1]))
+    vocabulary_size = doc_mdl.shape[1]
     ''' inverted key '''
-    doc_IDs = {doc_ID:int(idx) for idx, doc_ID in enumerate(doc_list)}
+    doc_IDs = {doc_ID:int(idx) for idx, doc_ID in enumerate(doc_IDs_list)}
     ''' smoothing '''
-    vocabulary_size = doc_model.shape[1]
-    for d_idx, doc_vec in enumerate(doc_model):
-        doc_model[d_idx] = (1 - smoothing) * doc_vec + smoothing * background_model
-
+    for d_idx, doc_vec in enumerate(doc_mdl):
+        doc_mdl[d_idx] = (1 - smoothing) * doc_vec + smoothing * bg_mdl
     ''' relevance model '''
-    for q_idx, q_key in enumerate(query_list):
-        q_vec = query_model[q_idx]
+    for q_idx, q_key in enumerate(qry_IDs_list):
+        q_vec = qry_mdl[q_idx]
         # Relevant top-M document
         q_t_d = np.zeros(len(query_docs_ranking[q_key][:topM]))
         w_d = np.zeros(vocabulary_size)
         for rank_idx, doc_key in enumerate(query_docs_ranking[q_key][:topM]):
             doc_idx = doc_IDs[doc_key]
-            doc_vec = doc_model[doc_idx]
+            doc_vec = doc_mdl[doc_idx]
             # P(q_t|D)
             q_non_zero, = np.where(q_vec != 0)
             # product
@@ -41,5 +44,5 @@ def feedback(query_list, query_model, doc_list, doc_model, background_model, que
             w_d += doc_vec * q_t_d[rank_idx]
         # relevance model
         w_d /= q_t_d.sum(axis = 0)
-        query_model[q_idx] = w_d
-    return query_model 
+        RM3[q_idx] = w_d
+    return RM3

@@ -6,28 +6,23 @@ sys.path.append("../Tools")
 import ProcDoc
 import Evaluate
 import RelevanceModel as RM3
+import logging
+from CommonPath import CommonPath  
 
 is_training = False
 is_short = False
 is_spoken = False
+path = CommonPath(is_training, is_short, is_spoken)
+log_filename = path.getLogFilename()
+qry_path = path.getQryPath()
+doc_path = path.getDocPath()
+rel_path = path.getRelPath()
 
-if is_training:
-    qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
-    rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-else:
-    if is_short:
-        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
-    else:
-        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
-    rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+dict_path = path.getDictPath()
+bg_path = path.getBGPath()
 
-if is_spoken:
-    doc_path = "../Corpus/TDT2/Spoken_Doc"
-else:
-    doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
-
-dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
-bg_path = "../Corpus/background"
+logging.basicConfig(filename=log_filename, format="%(asctime)s %(levelname)s:%(message)s", 
+                    level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
 # read relevant set for queries and documents
 eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
@@ -71,22 +66,27 @@ for q_idx, q_ID in enumerate(qry_IDs):
 
 #eval_mdl = EvaluateModel(rel_path, isTraining)
 mAP = eval_mdl.mAP(qry_docs_ranking)
-print mAP
+logging.debug("The mAP is " + str(mAP))
 
 # Relevance Feedback
 RM_mdl_np = RM3.feedback(qry_IDs, qry_mdl_np, doc_IDs, doc_mdl_np, bg_mdl_np, qry_docs_ranking, 9)
-qry_mdl_np = 1.0 * RM_mdl_np + 0.0 * qry_mdl_np
+qry_mdl_np_ = np.zeros((qry_mdl_np.shape[0],qry_mdl_np.shape[1]))
 
-# KL divergence
-results = np.argsort(-np.dot(qry_mdl_np, np.log(doc_mdl_np.T)), axis = 1)
+for alpha in np.linspace(0, 1, 11):
+    logging.debug("alpha " + str(alpha))
+    qry_mdl_np_ = (1 - alpha) * RM_mdl_np + alpha * qry_mdl_np
 
-# second-stage retrieval
-qry_docs_ranking = {}
-for q_idx, q_ID in enumerate(qry_IDs):
-    docs_ranking = []
-    for doc_idx in results[q_idx]:
-        docs_ranking.append(doc_IDs[doc_idx])
-    qry_docs_ranking[q_ID] = docs_ranking
+    # KL divergence
+    results = np.argsort(-np.dot(qry_mdl_np_, np.log(doc_mdl_np.T)), axis = 1)
 
-mAP = eval_mdl.mAP(qry_docs_ranking)
-print mAP
+    # second-stage retrieval
+    qry_docs_ranking = {}
+    for q_idx, q_ID in enumerate(qry_IDs):
+        docs_ranking = []
+        for doc_idx in results[q_idx]:
+            docs_ranking.append(doc_IDs[doc_idx])
+        qry_docs_ranking[q_ID] = docs_ranking
+
+    mAP = eval_mdl.mAP(qry_docs_ranking)
+    logging.debug("The mAP is " + str(mAP))
+    print(mAP)

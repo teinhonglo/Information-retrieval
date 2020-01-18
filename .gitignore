@@ -19,6 +19,7 @@ Corpus
 *.hdf5
 *.txt
 *.csv
+*.log
 
 # profiling files and core files
 *.nvprof
