@@ -5,35 +5,30 @@ sys.path.append("../Tools")
 
 import ProcDoc
 import Evaluate
+from CommonPath import CommonPath  
 
 is_training = False
 is_short = True
 is_spoken = False
 
-if is_training:
-    qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
-    rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-else:
-    if is_short:
-        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
-    else:
-        qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
-    rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+is_training = False
+is_short = False
+is_spoken = False
+alpha = 0.8
+beta = 0.4
 
-if is_spoken:
-    doc_path = "../Corpus/TDT2/Spoken_Doc"
-else:
-    doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+path = CommonPath(is_training, is_short, is_spoken)
+log_filename = path.getLogFilename()
+qry_path = path.getQryPath()
+doc_path = path.getDocPath()
+rel_path = path.getRelPath()
 
-dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
-bg_path = "../Corpus/background"
+dict_path = path.getDictPath()
+bg_path = path.getBGPath()
 
 # read relevant set for queries and documents
 eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
 rel_set = eval_mdl.getAset()
-
-alpha = 0.8
-beta = 0.4
 
 qry_file = ProcDoc.readFile(qry_path)
 doc_file = ProcDoc.readFile(doc_path)

@@ -18,6 +18,7 @@ output_name = ""
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir, 0755)
 
+# NOTE This description should be simplified by CommonPath in the future.
 if is_training:
     qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
     rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
