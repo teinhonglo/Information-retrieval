@@ -44,6 +44,10 @@ print("TF-IDF")
 [qry_mdl_np, doc_mdl_np] = Statistical.TFIDF(qry_mdl_np, doc_mdl_np)
 
 # Cosine Similarity
+# L2-normalize
+qry_mdl_np = Statistical.l2Norm(qry_mdl_np)
+doc_mdl_np = Statistical.l2Norm(doc_mdl_np)
+# Dot Product
 results = np.argsort(-np.dot(qry_mdl_np, doc_mdl_np.T), axis = 1)
 
 qry_docs_ranking = {}
@@ -53,6 +57,5 @@ for q_idx, q_ID in enumerate(qry_IDs):
         docs_ranking.append(doc_IDs[doc_idx])
     qry_docs_ranking[q_ID] = docs_ranking
 
-#eval_mdl = EvaluateModel(rel_path, isTraining)
 mAP = eval_mdl.mAP(qry_docs_ranking)
 print mAP

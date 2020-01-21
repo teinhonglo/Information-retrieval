@@ -22,8 +22,6 @@ def TFIDF(qry, doc):
         doc_tfidf[di] = dvec * np.log2(1 + num_docs / (1 + doc_freq[:,0]))
         doc_tfidf[di][zero_idx] = 0
 
-    qry_tfidf = l2Normalize(qry_tfidf)
-    doc_tfidf = l2Normalize(doc_tfidf)
     return [qry_tfidf, doc_tfidf]
 
 def docFreq(doc, vocab_size = 51253):
@@ -33,11 +31,9 @@ def docFreq(doc, vocab_size = 51253):
     corpus_dFreq_total[:, 1] = np.sum(doc, axis = 0)
     return corpus_dFreq_total
 
-def l2Normalize(cmp_np):
+def l2Norm(cmp_np):
     calc_np = np.copy(cmp_np)
     l2_norms = np.sum(cmp_np ** 2, axis=1) ** (1. / 2)
-    #print(l2_norms.shape)
-    # 952 1028 1330
     for idx, l2_norm in enumerate(l2_norms):
         if l2_norm != 0:
             calc_np[idx] = cmp_np[idx] / l2_norm
