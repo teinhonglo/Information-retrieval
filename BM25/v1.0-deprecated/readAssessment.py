@@ -3,7 +3,7 @@ import fileinput
 import collections
 from collections import defaultdict
 #assessmentTraingSet_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+assessmentTraingSet_path = "../../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
 assessmentTraingSetDict = {}
 
 # result : list [(doc, point)]
