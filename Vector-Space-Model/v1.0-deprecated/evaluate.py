@@ -6,9 +6,9 @@ from collections import defaultdict
 class evaluate_model():
         def __init__(self, HMM = False):
                 if not HMM:
-                        self.assessmentTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+                        self.assessmentTraingSet_path = "../../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
                 else:
-                        self.assessmentTraingSet_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
+                        self.assessmentTraingSet_path = "../../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
                 self.assessment = self.get_assessment(HMM)
 
         def get_assessment(self, HMM):

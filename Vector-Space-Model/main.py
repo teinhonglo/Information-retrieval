@@ -1,106 +1,58 @@
-import os
-import fileinput
-from collections import defaultdict
-import collections
-from math import log, sqrt
-import operator
+#!/usr/bin/env python
 import numpy as np
-import readAssessment
+import sys
+sys.path.append("../Tools")
+
 import ProcDoc
-import Expansion
-import timeit
-import evaluate
-import cPickle as Pickle
+import Evaluate
+from CommonPath import CommonPath
+import Statistical 
 
-data = {}				# content of document (doc, content)
-query = {}				# query
-doc_freq ={}
+is_training = False
+is_short = False
+is_spoken = False
+alpha = 0.8
+beta = 0.4
 
-document_path = "../Corpus/TDT2/Spoken_Doc"
-query_path = "../Corpus/TDT2/QUERY_WDID_NEW"
-#with open("HMMTraingSetDict.pkl", "rb") as file: HMMTraingSetDict = Pickle.load(file) 
+path = CommonPath(is_training, is_short, is_spoken)
+log_filename = path.getLogFilename()
+qry_path = path.getQryPath()
+doc_path = path.getDocPath()
+rel_path = path.getRelPath()
 
-# document model
-data = ProcDoc.read_file(document_path)
-doc_wordcount = ProcDoc.doc_preprocess(data)
-total_docs = len(doc_wordcount.keys()) * 1.0
-[doc_model, doc_freq] = ProcDoc.compute_TFIDF(doc_wordcount)
+dict_path = path.getDictPath()
+bg_path = path.getBGPath()
 
-# query model
-query = ProcDoc.read_file(query_path)
-query = ProcDoc.query_preprocess(query)
-query_wordcount = {}
+# read relevant set for queries and documents
+eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
+rel_set = eval_mdl.getAset()
 
-for q_key, q_content in query.items():
-	query_wordcount[q_key] = ProcDoc.word_count(q_content, {})
+# Preprocess for queries and documents
+qry_file = ProcDoc.readFile(qry_path)
+doc_file = ProcDoc.readFile(doc_path)
 
-query_model = defaultdict(dict)	
-for q_key, word_count_dict in query_wordcount.items():
-	max_freq = np.max(np.array(word_count_dict.values()), axis = 0)
-	for word, count in word_count_dict.items():
-		if word in doc_freq:
-			idf = log(1 + total_docs / doc_freq[word])
-			
-		else:
-			idf = log(1 + total_docs)
-			
-		query_model[q_key][word] = (1 + log(count)) * idf	
+# Term Frequency
+qry_mdl_dict = ProcDoc.qryPreproc(qry_file, rel_set)
+doc_mdl_dict = ProcDoc.docPreproc(doc_file)
 
-#with open("test_query_model_tfidf.pkl", "wb") as file: Pickle.dump(query_model, file, True)		
-'''
-for q, w_uni in query_model.items():
-	if q in HMMTraingSetDict:
-		continue
-	else:
-		query_model.pop(q, None)
+# Convert dictionary to numpy array (feasible to compute)
+qry_mdl_np, qry_IDs = ProcDoc.dict2npSparse(qry_mdl_dict)
+doc_mdl_np, doc_IDs = ProcDoc.dict2npSparse(doc_mdl_dict)
 
-'''
-#print(len(query_model.keys()))		
-		
-# query process
-print "query ..."
-start = timeit.default_timer()
-assessment = evaluate.evaluate_model(False)
-feedback_model = []
-feedback_ranking_list = []
-doc_length = {}
-#with open("doc_model_tfidf_dict.pkl", "wb") as file: Pickle.dump(doc_model, file, True)
-for step in range(2):
-	query_docs_point_dict = {}
-	AP = 0
-	mAP = 0
-	for q_key, q_words_count_list in query_model.items():
-		docs_point = defaultdict(int)
-		for doc_key, doc_words_count_dict in doc_model.items():
-			relevant_point = 0
-			query_length = 1
-			
-			# calculate each query value for the document
-			for doc_word, doc_word_count in doc_words_count_dict.items():
-				if not doc_word in q_words_count_list:
-					continue
-				else:	
-					relevant_point += q_words_count_list[doc_word] * doc_word_count
-				
-			if not doc_key in doc_length:
-				doc_length[doc_key] = sqrt((np.array(doc_words_count_dict.values()) ** 2).sum(axis = 0))
-				
-			# cosine measure
-			relevant_point /= (query_length * doc_length[doc_key])
-			docs_point[doc_key] = relevant_point
-		# sorted each doc of query by point
-		docs_point_list = sorted(docs_point.items(), key=operator.itemgetter(1), reverse = True)
-		query_docs_point_dict[q_key] = docs_point_list
-	# mean average precision	
-	mAP = assessment.mean_average_precision(query_docs_point_dict)
-	print "mAP:", mAP
-	print "feedback:", step
-	'''
-	if step < 1:
-		#feedback_ranking_list = HMMTraingSetDict
-		feedback_ranking_list = dict(query_docs_point_dict)
-		[query_model, feedback_model] = Expansion.extQueryModel(query_model, feedback_ranking_list, doc_model, feedback_model, None)
-		with open("rel_vsm_dict.pkl", "wb") as file: Pickle.dump(query_model, file, True)
-    '''    
-stop = timeit.default_timer()
-print "Result : ", stop - start	
+# TF-IDF
+print("TF-IDF")
+[qry_mdl_np, doc_mdl_np] = Statistical.TFIDF(qry_mdl_np, doc_mdl_np)
+
+# Cosine Similarity
+results = np.argsort(-np.dot(qry_mdl_np, doc_mdl_np.T), axis = 1)
+
+qry_docs_ranking = {}
+for q_idx, q_ID in enumerate(qry_IDs):
+    docs_ranking = []
+    for doc_idx in results[q_idx]:
+        docs_ranking.append(doc_IDs[doc_idx])
+    qry_docs_ranking[q_ID] = docs_ranking
+
+#eval_mdl = EvaluateModel(rel_path, isTraining)
+mAP = eval_mdl.mAP(qry_docs_ranking)
+print mAP

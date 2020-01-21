@@ -11,7 +11,7 @@ from webbrowser import BackgroundBrowser
 from collections import defaultdict
 from math import log
 
-bg_modle_path = "../Corpus/background"
+bg_modle_path = "../../Corpus/background"
 Cluster_path = "Topic"
 
 
