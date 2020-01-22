@@ -7,12 +7,38 @@ import ProcDoc
 import Evaluate
 from CommonPath import CommonPath
 import Statistical 
+import argparse
 
-is_training = False
-is_short = False
-is_spoken = False
-alpha = 0.8
-beta = 0.4
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+parser = argparse.ArgumentParser()
+
+## Required parameters
+parser.add_argument("--is_training",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_short",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_spoken",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+args = parser.parse_args()
+is_training = args.is_training
+is_short = args.is_short
+is_spoken = args.is_spoken
 
 path = CommonPath(is_training, is_short, is_spoken)
 log_filename = path.getLogFilename()

@@ -6,16 +6,51 @@ sys.path.append("../Tools")
 import ProcDoc
 import Evaluate
 from CommonPath import CommonPath  
+import argparse
 
-is_training = False
-is_short = True
-is_spoken = False
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
-is_training = False
-is_short = False
-is_spoken = False
-alpha = 0.8
-beta = 0.4
+parser = argparse.ArgumentParser()
+
+## Required parameters
+parser.add_argument("--is_training",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_short",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_spoken",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--alpha",
+                     default="0.8",
+                     type=float,
+                     required=False)
+
+parser.add_argument("--beta",
+                     default="0.4",
+                     type=float,
+                     required=False)
+
+args = parser.parse_args()
+is_training = args.is_training
+is_short = args.is_short
+is_spoken = args.is_spoken
+
+alpha = args.alpha
+beta = args.beta
 
 path = CommonPath(is_training, is_short, is_spoken)
 log_filename = path.getLogFilename()

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
+from numpy import ma
 import sys
 sys.path.append("../Tools")
 
@@ -7,14 +8,52 @@ import ProcDoc
 import Evaluate
 from CommonPath import CommonPath
 import Statistical 
+import argparse
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+parser = argparse.ArgumentParser()
+
+## Required parameters
+parser.add_argument("--is_training",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_short",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_spoken",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--k1",
+                     default="2.0",
+                     type=float,
+                     required=False)
+
+parser.add_argument("--b",
+                     default="0.75",
+                     type=float,
+                     required=False)
 
 # Test Condition
-is_training = False
-is_short = False
-is_spoken = False
+args = parser.parse_args()
+is_training = args.is_training
+is_short = args.is_short
+is_spoken = args.is_spoken
 # Parameters of BM25
-k1 = 2.0
-b = 0.75
+k1 = args.k1
+b = args.b
 
 path = CommonPath(is_training, is_short, is_spoken)
 log_filename = path.getLogFilename()

@@ -1,26 +1,48 @@
 
 class CommonPath(object):
     def __init__(self, is_training, is_short, is_spoken, is_TDT2 = True):
-        if is_training:
-            self.qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
-            self.rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
-            self.log_filename = "train."
-        else:
-            self.log_filename = "test."
-            if is_short:
-                self.log_filename += "short."
-                self.qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+        if is_TDT2:
+            if is_training:
+                self.log_filename = "train."
+                self.qry_path = "../Corpus/TDT2/Train/XinTrainQryTDT2/QUERY_WDID_NEW"
+                self.rel_path = "../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain"
             else:
-                self.log_filename += "long."
-                self.qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
-            self.rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
-
-        if is_spoken:
-            self.log_filename += "spk.log"
-            self.doc_path = "../Corpus/TDT2/Spoken_Doc"
+                self.log_filename = "test."
+                if is_short:
+                    self.log_filename += "short."
+                    self.qry_path = "../Corpus/TDT2/QUERY_WDID_NEW_middle"
+                else:
+                    self.log_filename += "long."
+                    self.qry_path = "../Corpus/TDT2/QUERY_WDID_NEW"
+                self.rel_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+        
+            if is_spoken:
+                self.log_filename += "spk.log"
+                self.doc_path = "../Corpus/TDT2/Spoken_Doc"
+            else:
+                self.log_filename += "text.log"
+                self.doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
         else:
-            self.log_filename += "text.log"
-            self.doc_path = "../Corpus/TDT2/SPLIT_DOC_WDID_NEW"
+            if is_training:
+                self.log_filename = "train."
+                self.qry_path = "../Corpus/TDT3/XinTrainQryTDT3/QUERY_WDID_NEW"
+                self.rel_path = "../Corpus/TDT3/QDRelevanceTDT3_forHMMOutSideTrain731-2004New"
+            else:
+                self.log_filename = "test."
+                if is_short:
+                    print("[ERROR] We haven't short queries for TDT3-dataset yet.")
+                    exit(0)
+                else:
+                    self.log_filename += "long."
+                    self.qry_path = "../Corpus/TDT3/XinTestQryTDT3/QUERY_WDID_NEW"
+                self.rel_path = "../Corpus/TDT3/Assessment3371TDT3_clean.txt"
+
+            if is_spoken:
+                self.log_filename += "spk.log"
+                self.doc_path = "../Corpus/TDT3/SPLIT_AS0_WDID_NEW_C"
+            else:
+                self.log_filename += "text.log"
+                self.doc_path = "../Corpus/TDT3/SPLIT_DOC_WDID_NEW"
 
         self.dict_path = "../Corpus/TDT2/LDC_Lexicon.txt"
         self.bg_path = "../Corpus/background"
