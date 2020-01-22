@@ -5,37 +5,36 @@ import numpy as np
 from collections import defaultdict
 
 class EvaluateModel(object):
-    def __init__(self, rel_set_path = None, HMM = False):
+    def __init__(self, rel_set_path = None, is_training = False):
         # TDT2 path ../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt
         # HMMTrainingSet path ../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain
         if rel_set_path == None:
-            self.answerTraingSet_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
+            self.relevant_set_path = "../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt"
         else:
-            self.answerTraingSet_path = rel_set_path
-        self.answer = self.__getAssessment(HMM)
+            self.relevant_set_path = rel_set_path
+        self.answer = self.__getAssessment(self.relevant_set_path, is_training)
         self.APs = []
         self.num_docs = 2265
-        
-    def __getAssessment(self, HMM):
-        answerTraingSetDict = defaultdict(list)
-        answerTraingSet_path = self.answerTraingSet_path
-        with open(answerTraingSet_path, 'r') as f:
+
+    def __getAssessment(self, relevant_set_path, is_training):
+        relevant_set_dict = defaultdict(list)
+        relevant_set_path = relevant_set_path
+        with open(relevant_set_path, 'r') as f:
             # read content of query document (doc, content)
             title = ""
             for line in f.readlines():
-                result = line.split()              
+                result = line.split()
                 if len(result) == 0:
                     continue
                 if len(result) > 1:
-                    if not HMM:
+                    if not is_training:
                         title = result[2]
                     else:
                         title = result[1]
                     continue
 
-                answerTraingSetDict[title].append(result[0])
-                
-        return answerTraingSetDict
+                relevant_set_dict[title].append(result[0])
+        return relevant_set_dict
 
     # result : list [(doc, point)]
     # answer_list : list [(doc)]
@@ -78,6 +77,7 @@ class EvaluateModel(object):
         return d_cumul_gain
         
     def mAP(self, query_docs_dict):
+        # mean Average Precision
         mAP = 0.
         cumulAP = 0.
         for q_key, doc_list in query_docs_dict.items():
@@ -88,6 +88,7 @@ class EvaluateModel(object):
         return mAP
     
     def precisionAtK(self, query_docs_dict, atPos):
+        # Precision at position K
         mPAK = 0.
         cumulAP = 0.
         num_qry = len(list(query_docs_dict.keys()))
@@ -98,6 +99,7 @@ class EvaluateModel(object):
         return mPAK
     
     def NDCGAtK(self, query_docs_dict, atPos = None):
+        # Normalized Discounted Cumulative Gain (NDCG) at K
         mPAK = 0.
         first_qry_key = list(query_docs_dict.keys())[0]
         num_qry = len(list(query_docs_dict.keys()))

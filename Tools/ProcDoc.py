@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-import codecs
 import io
 import os
-import fileinput
 import collections
 import numpy as np
-import operator
 import types
 from math import exp
-from webbrowser import BackgroundBrowser
 from collections import defaultdict
 from math import log
-Cluster_path = "Topic"
 
 # read file(query or document)
 def readFile(filepath):
