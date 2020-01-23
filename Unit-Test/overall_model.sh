@@ -7,7 +7,7 @@ for model in $example_models; do
     cd -;
 done
 
-regular_models="BM25 Vector-Space-Model";
+regular_models="BM25 Vector-Space-Model Relevance-Model";
 for model in $regular_models; do
     cd ../$model;
     python main.py;

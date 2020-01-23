@@ -8,10 +8,52 @@ import Evaluate
 import RelevanceModel as RM3
 import logging
 from CommonPath import CommonPath  
+import argparse
 
-is_training = False
-is_short = False
-is_spoken = False
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+parser = argparse.ArgumentParser()
+
+## Required parameters
+parser.add_argument("--is_training",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_short",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--is_spoken",
+                     default="False",
+                     type=str2bool,
+                     required=False)
+
+parser.add_argument("--alpha",
+                     default="0.8",
+                     type=float,
+                     required=False)
+
+parser.add_argument("--beta",
+                     default="0.4",
+                     type=float,
+                     required=False)
+
+args = parser.parse_args()
+is_training = args.is_training
+is_short = args.is_short
+is_spoken = args.is_spoken
+
+alpha = args.alpha
+beta = args.beta
+
 path = CommonPath(is_training, is_short, is_spoken)
 log_filename = path.getLogFilename()
 qry_path = path.getQryPath()
@@ -23,33 +65,35 @@ bg_path = path.getBGPath()
 
 logging.basicConfig(filename=log_filename, format="%(asctime)s %(levelname)s:%(message)s", 
                     level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.getLogger().setLevel(logging.INFO)
 
-# read relevant set for queries and documents
+# Read relevant set for queries and documents
 eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
 rel_set = eval_mdl.getAset()
 
-alpha = 0.8
-beta = 0.4
-
+# Preprocess
 qry_file = ProcDoc.readFile(qry_path)
 doc_file = ProcDoc.readFile(doc_path)
 
+# Term Frequency
 qry_mdl_dict = ProcDoc.qryPreproc(qry_file, rel_set)
 doc_mdl_dict = ProcDoc.docPreproc(doc_file)
 
+# Unigram
 qry_unimdl_dict = ProcDoc.unigram(qry_mdl_dict)
 doc_unimdl_dict = ProcDoc.unigram(doc_mdl_dict)
 
+# Convert dictionary to numpy array (feasible to compute)
 qry_mdl_np, qry_IDs = ProcDoc.dict2npSparse(qry_unimdl_dict)
 doc_mdl_np, doc_IDs = ProcDoc.dict2npSparse(doc_unimdl_dict)
 
 bg_mdl_np = ProcDoc.readBGnp(bg_path)
 
-# smoothing
+# Smoothing
 for doc_idx in range(doc_mdl_np.shape[0]):
     doc_mdl_np[doc_idx] = (1-alpha) * doc_mdl_np[doc_idx] + alpha * bg_mdl_np
 
-# smoothing
+# Smoothing
 for qry_idx in range(qry_mdl_np.shape[0]):
     qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
 

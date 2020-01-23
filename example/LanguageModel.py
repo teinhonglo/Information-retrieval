@@ -91,6 +91,8 @@ for doc_idx in range(doc_mdl_np.shape[0]):
 for qry_idx in range(qry_mdl_np.shape[0]):
     qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
 
+print("Languge Model")
+# KL divergence
 results = np.argsort(-np.dot(qry_mdl_np, np.log(doc_mdl_np.T)), axis = 1)
 
 qry_docs_ranking = {}
