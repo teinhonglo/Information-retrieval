@@ -134,3 +134,4 @@ for alpha in np.linspace(0, 1, 11):
     mAP = eval_mdl.mAP(qry_docs_ranking)
     logging.debug("The mAP is " + str(mAP))
     print(mAP)
+    eval_mdl.reset()

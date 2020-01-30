@@ -5,7 +5,7 @@ import numpy as np
 from collections import defaultdict
 
 class EvaluateModel(object):
-    def __init__(self, rel_set_path = None, is_training = False):
+    def __init__(self, rel_set_path = None, is_training = False, num_docs = 2265):
         # TDT2 path ../Corpus/TDT2/AssessmentTrainSet/AssessmentTrainSet.txt
         # HMMTrainingSet path ../Corpus/TDT2/Train/QDRelevanceTDT2_forHMMOutSideTrain
         if rel_set_path == None:
@@ -14,7 +14,7 @@ class EvaluateModel(object):
             self.relevant_set_path = rel_set_path
         self.answer = self.__getAssessment(self.relevant_set_path, is_training)
         self.APs = []
-        self.num_docs = 2265
+        self.num_docs = num_docs
 
     def __getAssessment(self, relevant_set_path, is_training):
         relevant_set_dict = defaultdict(list)
@@ -125,6 +125,9 @@ class EvaluateModel(object):
 
     def getAPs(self):
         return self.APs
+        
+    def reset(self):
+        self.APs = []
 
 if __name__ == "__main__":
     eva = EvaluateModel()

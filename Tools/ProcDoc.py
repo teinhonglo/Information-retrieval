@@ -325,7 +325,7 @@ def dict2npSparse(ori_dict, IDs_list = None, vocab_size = 51253):
         for o_wid, o_wc in ori_dict[o_id].items():
             obj_vec[idx][int(o_wid)] = o_wc
             
-    return obj_vec, IDs_list    
+    return obj_vec, IDs_list
 
 def dict2npDense(ori_dict, word_list = None, IDs_list = None, vocab_size = 51253):
     # convert dictionary to numpy array (dense)
