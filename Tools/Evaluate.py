@@ -38,20 +38,20 @@ class EvaluateModel(object):
 
     # result : list [(doc, point)]
     # answer_list : list [(doc)]
-    def __avePrecision(self, result, q_key, atPos = None):
-        iterative = 0.
-        count = 0.
+    def __avgPrecision(self, result, q_key, at_pos = None):
+        rank_pos = 0.
+        hit = 0.
         precision = 0.
         answer = self.answer[q_key]
-        if atPos == None:
-            atPos = len(answer)
+        if at_pos == None:
+            at_pos = len(answer)
     
         for doc_name in result:
-            iterative += 1
-            if count == atPos: break
+            rank_pos += 1
             if doc_name in answer:
-                count += 1
-                precision += count / iterative
+                hit += 1
+                precision += hit / rank_pos
+            if hit == at_pos: break
          
         precision /= len(answer)
         return precision
@@ -81,24 +81,24 @@ class EvaluateModel(object):
         mAP = 0.
         cumulAP = 0.
         for q_key, doc_list in query_docs_dict.items():
-            AP = self.__avePrecision(doc_list, q_key)
+            AP = self.__avgPrecision(doc_list, q_key)
             cumulAP += AP
             self.APs.append([q_key, AP])
-        mAP = cumulAP / len(query_docs_dict.keys())
+        mAP = cumulAP / len(self.APs)
         return mAP
     
-    def precisionAtK(self, query_docs_dict, atPos):
+    def precisionAtK(self, query_docs_dict, at_pos):
         # Precision at position K
         mPAK = 0.
         cumulAP = 0.
         num_qry = len(list(query_docs_dict.keys()))
         for q_key, doc_list in query_docs_dict.items():
-            pAK = self.__avePrecision(docs_list, q_key, atPos)
+            pAK = self.__avgPrecision(doc_list, q_key, at_pos)
             cumulAP += pAK
         mPAK = cumulAP / num_qry
         return mPAK
     
-    def NDCGAtK(self, query_docs_dict, atPos = None):
+    def NDCGAtK(self, query_docs_dict, at_pos = None):
         # Normalized Discounted Cumulative Gain (NDCG) at K
         mPAK = 0.
         first_qry_key = list(query_docs_dict.keys())[0]
@@ -115,10 +115,10 @@ class EvaluateModel(object):
         idcg /= num_qry
         ndcg = dcg / idcg
         
-        if atPos == None:
+        if at_pos == None:
             return ndcg
         else:
-            return ndcg[atPos]
+            return ndcg[at_pos]
         
     def getAset(self):
         return self.answer
