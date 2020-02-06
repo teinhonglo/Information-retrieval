@@ -1,7 +1,8 @@
 #!/bin/bash
-TASK_NAME="TDT3"
+TASK_NAME="TDT2"
 DATA_DIR="data"
 OUTPUT_EXPDIR="exp/${TASK_NAME}"
+NUM_PASSAGES=1
 stage=0
 train_set=train
 test_set=test_short
@@ -17,7 +18,6 @@ if [ $stage -le 0 ]; then
     python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training true --is_short false --is_spoken true
     python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short true --is_spoken true
     python preprocess.py --output_dir $DATA_DIR --task_name $TASK_NAME --is_training false --is_short false --is_spoken true
-    exit 0;
 fi
 
 if [ $stage -le 1 ]; then
@@ -26,7 +26,9 @@ if [ $stage -le 1 ]; then
                                    --data_dir $DATA_DIR/$TASK_NAME --bert_model bert-base-chinese \
                                    --max_seq_length 128 --train_batch_size 32 --learning_rate 2e-5 \
                                    --num_train_epochs 3.0 --output_dir $OUTPUT_EXPDIR \
-                                   --set_trainset ${train_set}.csv --set_testset ${test_set}.all.csv
+                                   --num_passages $NUM_PASSAGES --set_trainset ${train_set}.csv --set_testset ${test_set}.all.csv
+    # Skip to stage 3
+    stage=3;
 fi
 
 if [ $stage -le 2 ]; then
@@ -35,10 +37,10 @@ if [ $stage -le 2 ]; then
                                    --data_dir $DATA_DIR/$TASK_NAME --bert_model bert-base-chinese \
                                    --max_seq_length 128 --train_batch_size 32 --learning_rate 2e-5 \
                                    --num_train_epochs 3.0 --output_dir $OUTPUT_EXPDIR \
-                                   --set_trainset ${train_set}.csv --set_testset ${test_set}.all.csv
+                                   --num_passages $NUM_PASSAGES --set_trainset ${train_set}.csv --set_testset ${test_set}.all.csv
 fi
 
 if [ $stage -le 3 ]; then
     # text (short query)
-    python BERT_test.py --bert_results $OUTPUT_EXPDIR/${train_set}_${test_set}.txt --is_training false --is_short true --is_spoken false 
+    python BERT_test.py --bert_results $OUTPUT_EXPDIR/${train_set}_${test_set}_p${NUM_PASSAGES}.txt --is_training false --is_short true --is_spoken false 
 fi

@@ -138,7 +138,7 @@ class TDT2Processor(DataProcessor):
                 InputExample(tdt2_id=tdt2_id, text_a=text_a, text_b=text_b, label=label))
         return examples
 
-def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer, do_passage = False):
+def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer, num_passages = 1):
     """Loads a data file into a list of `InputBatch`s."""
 
     label_map = {label : i for i, label in enumerate(label_list)}
@@ -181,7 +181,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         # For classification tasks, the first vector (corresponding to [CLS]) is
         # used as as the "sentence vector". Note that this only makes sense because
         # the entire model is fine-tuned.
-        if do_passage:
+        if num_passages > 1:
             len_tokens_b = max_seq_length - len(tokens_a) - 3
             st_idx = 0
             ed_idx = len_tokens_b
@@ -408,6 +408,7 @@ def main():
     
     parser.add_argument('--set_trainset', type=str, default='train.csv',help='Choose the dataset which you want to train.')
     parser.add_argument('--set_testset', type=str, default='test_short.all.csv', help='Choose the dataset which you want to train.')
+    parser.add_argument('--num_passages', type=int, default=1, help='Set the number of passages that default value equals to 1 (do nothing)')
     args = parser.parse_args()
 
     if args.server_ip and args.server_port:
@@ -473,7 +474,7 @@ def main():
     if args.do_train:
         train_examples = processor.get_train_examples(args.data_dir, args.set_trainset)
         num_train_optimization_steps = int(
-            332896 / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
+            len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
         if args.local_rank != -1:
             num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
 
@@ -609,7 +610,7 @@ def main():
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         eval_examples = processor.get_dev_examples(args.data_dir, args.set_testset)
         eval_features = convert_examples_to_features(
-            eval_examples, label_list, args.max_seq_length, tokenizer, do_passage = True)
+            eval_examples, label_list, args.max_seq_length, tokenizer, num_passages=args.num_passages)
         logger.info("***** Running evaluation *****")
         logger.info("  Num examples = %d", len(eval_examples))
         logger.info("  Batch size = %d", args.eval_batch_size)
@@ -629,7 +630,9 @@ def main():
         pair_offset = 0
         preds = []
         labels = []
-        with open(args.output_dir + "/" + args.set_trainset.split('.')[0] + "_" + args.set_testset.split('.')[0] + "_p5.txt", "w") as writer:
+        results_filename = args.output_dir + "/" + args.set_trainset.split('.')[0] + "_" \
+                           + args.set_testset.split('.')[0] + "_p" + str(args.num_passages) + ".txt"
+        with open(results_filename, "w") as writer:
             for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"): 
                 input_ids = input_ids.to(device)
                 input_mask = input_mask.to(device)
