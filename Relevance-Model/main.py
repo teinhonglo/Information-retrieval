@@ -63,6 +63,7 @@ rel_path = path.getRelPath()
 dict_path = path.getDictPath()
 bg_path = path.getBGPath()
 
+print("Relevance-Model")
 logging.basicConfig(filename=log_filename, format="%(asctime)s %(levelname)s:%(message)s", 
                     level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.getLogger().setLevel(logging.INFO)
@@ -100,7 +101,8 @@ for qry_idx in range(qry_mdl_np.shape[0]):
 # KL divergence
 results = np.argsort(-np.dot(qry_mdl_np, np.log(doc_mdl_np.T)), axis = 1)
 
-# one-stage retrieval
+# fisrt stage retrieval
+print("Fisrt stage retrieval")
 qry_docs_ranking = {}
 for q_idx, q_ID in enumerate(qry_IDs):
     docs_ranking = []
@@ -110,6 +112,7 @@ for q_idx, q_ID in enumerate(qry_IDs):
 
 #eval_mdl = EvaluateModel(rel_path, isTraining)
 mAP = eval_mdl.mAP(qry_docs_ranking)
+print(mAP)
 logging.debug("The mAP is " + str(mAP))
 
 # Relevance Feedback

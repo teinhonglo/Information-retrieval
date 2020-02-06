@@ -64,6 +64,7 @@ rel_path = path.getRelPath()
 dict_path = path.getDictPath()
 bg_path = path.getBGPath()
 
+print("Best Match 25")
 # Read relevant set for queries and documents
 eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
 rel_set = eval_mdl.getAset()
@@ -86,7 +87,6 @@ idf = Statistical.IDF(doc_mdl_np)
 doc_len = Statistical.compLenAve(doc_mdl_np)
 
 # BM25
-print("BM25")
 ranking = np.zeros((qry_mdl_np.shape[0], doc_mdl_np.shape[0]))
 # score(Q, D)
 for q_idx, q_vec in enumerate(qry_mdl_np):
@@ -97,6 +97,7 @@ for q_idx, q_vec in enumerate(qry_mdl_np):
         ranking[q_idx][d_idx] = (nominator / denominator).sum(axis = 0)
     
 # Ranking
+print("Retrieval")
 results = np.argsort(-ranking, axis = 1)
 
 qry_docs_ranking = {}

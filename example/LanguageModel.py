@@ -61,6 +61,7 @@ rel_path = path.getRelPath()
 dict_path = path.getDictPath()
 bg_path = path.getBGPath()
 
+print("Language-Model")
 # Read relevant set for queries and documents
 eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
 rel_set = eval_mdl.getAset()
@@ -91,7 +92,7 @@ for doc_idx in range(doc_mdl_np.shape[0]):
 for qry_idx in range(qry_mdl_np.shape[0]):
     qry_mdl_np[qry_idx] = (1-beta) * qry_mdl_np[qry_idx] + beta * bg_mdl_np
 
-print("Languge Model")
+print("KL-Divergence")
 # KL divergence
 results = np.argsort(-np.dot(qry_mdl_np, np.log(doc_mdl_np.T)), axis = 1)
 
@@ -103,4 +104,4 @@ for q_idx, q_ID in enumerate(qry_IDs):
     qry_docs_ranking[q_ID] = docs_ranking
 
 mAP = eval_mdl.mAP(qry_docs_ranking)
-print mAP
+print(mAP)

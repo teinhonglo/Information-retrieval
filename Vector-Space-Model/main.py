@@ -49,6 +49,7 @@ rel_path = path.getRelPath()
 dict_path = path.getDictPath()
 bg_path = path.getBGPath()
 
+print("Vector-Space-Model")
 # read relevant set for queries and documents
 eval_mdl = Evaluate.EvaluateModel(rel_path, is_training)
 rel_set = eval_mdl.getAset()
@@ -73,6 +74,8 @@ print("TF-IDF")
 # L2-normalize
 qry_mdl_np = Statistical.l2Norm(qry_mdl_np)
 doc_mdl_np = Statistical.l2Norm(doc_mdl_np)
+
+print("Retrieval")
 # Dot Product
 results = np.argsort(-np.dot(qry_mdl_np, doc_mdl_np.T), axis = 1)
 
@@ -84,4 +87,4 @@ for q_idx, q_ID in enumerate(qry_IDs):
     qry_docs_ranking[q_ID] = docs_ranking
 
 mAP = eval_mdl.mAP(qry_docs_ranking)
-print mAP
+print(mAP)
