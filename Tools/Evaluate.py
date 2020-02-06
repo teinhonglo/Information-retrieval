@@ -44,14 +44,15 @@ class EvaluateModel(object):
         precision = 0.
         answer = self.answer[q_key]
         if at_pos == None:
-            at_pos = len(answer)
+            at_pos = self.num_docs
     
         for doc_name in result:
             rank_pos += 1
             if doc_name in answer:
                 hit += 1
                 precision += hit / rank_pos
-            if hit == at_pos: break
+                if hit == len(answer): break
+            if rank_pos == at_pos: break
          
         precision /= len(answer)
         return precision
@@ -78,6 +79,7 @@ class EvaluateModel(object):
         
     def mAP(self, query_docs_dict):
         # mean Average Precision
+        print("Eval: mean Average Precision")
         mAP = 0.
         cumulAP = 0.
         for q_key, doc_list in query_docs_dict.items():
@@ -89,6 +91,7 @@ class EvaluateModel(object):
     
     def precisionAtK(self, query_docs_dict, at_pos):
         # Precision at position K
+        print("Eval: Precision at position " + str(at_pos))
         mPAK = 0.
         cumulAP = 0.
         num_qry = len(list(query_docs_dict.keys()))
@@ -100,6 +103,7 @@ class EvaluateModel(object):
     
     def NDCGAtK(self, query_docs_dict, at_pos = None):
         # Normalized Discounted Cumulative Gain (NDCG) at K
+        print("Eval: Precision at position " + str(at_pos))
         mPAK = 0.
         first_qry_key = list(query_docs_dict.keys())[0]
         num_qry = len(list(query_docs_dict.keys()))
