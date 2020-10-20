@@ -8,6 +8,7 @@ import Evaluate
 from CommonPath import CommonPath
 import Statistical 
 import argparse
+import Rocchio
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -88,3 +89,22 @@ for q_idx, q_ID in enumerate(qry_IDs):
 
 mAP = eval_mdl.mAP(qry_docs_ranking)
 print(mAP)
+eval_mdl.reset()
+'''
+for topM in range(1,5,1):
+    qry_mdl_np_fb = Rocchio.feedback(qry_IDs_list=qry_IDs, qry_mdl=qry_mdl_np, \
+                                     doc_IDs_list=doc_IDs, doc_mdl=doc_mdl_np, \
+                                     query_docs_ranking=qry_docs_ranking, topM=topM)
+    ranking = np.dot(qry_mdl_np_fb, doc_mdl_np.T)
+    results = np.argsort(-ranking)
+    qry_docs_ranking_fb = {}
+    for q_idx, q_ID in enumerate(qry_IDs):
+        docs_ranking = []
+        for doc_idx in results[q_idx]:
+            docs_ranking.append(doc_IDs[doc_idx])
+    qry_docs_ranking_fb[q_ID] = docs_ranking
+
+    mAP = eval_mdl.mAP(qry_docs_ranking_fb)
+    print(mAP)
+    eval_mdl.reset()
+'''  

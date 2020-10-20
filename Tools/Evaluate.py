@@ -82,6 +82,7 @@ class EvaluateModel(object):
         print("Eval: mean Average Precision")
         mAP = 0.
         cumulAP = 0.
+        self.APs = []
         for q_key, doc_list in query_docs_dict.items():
             AP = self.__avgPrecision(doc_list, q_key)
             cumulAP += AP

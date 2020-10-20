@@ -54,5 +54,3 @@ if __name__ == "__main__":
     qry = np.array([[1, 2, 0], [3, 4, 9]])
     doc = np.array([[5, 0, 0], [7, 8, 1]])
     TFIDF(qry, doc)
-    
-

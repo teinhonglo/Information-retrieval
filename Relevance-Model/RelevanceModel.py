@@ -9,8 +9,6 @@
 '''
 
 import numpy as np
-import ProcDoc
-from math import exp
 import logging
 
 def feedback(qry_IDs_list, qry_mdl, doc_IDs_list, doc_mdl, bg_mdl, query_docs_ranking, topM = 9, smoothing = 0.0):
