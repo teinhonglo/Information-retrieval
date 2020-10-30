@@ -39,18 +39,16 @@ class EvaluateModel(object):
     # result : list [(doc, point)]
     # answer_list : list [(doc)]
     def __avgPrecision(self, result, q_key, at_pos = None):
-        rank_pos = 0.
         hit = 0.
         precision = 0.
         answer = self.answer[q_key]
         if at_pos == None:
             at_pos = self.num_docs
     
-        for doc_name in result:
-            rank_pos += 1
+        for rank_pos, doc_name in enumerate(result):
             if doc_name in answer:
                 hit += 1
-                precision += hit / rank_pos
+                precision += hit / (rank_pos + 1.0)
                 if hit == len(answer): break
             if rank_pos == at_pos: break
          
