@@ -1,14 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import numpy as np
-from numpy import ma
 import sys
+import argparse
 sys.path.append("../Tools")
 
 import ProcDoc
 import Evaluate
 from CommonPath import CommonPath
-import Statistical 
-import argparse
+import Statistical
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -36,24 +35,16 @@ parser.add_argument("--is_spoken",
                      type=str2bool,
                      required=False)
 
-parser.add_argument("--k1",
-                     default="2.0",
-                     type=float,
-                     required=False)
-
-parser.add_argument("--b",
-                     default="0.75",
-                     type=float,
-                     required=False)
-
 # Test Condition
 args = parser.parse_args()
 is_training = args.is_training
 is_short = args.is_short
 is_spoken = args.is_spoken
 # Parameters of BM25
-k1 = args.k1
-b = args.b
+idf_t = 6
+b = 0.75
+k1 = 2.0
+k3 = 2.0
 
 path = CommonPath(is_training, is_short, is_spoken)
 log_filename = path.getLogFilename()
@@ -78,27 +69,18 @@ qry_mdl_dict = ProcDoc.qryPreproc(qry_file, rel_set)
 doc_mdl_dict = ProcDoc.docPreproc(doc_file)
 
 # Convert dictionary to numpy array (feasible to compute)
-qry_mdl_np, qry_IDs = ProcDoc.dict2npSparse(qry_mdl_dict)
-doc_mdl_np, doc_IDs = ProcDoc.dict2npSparse(doc_mdl_dict)
+qry_mdl_np_, qry_IDs = ProcDoc.dict2npSparse(qry_mdl_dict)
+doc_mdl_np_, doc_IDs = ProcDoc.dict2npSparse(doc_mdl_dict)
 
 # Document frequency
 print("Document frequency")
-idf = Statistical.IDF(doc_mdl_np)
-doc_len = Statistical.compLenAve(doc_mdl_np)
+avg_len = Statistical.avgLen(doc_mdl_np_)
 
+idf = Statistical.IDF(doc_mdl_np_)
 # BM25
-ranking = np.zeros((qry_mdl_np.shape[0], doc_mdl_np.shape[0]))
-# score(Q, D)
-for q_idx, q_vec in enumerate(qry_mdl_np):
-    qw_idx = np.where(q_vec != 0)
-    for d_idx, d_vec in enumerate(doc_mdl_np):
-        nominator = idf[qw_idx] * d_vec[qw_idx] * (k1 + 1)
-        denominator = d_vec[qw_idx] + (k1 * (1 - b + b * doc_len[d_idx]))
-        ranking[q_idx][d_idx] = (nominator / denominator).sum(axis = 0)
-    
-# Ranking
-print("Retrieval")
-results = np.argsort(-ranking, axis = 1)
+[qry_bm25, doc_bm25] = Statistical.BM25(qry=qry_mdl_np_, doc=doc_mdl_np_, idf=idf, avg_len=avg_len, b=b, k1=k1, k3=k3, delta=0)
+ranking = -np.dot(qry_bm25, doc_bm25.T)
+results = np.argsort(ranking, axis=1)
 
 qry_docs_ranking = {}
 for q_idx, q_ID in enumerate(qry_IDs):
@@ -108,4 +90,4 @@ for q_idx, q_ID in enumerate(qry_IDs):
     qry_docs_ranking[q_ID] = docs_ranking
 
 mAP = eval_mdl.mAP(qry_docs_ranking)
-print mAP
+print(mAP)
