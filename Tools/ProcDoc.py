@@ -336,7 +336,7 @@ def dict2npDense(ori_dict, word_list = None, IDs_list = None, vocab_size = 51253
     #        word_list [0, 1, 3]
     #        IDs_list [doc1, doc2]
     num_target = len(list(ori_dict.keys()))
-    invert_word_list = {}
+    inv_word_list = {}
     
     if word_list is None:
         word_list = set()
