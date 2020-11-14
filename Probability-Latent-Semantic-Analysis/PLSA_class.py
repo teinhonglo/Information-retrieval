@@ -40,10 +40,11 @@ class pLSA(object):
         pzdw = self.pzdw
         k = self.k
         m, n = x.shape
+        print(m, n, k)
         epsilon = self.epsilon
         #  iteration   
         print('EM Training:');  
-        for iteration in xrange(iteration):
+        for iteration in range(iteration):
             start_time = time.time()
             denopzdw = np.zeros((m,n))          # denominator of p(z/d,w)  
             deno = np.zeros((k)) + epsilon      # denominator of p(w/z) and p(d/z)
@@ -52,15 +53,18 @@ class pLSA(object):
             count = 0
             print("iteration :" ,iteration)
             print("E step:")
-            for i in xrange(m):
-                for j in xrange(n):
-                    for ki in xrange(k):
+            for i in range(m):
+                for j in range(n):
+                    for ki in range(k):
                         # numerator of p(z/d,w)
                         pzdw[i, j, ki] = pwz[ki, i] * pzd[j, ki]
 
             # denominator of p(z/d,w)  
             denopzdw = np.sum(pzdw, axis=2)
             pzdw /= denopzdw[:,:,None]
+            where_are_NaNs = np.isnan(pzdw)
+            pzdw[where_are_NaNs] = 0
+            
             # M step
             print("M step:")
             # cache function of p(w/z)
@@ -90,11 +94,11 @@ class pLSA(object):
         # maximum collection likelihood estimation
         k = pzdw.shape[2]
         loss = 0.
-        for i, j in itertools.izip(self.nm, self.nn):
+        for i, j in zip(self.nm, self.nn):
             pwd = 0.
-            for ki in xrange(k):
+            for ki in range(k):
                 pwd += pwz[ki, i] * pzd[j, ki]
-            loss += x[i, j] * pwd
+            loss += x[i, j] * np.log(pwd)
         print(loss)
     
     def __calc_x_pzdw(self, x, pzdw):
