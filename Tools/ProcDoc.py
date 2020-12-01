@@ -8,21 +8,38 @@ import types
 from math import exp
 from collections import defaultdict
 from math import log
+from tqdm import tqdm
 
 # read file(query or document)
-def readFile(filepath):
-    data = {}                # content of document (doc, content)
-    # list all files of a directory(Document)
-    for dir_item in os.listdir(filepath):
-        # join dir path and file name
-        dir_item_path = os.path.join(filepath, dir_item)
-        # check whether a file exists before read
-        if os.path.isfile(dir_item_path):
-            with open(dir_item_path, 'r') as f:
-                # read content of document (doc, content)
-                data[dir_item] = f.read()
+def readFile(filepath, list_fn=None):
+    data = {}
+    if list_fn is None:
+        # list all files of a directory(Document)
+        for dir_item in tqdm(os.listdir(filepath)):
+            # join dir path and file name
+            dir_item_path = os.path.join(filepath, dir_item)
+            # check whether a file exists before read
+            if os.path.isfile(dir_item_path):
+                with open(dir_item_path, 'r') as f:
+                    # read content of document (doc, content)
+                    filename = dir_item.split(".txt")[0]
+                    data[filename] = f.read()
+    else:
+        fn_list = []
+        with open(list_fn, "r") as fn:
+            for line in fn.readlines():
+                fn_list.append(line.split("\n")[0] + ".txt")
+        for dir_item in tqdm(fn_list):
+            # join dir path and file name
+            dir_item_path = os.path.join(filepath, dir_item)
+            # check whether a file exists before read
+            if os.path.isfile(dir_item_path):
+                with open(dir_item_path, 'r') as f:
+                    # read content of document (doc, content)
+                    filename = dir_item.split(".")[0]
+                    data[filename] = f.read()
     # data(dict)
-    return data    
+    return data
 
 # read background model
 def readRELdict(REL_PATH = None, isTraining = True):
@@ -327,9 +344,9 @@ def dict2npSparse(ori_dict, IDs_list = None, vocab_size = 51253):
             
     return obj_vec, IDs_list
 
-def dict2npDense(ori_dict, word_list = None, IDs_list = None, vocab_size = 51253):
+def dict2npDense(ori_dict, word_list = None, IDs_list = None, dtype = np.float32):
     # convert dictionary to numpy array (dense)
-    # NOTE: I haven't test this function right now.
+    # NOTE:haven't test this function yet.
     # parameter: 
     # ori_dict {doc1:{w_id1: 3, w_id3: 1}, doc2:{w_id0: 6, w_id1: 9}}
     # output obj_vec [[0, 3, 1], [6, 9, 0]]
@@ -339,21 +356,27 @@ def dict2npDense(ori_dict, word_list = None, IDs_list = None, vocab_size = 51253
     inv_word_list = {}
     
     if word_list is None:
-        word_list = set()
+        word_list = {}
         for o_id, o_wid in ori_dict.items():
-            word_list.add(o_wid)
+            if o_wid in word_list:
+                continue
+            else:
+                word_list[o_wid] = len(list(word_list.keys()))
 
     for wi, wid in enumerate(word_list):
         inv_word_list[wid] = wi
 
-    obj_vec = np.zeros((num_target, len(word_list)))
+    obj_vec = np.zeros((num_target, len(word_list)), dtype=dtype)
     
     if IDs_list is None:
         IDs_list = list(ori_dict.keys())
         
     for idx, o_id in enumerate(IDs_list):
         for o_wid, o_wc in ori_dict[o_id].items():
-            o_wid_idx = int(inv_word_list[o_wid])
+            if o_wid in word_list:
+                o_wid_idx = int(word_list[o_wid])
+            else:
+                continue
             obj_vec[idx][o_wid_idx] = o_wc
             
     return obj_vec, word_list, IDs_list
