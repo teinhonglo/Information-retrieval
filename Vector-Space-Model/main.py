@@ -6,7 +6,7 @@ sys.path.append("../Tools")
 import ProcDoc
 import Evaluate
 from CommonPath import CommonPath
-import Statistical 
+import Statistical as Statistical
 import argparse
 import Rocchio
 
@@ -64,47 +64,32 @@ qry_mdl_dict = ProcDoc.qryPreproc(qry_file, rel_set)
 doc_mdl_dict = ProcDoc.docPreproc(doc_file)
 
 # Convert dictionary to numpy array (feasible to compute)
-qry_mdl_np, qry_IDs = ProcDoc.dict2npSparse(qry_mdl_dict)
-doc_mdl_np, doc_IDs = ProcDoc.dict2npSparse(doc_mdl_dict)
+qry_mdl_np_, qry_IDs = ProcDoc.dict2npSparse(qry_mdl_dict)
+doc_mdl_np_, doc_IDs = ProcDoc.dict2npSparse(doc_mdl_dict)
 
 # TF-IDF
 print("TF-IDF")
-[qry_mdl_np, doc_mdl_np] = Statistical.TFIDF(qry_mdl_np, doc_mdl_np)
+[qry_mdl_np, doc_mdl_np] = Statistical.TFIDF(qry_mdl_np_, doc_mdl_np_, {"qry":[3, 3], "doc": [3, 3]})
 
 # Cosine Similarity
 # L2-normalize
 qry_mdl_np = Statistical.l2Norm(qry_mdl_np)
 doc_mdl_np = Statistical.l2Norm(doc_mdl_np)
 
-print("Retrieval")
-# Dot Product
-results = np.argsort(-np.dot(qry_mdl_np, doc_mdl_np.T), axis = 1)
-
-qry_docs_ranking = {}
-for q_idx, q_ID in enumerate(qry_IDs):
-    docs_ranking = []
-    for doc_idx in results[q_idx]:
-        docs_ranking.append(doc_IDs[doc_idx])
-    qry_docs_ranking[q_ID] = docs_ranking
-
-mAP = eval_mdl.mAP(qry_docs_ranking)
-print(mAP)
-eval_mdl.reset()
-'''
-for topM in range(1,5,1):
-    qry_mdl_np_fb = Rocchio.feedback(qry_IDs_list=qry_IDs, qry_mdl=qry_mdl_np, \
-                                     doc_IDs_list=doc_IDs, doc_mdl=doc_mdl_np, \
-                                     query_docs_ranking=qry_docs_ranking, topM=topM)
-    ranking = np.dot(qry_mdl_np_fb, doc_mdl_np.T)
-    results = np.argsort(-ranking)
-    qry_docs_ranking_fb = {}
+def retrieval(qry_mdl, doc_mdl):
+    print("Retrieval")
+    ranking = -np.dot(qry_mdl, doc_mdl.T)
+    results = np.argsort(ranking, axis=1)
+    
+    qry_docs_ranking = {}
     for q_idx, q_ID in enumerate(qry_IDs):
         docs_ranking = []
         for doc_idx in results[q_idx]:
             docs_ranking.append(doc_IDs[doc_idx])
-    qry_docs_ranking_fb[q_ID] = docs_ranking
+        qry_docs_ranking[q_ID] = docs_ranking
+    return [ranking, results, qry_docs_ranking]
 
-    mAP = eval_mdl.mAP(qry_docs_ranking_fb)
-    print(mAP)
-    eval_mdl.reset()
-'''  
+ranking, results, qry_docs_ranking = retrieval(qry_mdl_np, doc_mdl_np)
+mAP = eval_mdl.mAP(qry_docs_ranking)
+print(mAP)
+eval_mdl.reset()
