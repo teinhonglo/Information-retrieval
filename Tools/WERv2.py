@@ -189,11 +189,15 @@ def wer(r, h):
     result = float(d[len(r)][len(h)]) / len(r) * 100
     result = str("%.2f" % result) + "%"
     alignedPrint(list, r, h, result)
+    
+    return float(d[len(r)][len(h)]), len(r)
 
 
 if __name__ == '__main__':
     filename1 = sys.argv[1]
     filename2 = sys.argv[2]
+    word_errs, num_words = 0, 0
+
     with open(filename1,'rU') as f1, open(filename2, 'rU') as f2:
         for r, h in zip(f1,f2):
             r_list = r.split()
@@ -201,7 +205,15 @@ if __name__ == '__main__':
             r_uttid, r_list = r_list[0], r_list[1:]
             h_uttid, h_list = h_list[0], h_list[1:]
             print(r_uttid)
-            wer(r_list, h_list)
+            word_err, num_word = wer(r_list, h_list)
+            word_errs += word_err
+            num_words += num_word
+            print()
+    
+    result = word_errs / num_words * 100
+    result = str("%.2f" % result) + "%"
+    print("%WER (overall)", result)
+            
     #r = file(filename1).read().split()
     #h = file(filename2).read().split()
     #wer(r, h)
