@@ -11,7 +11,7 @@
 import numpy as np
 import logging
 
-def feedback(qry_IDs_list, qry_mdl, doc_IDs_list, doc_mdl, bg_mdl, query_docs_ranking, topM = 9, smoothing = 0.0):
+def feedback(qry_IDs_list, qry_mdl, doc_IDs_list, doc_mdl, bg_mdl, query_docs_ranking, topN = 9, smoothing = 0.0):
     logging.debug("RM3 feedback")
     ''' Initialize '''
     RM3 = np.zeros((qry_mdl.shape[0], qry_mdl.shape[1]))
@@ -25,9 +25,9 @@ def feedback(qry_IDs_list, qry_mdl, doc_IDs_list, doc_mdl, bg_mdl, query_docs_ra
     for q_idx, q_key in enumerate(qry_IDs_list):
         q_vec = qry_mdl[q_idx]
         # Relevant top-M document
-        q_t_d = np.zeros(len(query_docs_ranking[q_key][:topM]))
+        q_t_d = np.zeros(len(query_docs_ranking[q_key][:topN]))
         w_d = np.zeros(vocabulary_size)
-        for rank_idx, doc_key in enumerate(query_docs_ranking[q_key][:topM]):
+        for rank_idx, doc_key in enumerate(query_docs_ranking[q_key][:topN]):
             doc_idx = doc_IDs[doc_key]
             doc_vec = doc_mdl[doc_idx]
             # P(q_t|D)
